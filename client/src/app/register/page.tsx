@@ -12,6 +12,7 @@ import { User, Mail, Phone, MapPin, Lock, UtensilsCrossed } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import Image from 'next/image';
+import axios from 'axios';
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -52,6 +53,7 @@ const Register = () => {
 
   const handleSubmit = (values: typeof initialValues, { setSubmitting }: any) => {
     console.log('Registration form submitted:', values);
+    axios.post('http://localhost:8080/register', values)
     
     // Simulate API call
     setTimeout(() => {
