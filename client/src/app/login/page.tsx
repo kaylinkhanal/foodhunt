@@ -36,8 +36,8 @@ const Register = () => {
   };
 
   const handleSubmit = async(values: typeof initialValues, { setSubmitting }: any) => {
-    const {data}= await  axios.post('http://localhost:8080/register', values)
-    toast(data)
+    const {data}= await  axios.post('http://localhost:8080/login', values)
+    toast(data?.message)
     // Simulate API call
     setTimeout(() => {
 
@@ -53,8 +53,7 @@ const Register = () => {
           <div className="flex items-center justify-center space-x-2 mb-4">
             <Image src="/applogo.png" alt="App Logo" width={200} height={200} />
           </div>
-          <h2 className="text-2xl font-bold text-foreground">Create Account</h2>
-          <p className="text-muted-foreground">Join our food community today</p>
+          <h2 className="text-2xl font-bold text-foreground">Sign In</h2>
         </div>
 
         {/* Registration Form */}
@@ -110,7 +109,7 @@ const Register = () => {
                     disabled={isSubmitting}
                     className="w-full bg-[#F9A51D] hover:bg-orange-700 text-primary-foreground font-semibold py-3 transition-all duration-200 transform hover:scale-[1.02]"
                   >
-                    {isSubmitting ? 'Creating Account...' : 'Create Account'}
+                    {isSubmitting ? 'Creating Account...' : 'Sign In'}
                   </Button>
                 </Form>
               )}
