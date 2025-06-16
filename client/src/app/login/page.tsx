@@ -13,6 +13,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import axios from 'axios';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -28,15 +30,14 @@ const validationSchema = Yup.object({
 });
 
 const Register = () => {
-
-
   const initialValues = {
     email: '',
     password: '',
   };
-
+  const router = useRouter()
   const handleSubmit = async(values: typeof initialValues, { setSubmitting }: any) => {
     const {data}= await  axios.post('http://localhost:8080/login', values)
+    if(data?.isLoggedIn) router.back();
     toast(data?.message)
     // Simulate API call
     setTimeout(() => {

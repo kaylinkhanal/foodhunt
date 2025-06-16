@@ -193,7 +193,7 @@ export function NavigationMenuDemo() {
         </NavigationMenuItem>
       </NavigationMenuList>
               <div className="flex gap-2">
-                <Link href="/register">
+                <Link href="/login">
                         <Button  className="bg-[#F8A619]">Login</Button>
                 </Link>
               <Button className="bg-[#CB351D]">Register</Button>
