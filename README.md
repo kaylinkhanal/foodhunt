@@ -21,15 +21,24 @@ Food Hunt is a MERN stack application inspired by platforms like Too Good To Go 
 
 ## Features
 
-### Current Features (Phase 1)
+### Core Features
 
-* **User Authentication**:
-    * **User Registration**: New users can create an account with their email and password.
-    * **User Login**: Registered users can securely log in to their accounts.
-* **User Management (Backend)**:
-    * Secure password hashing using **bcrypt**.
-    * JSON Web Token (**JWT**) generation for authenticated sessions.
-    * Basic user data retrieval (for development/admin purposes).
+* **User & Business Authentication**: Secure registration and login for both general users and business owners.
+* **Shop/Organization Registration**: Businesses can register their establishments for verification.
+* **Discounted Item Listing**: Verified businesses can add surplus food items at discounted prices.
+* **Location-Based Search**: Users can search for nearby discounted items.
+* **Item Booking/Reservation**: Users can book available discounted items.
+* **Order Confirmation Emails**: Automated email notifications upon order confirmation.
+* **Interactive Maps**: Visualize nearby discounts on a map.
+* **Invoice/PDF Generation**: Generate invoices or PDFs for orders.
+* **Magic Basket Creation**: Businesses can create curated "magic baskets" of mixed items at a discounted price.
+* **Rider Integration**: Functionality for riders to pick up and deliver orders.
+* **Seller Ratings**: Users can rate their experience with sellers.
+* **Payment Integration**: Secure payment processing for orders.
+* **User Preferences**: Personalized recommendations based on user history and preferences.
+* **Reward Points**: Earn reward points for purchases.
+* **Coupon Codes**: Generate and use coupon codes for discounts.
+* **Chat with Sellers**: Real-time communication between users and sellers.
 
 ---
 
@@ -65,23 +74,53 @@ Food Hunt is built using the following technologies:
 
 We are developing Food Hunt in distinct phases to ensure a robust and scalable application.
 
-### Phase 1: Core User Authentication & Basic Setup (Currently in Progress)
+### Phase 1: Core User & Business Authentication, Basic Listings & Search (Currently in Progress)
 
-**Goal**: Establish the fundamental user authentication system and set up the project structure.
+**Goal**: Establish fundamental user and business authentication, enable business registration, and allow users to find and book items.
 
 * **Frontend**:
-    * Implemented **Login** page.
-    * Implemented **Register** page.
+    * ✅ Implemented **User Login** page.
+    * ✅ Implemented **User Register** page.
+    * ✅ Basic **Logout** functionality.
+    * ⬜ Business Owner Registration Form.
+    * ⬜ Search interface for nearby discounts.
+    * ⬜ Item booking/reservation flow.
 * **Backend**:
-    * **User Registration Endpoint**: Allows new users to sign up.
+    * ✅ **User Registration Endpoint**: Allows new users to sign up.
         * Checks for existing emails.
         * Hashes passwords securely using **bcrypt**.
         * Creates new user entries in the database.
-    * **User Login Endpoint**: Authenticates users.
+    * ✅ **User Login Endpoint**: Authenticates users.
         * Verifies email existence.
-        * Compares provided password with hashed password using **bcrypt**.
+        * Compares provided password with hashed password with **bcrypt**.
         * Generates a **JWT** upon successful login.
-    * **Get All Users Endpoint**: (For internal use/testing) Retrieves a list of all registered users.
+    * ✅ **Get All Users Endpoint**: (For internal use/testing) Retrieves a list of all registered users.
+    * ⬜ Business Registration Endpoint (pending verification flow).
+    * ⬜ Endpoints for verified businesses to add discounted items.
+    * ⬜ Endpoints for users to search nearby items.
+    * ⬜ Endpoint for booking items.
+
+### Phase 2: Enhanced Order Management, Mapping & Payment Integration
+
+**Goal**: Improve the order process, introduce location-based services, and integrate payment gateways.
+
+* ⬜ **Email Notifications**: Send order confirmation emails to users and sellers.
+* ⬜ **Interactive Maps**: Integrate mapping services to display nearby discounts visually.
+* ⬜ **Invoice/PDF Generation**: Implement functionality to generate invoices or order summaries.
+* ⬜ **Magic Basket Creation**: Allow sellers to create and list special "magic baskets" of mixed items.
+* ⬜ **Rider Request System**: Develop a system for riders to be requested for order pickups.
+* ⬜ **Seller Rating System**: Implement a rating and review system for businesses.
+* ⬜ **Payment Gateway Integration**: Integrate a secure payment gateway for transactions (test environment).
+* ⬜ **Add-ons**: Explore and implement additional features as required.
+
+### Phase 3: Personalization, Rewards & Communication
+
+**Goal**: Enhance user experience with personalization, loyalty programs, and direct communication.
+
+* ⬜ **User Specific Preferences**: Implement features that allow users to set preferences for personalized recommendations.
+* ⬜ **Reward Points System**: Introduce a system for users to earn and redeem reward points.
+* ⬜ **Coupon Code Generation**: Enable the generation and redemption of coupon codes for promotions.
+* ⬜ **Chat with Sellers**: Implement a real-time chat feature for users to communicate directly with sellers.
 
 ---
 
