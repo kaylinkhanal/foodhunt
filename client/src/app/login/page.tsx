@@ -14,6 +14,8 @@ import Image from 'next/image';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { useDispatch } from 'react-redux';
+import { addLoginDetails } from '@/redux/reducerSlices/userSlice';
 
 
 const validationSchema = Yup.object({
@@ -35,10 +37,14 @@ const Register = () => {
     password: '',
   };
   const router = useRouter()
+  const dispatch = useDispatch()
   const handleSubmit = async(values: typeof initialValues, { setSubmitting }: any) => {
     const {data}= await  axios.post('http://localhost:8080/login', values)
     if(data?.isLoggedIn) router.back();
     toast(data?.message)
+    if(data) {
+      dispatch(addLoginDetails(data))
+    }
     // Simulate API call
     setTimeout(() => {
 

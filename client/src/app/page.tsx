@@ -4,10 +4,10 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 
 const Home = () => {
-  const {backgroundColor} = useSelector(state=>state.box)
+  const {email} = useSelector(state=>state.user)
   return (
     <div>
-{backgroundColor}
+{email}
       <NavigationMenuDemo/>
       Home</div>
   )
