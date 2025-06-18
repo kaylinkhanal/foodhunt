@@ -4,7 +4,7 @@ const intialState ={
   token : '',
   isLoggedIn: false,
   role: '',
-  location: ''
+  location: '',
 }
 
 export const userSlice = createSlice({
@@ -15,17 +15,14 @@ export const userSlice = createSlice({
       return initialState
     },
     addLoginDetails: (state, action) => {
-      debugger;
-      const {token, isLoggedIn} = action.payload
-      const { email,  role, location, _id } = action.payload.user
       return {
         ...state,
-        email: email,
-        token: token,
-        isLoggedIn: isLoggedIn,
-        role: role,
-        _id: _id,
-        location: location
+        email:  action.payload.user?.email,
+        token: action.payload?.token,
+        isLoggedIn:  action.payload?.isLoggedIn,
+        role:  action.payload?.user.role,
+        _id:  action.payload?.user._id,
+        location: action.payload?.user.location,
       }
     },
   }

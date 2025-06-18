@@ -43,6 +43,7 @@ const Register = () => {
     if(data?.isLoggedIn) router.back();
     toast(data?.message)
     if(data) {
+      debugger;
       dispatch(addLoginDetails(data))
     }
     // Simulate API call
