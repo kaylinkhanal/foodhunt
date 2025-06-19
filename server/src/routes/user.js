@@ -44,7 +44,21 @@ userRouter.post('/register', async (req, res) => {
 
 
   userRouter.get('/users', async (req, res) => {
-    const data = await User.find()
+    console.log(req.query.role)
+    let data
+    if(req.query.role ) {
+      data = await User.find({role: req.query.role, isApproved: false })
+    }else{
+      data = await User.find()
+    }
     return res.send(data)
+  })
+
+
+  userRouter.patch('/users/:id', async (req, res) => {
+    const user = await User.findById(req.params.id)
+    user.isApproved = true
+    await user.save()
+    return res.send({message: "User approved successfully", user})
   })
 export default userRouter

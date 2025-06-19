@@ -46,11 +46,8 @@ const Register = () => {
       debugger;
       dispatch(addLoginDetails(data))
     }
-    // Simulate API call
-    setTimeout(() => {
 
-      setSubmitting(false);
-    }, 1000);
+
   };
 
   return (

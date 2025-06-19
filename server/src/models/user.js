@@ -6,8 +6,8 @@ const userSchema = new Schema({
   phoneNumber: String,
   role: String,
   password: String,
-  location: String
-
+  location: String,
+  isApproved: { type: Boolean, default: false },
 });
 const User = mongoose.model('User', userSchema);
 export default User;
