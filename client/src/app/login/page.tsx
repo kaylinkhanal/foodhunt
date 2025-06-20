@@ -14,8 +14,9 @@ import Image from 'next/image';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addLoginDetails } from '@/redux/reducerSlices/userSlice';
+import { useEffect } from 'react';
 
 
 const validationSchema = Yup.object({
@@ -31,7 +32,13 @@ const validationSchema = Yup.object({
  
 });
 
-const Register = () => {
+const Login = () => {
+  const { isLoggedIn } = useSelector((state: any) => state.user);
+  useEffect(()=>{
+    if(isLoggedIn) router.push('/')
+  },[])
+
+
   const initialValues = {
     email: '',
     password: '',
@@ -40,7 +47,16 @@ const Register = () => {
   const dispatch = useDispatch()
   const handleSubmit = async(values: typeof initialValues, { setSubmitting }: any) => {
     const {data}= await  axios.post('http://localhost:8080/login', values)
-    if(data?.isLoggedIn) router.back();
+    if(data?.isLoggedIn) {
+      if(data.user.role === 'admin') {
+        router.push('/admin/dashboard') 
+      }else if(data.user.role === 'seller') {
+        router.push('/seller/dashboard')
+      }
+      else{
+        router.back()
+      }
+    }
     toast(data?.message)
     if(data) {
       debugger;
@@ -138,4 +154,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;

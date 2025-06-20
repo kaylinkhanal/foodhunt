@@ -3,6 +3,7 @@ import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 const saltRounds = 10
 import User from "../models/user.js"
+import sendEmail from "../utils/sendEmail.js"
 const userRouter = Router()
 
 userRouter.post('/register', async (req, res) => {
@@ -58,6 +59,7 @@ userRouter.post('/register', async (req, res) => {
   userRouter.patch('/users/:id', async (req, res) => {
     const user = await User.findById(req.params.id)
     user.isApproved = true
+    sendEmail(user.email)
     await user.save()
     return res.send({message: "User approved successfully", user})
   })

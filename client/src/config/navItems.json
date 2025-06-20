@@ -1,0 +1,13 @@
+{
+    "admin": [
+        {"id":1, "label": "Dashboard", "icon": "dashboard", "path": "/admin/dashboard"},
+        {"id":2, "label": "Approve User", "icon": "users", "path": "/admin/approve-user"},
+        {"id":3, "label": "Track Driver", "icon": "settings", "path": "/admin/track-driver"}
+    ],
+    "seller": [
+        {"id":1, "label": "Dashboard", "icon": "dashboard", "path": "/seller/dashboard"},
+        {"id":2, "label": "Products", "icon": "products", "path": "/seller/products"},
+        {"id":3, "label": "Orders", "icon": "orders", "path": "/seller/orders"},
+        {"id":4, "label": "Revenue", "icon": "settings", "path": "/seller/revenue"}
+    ]
+}

@@ -82,7 +82,6 @@ We are developing Food Hunt in distinct phases to ensure a robust and scalable a
     * ✅ Implemented **User Login** page.
     * ✅ Implemented **User Register** page.
     * ✅ Basic **Logout** functionality.
-    * ⬜ Business Owner Registration Form.
     * ⬜ Search interface for nearby discounts.
     * ⬜ Item booking/reservation flow.
 * **Backend**:
@@ -95,7 +94,7 @@ We are developing Food Hunt in distinct phases to ensure a robust and scalable a
         * Compares provided password with hashed password with **bcrypt**.
         * Generates a **JWT** upon successful login.
     * ✅ **Get All Users Endpoint**: (For internal use/testing) Retrieves a list of all registered users.
-    * ⬜ Business Registration Endpoint (pending verification flow).
+    * ✅ Business Approval UI (pending verification flow).
     * ⬜ Endpoints for verified businesses to add discounted items.
     * ⬜ Endpoints for users to search nearby items.
     * ⬜ Endpoint for booking items.

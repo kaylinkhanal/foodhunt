@@ -1,5 +1,6 @@
 
 'use client'
+import Sidebar from "@/components/sidebar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import axios from "axios";
@@ -17,14 +18,13 @@ const UserApprovalCard = () => {
 
     const handleApproval = async(id) =>{
         const {data} = await axios.patch('http://localhost:8080/users/'+ id)
-
+        if(data)   fetchUser()
     }
-  if(user.length === 0) return "No pending user"
+
   return (
     <div>
-
         Approve sellers
-        {user.map((item)=>{
+    {user.length > 0 ? user.map((item)=>{
             return (
                 <Card key={item._id} className="dashboard-card-hover border-1 m-2 shadow-lg bg-gradient-to-br from-white to-gray-50">
                     <div className="p-4">
@@ -38,7 +38,7 @@ const UserApprovalCard = () => {
                     </div>
                 </Card>
             )
-        })}
+        }) : "No users to approve"}
 
     </div>
 

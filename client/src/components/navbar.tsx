@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/navigation-menu"
 import Image from "next/image"
 import { Button } from "./ui/button"
+import { useDispatch, useSelector } from "react-redux"
+import { logoutUser } from "@/redux/reducerSlices/userSlice"
 
 const components: { title: string; href: string; description: string }[] = [
   {
@@ -55,6 +57,12 @@ const components: { title: string; href: string; description: string }[] = [
 ]
 
 export function NavigationMenuDemo() {
+  const {isLoggedIn} = useSelector(state=>state.user)
+  const dispatch =useDispatch()
+
+  const handleLogout = () =>{
+    dispatch(logoutUser())
+  }
   return (
     <NavigationMenu viewport={false}>
          <div className="flex items-center justify-center space-x-2 mb-4">
@@ -192,12 +200,18 @@ export function NavigationMenuDemo() {
           </NavigationMenuContent>
         </NavigationMenuItem>
       </NavigationMenuList>
-              <div className="flex gap-2">
-                <Link href="/login">
-                        <Button  className="bg-[#F8A619]">Login</Button>
-                </Link>
-              <Button className="bg-[#CB351D]">Register</Button>
-              </div>
+             {isLoggedIn ? (
+                <div>
+                 <Button onClick={handleLogout}> Logout</Button>
+                </div>
+             ):(
+                <div className="flex gap-2">
+                  <Link href="/login">
+                          <Button  className="bg-[#F8A619]">Login</Button>
+                  </Link>
+                <Button className="bg-[#CB351D]">Register</Button>
+                </div>
+             ) }
 
 
     </NavigationMenu>
