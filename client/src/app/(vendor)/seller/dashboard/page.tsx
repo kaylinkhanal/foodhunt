@@ -8,7 +8,7 @@ const Dashboard = () => {
 
   const [kycStatus, setKycStatus] = useState({})
   const fetchKycStatus = async () => {
-    const {data}= await axios.get('http://localhost:8080/kycs/684f830c0bed0edb979279fc')
+    const {data}= await axios.get(process.env.NEXT_PUBLIC_API_URL+ '/kycs/684f830c0bed0edb979279fc')
     setKycStatus(data)
   }
   useEffect(()=>{

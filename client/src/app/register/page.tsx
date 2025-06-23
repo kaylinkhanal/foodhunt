@@ -52,7 +52,7 @@ const Register = () => {
   };
 
   const handleSubmit = async(values: typeof initialValues, { setSubmitting }: any) => {
-    const {data}= await  axios.post('http://localhost:8080/register', values)
+    const {data}= await  axios.post(process.env.NEXT_PUBLIC_API_URL+ '/register', values)
     toast(data)
     // Simulate API call
     setTimeout(() => {

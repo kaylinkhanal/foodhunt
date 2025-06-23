@@ -42,7 +42,7 @@ const SellerKycForm = () => {
 
 
   const handleSubmit = async (values: typeof initialValues, { setSubmitting }: any) => {
-    const {data} = await axios.post('http://localhost:8080/kycs/' +_id, values)
+    const {data} = await axios.post(process.env.NEXT_PUBLIC_API_URL+ '/kycs/' +_id, values)
     alert(data.message)
   };
 

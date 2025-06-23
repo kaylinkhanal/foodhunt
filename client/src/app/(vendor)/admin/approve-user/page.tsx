@@ -17,7 +17,7 @@ const UserApprovalCard = () => {
     },[])
 
     const handleApproval = async(id) =>{
-        const {data} = await axios.patch('http://localhost:8080/users/'+ id)
+        const {data} = await axios.patch(process.env.NEXT_PUBLIC_API_URL+ '/users/'+ id)
         if(data)   fetchUser()
     }
 
