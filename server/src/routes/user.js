@@ -32,7 +32,7 @@ userRouter.post('/register', async (req, res) => {
       const isMatched = await bcrypt.compare(password, user.password)
       if(!isMatched) return res.send({message: 'Invalid password'})
       
-      const token = await jwt.sign({ email: email }, '33ceecfc3c914cb6dee77a8c16d08211caf46cfb1aa0b9372f24e39fbaaa1fca31d1a7ae7938579f7ed157636babf812ac42468d431128f7f3098c51a5a4a69a');
+      const token = await jwt.sign({ email: email }, process.env.JWT_SECRET);
 
       return res.send({
           message: 'logged in successfully',
@@ -56,11 +56,5 @@ userRouter.post('/register', async (req, res) => {
   })
 
 
-  userRouter.patch('/users/:id', async (req, res) => {
-    const user = await User.findById(req.params.id)
-    user.isApproved = true
-    sendEmail(user.email)
-    await user.save()
-    return res.send({message: "User approved successfully", user})
-  })
+
 export default userRouter
