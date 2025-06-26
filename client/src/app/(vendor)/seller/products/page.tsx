@@ -47,16 +47,19 @@ const Products = () => {
   const [showForm, setShowForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [products, setProducts] = useState([])
+  const [products, setProducts] = useState([]);
   const user = useSelector((state) => state.user);
-  const {  isLoggedIn, role, email, _id } = user;
+  const { isLoggedIn, role, email, _id } = user;
+
+  const dispatch = useDispatch();
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
   const fetchProducts = async () => {
     setIsLoading(true);
     setError(null);
     try {
       const { data } = await axios.get(`${API_BASE_URL}/get-all-products?sellerId=${_id}`);
-      setProducts(data)
+      setProducts(data);
     } catch (err) {
       console.error('Failed to fetch products:', err);
       setError(err.response?.data?.error || err.message);
@@ -66,11 +69,7 @@ const Products = () => {
     }
   };
 
-  const dispatch = useDispatch();
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-
   useEffect(() => {
-
     fetchProducts();
   }, [dispatch, API_BASE_URL]);
 
@@ -96,8 +95,8 @@ const Products = () => {
         values.discountPercentage = ((values.originalPrice - values.discountedPrice) / values.originalPrice) * 100;
       }
 
-      const { data } = await axios.post(`${API_BASE_URL}/add-product`, {...values, sellerId: _id});
-      if(data) fetchProducts()
+      const { data } = await axios.post(`${API_BASE_URL}/add-product`, { ...values, sellerId: _id });
+      if (data) fetchProducts();
       toast.success('Product added successfully!');
       resetForm();
       setShowForm(false);
@@ -112,10 +111,8 @@ const Products = () => {
     }
   };
 
-
-
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-yellow-100 to-red-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen w-full  bg-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full mx-auto">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -123,7 +120,7 @@ const Products = () => {
           transition={{ duration: 0.5 }}
           className="text-center mb-8"
         >
-          <h1 className="text-4xl font-bold text-red-600">Add Product</h1>
+          <h1 className="text-4xl font-bold text-orange-600">Add Product</h1>
           <p className="text-gray-600 mt-2">Showcase your food items with a vibrant and inviting form.</p>
         </motion.div>
 
@@ -136,7 +133,7 @@ const Products = () => {
 
         {isLoading && (
           <div className="flex justify-center items-center py-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-500"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
             <span className="ml-3 text-gray-700">Loading products...</span>
           </div>
         )}
@@ -148,7 +145,7 @@ const Products = () => {
           {isLoggedIn && role === 'seller' ? (
             <Button
               onClick={() => setShowForm(!showForm)}
-              className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition-all duration-300"
+              className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition-all duration-300"
               disabled={isLoading}
             >
               {showForm ? 'Close Form' : 'Add New Food Product'}
@@ -167,7 +164,7 @@ const Products = () => {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.5 }}
-              className="bg-white p-8 rounded-2xl shadow-xl border border-yellow-500 mb-12"
+              className="bg-white p-8 rounded-2xl shadow-xl border border-orange-500 mb-12"
             >
               <Formik
                 initialValues={initialValues}
@@ -186,7 +183,7 @@ const Products = () => {
                         <Field
                           type="text"
                           name="name"
-                          className="w-full p-3 border border-yellow-500 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all"
+                          className="w-full p-3 border border-orange-500 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
                           placeholder="Enter food product name"
                         />
                         <ErrorMessage
@@ -204,7 +201,7 @@ const Products = () => {
                         <Field
                           as="select"
                           name="category"
-                          className="w-full p-3 border border-yellow-500 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all"
+                          className="w-full p-3 border border-orange-500 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
                         >
                           {categories.map((cat) => (
                             <option key={cat} value={cat}>
@@ -227,7 +224,7 @@ const Products = () => {
                         <Field
                           type="url"
                           name="imageUrl"
-                          className="w-full p-3 border border-yellow-500 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all"
+                          className="w-full p-3 border border-orange-500 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
                           placeholder="https://example.com/food-image.jpg"
                         />
                         <ErrorMessage
@@ -245,7 +242,7 @@ const Products = () => {
                         <Field
                           type="number"
                           name="originalPrice"
-                          className="w-full p-3 border border-yellow-500 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all"
+                          className="w-full p-3 border border-orange-500 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
                           placeholder="Enter original price"
                         />
                         <ErrorMessage
@@ -263,7 +260,7 @@ const Products = () => {
                         <Field
                           type="number"
                           name="discountedPrice"
-                          className="w-full p-3 border border-yellow-500 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all"
+                          className="w-full p-3 border border-orange-500 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
                           placeholder="Enter discounted price"
                           onChange={(e) => {
                             setFieldValue('discountedPrice', e.target.value);
@@ -291,7 +288,7 @@ const Products = () => {
                         <Field
                           type="number"
                           name="discountPercentage"
-                          className="w-full p-3 border border-yellow-500 rounded-lg bg-gray-100 cursor-not-allowed"
+                          className="w-full p-3 border border-orange-500 rounded-lg bg-gray-100 cursor-not-allowed"
                           placeholder="Calculated automatically"
                           readOnly
                           value={values.discountPercentage ? values.discountPercentage.toFixed(2) : ''}
@@ -311,7 +308,7 @@ const Products = () => {
                         <Field
                           type="date"
                           name="expiryDate"
-                          className="w-full p-3 border border-yellow-500 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all"
+                          className="w-full p-3 border border-orange-500 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
                         />
                         <ErrorMessage
                           name="expiryDate"
@@ -328,7 +325,7 @@ const Products = () => {
                         <Field
                           type="number"
                           name="availableQuantity"
-                          className="w-full p-3 border border-yellow-500 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all"
+                          className="w-full p-3 border border-orange-500 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
                           placeholder="Enter quantity"
                         />
                         <ErrorMessage
@@ -346,9 +343,9 @@ const Products = () => {
                         <Field
                           as="select"
                           name="status"
-                          className="w-full p-3 border border-yellow-500 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all"
+                          className="w-full p-3 border border-orange-500 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
                         >
-                          {statuses.map((status) => (
+                          {categories.map((status) => (
                             <option key={status} value={status.toLowerCase()}>
                               {status}
                             </option>
@@ -370,7 +367,7 @@ const Products = () => {
                       <Field
                         as="textarea"
                         name="description"
-                        className="w-full p-3 border border-yellow-500 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all h-32 resize-none"
+                        className="w-full p-3 border border-orange-500 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all h-32 resize-none"
                         placeholder="Describe your food product"
                       />
                       <ErrorMessage
@@ -385,7 +382,7 @@ const Products = () => {
                       <Field
                         type="checkbox"
                         name="isAvailable"
-                        className="h-5 w-5 text-yellow-500 focus:ring-yellow-500 border-red-500 rounded"
+                        className="h-5 w-5 text-orange-500 focus:ring-orange-500 border-red-500 rounded"
                       />
                       <label className="ml-2 text-sm font-medium text-gray-700">
                         Is Available
@@ -397,7 +394,7 @@ const Products = () => {
                       <Button
                         type="submit"
                         disabled={isSubmitting || isLoading}
-                        className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg transition-all duration-300"
+                        className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg transition-all duration-300"
                       >
                         {isSubmitting || isLoading ? 'Submitting...' : 'Submit Food Product'}
                       </Button>
@@ -410,8 +407,8 @@ const Products = () => {
         </AnimatePresence>
 
         {/* Display fetched products */}
-        <div className="mt-12 p-8 bg-yellow-500 rounded-2xl shadow-2xl border border-yellow-500">
-          <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">Available Food Products</h2>
+        <div className="mt-12 p-8 w-full">
+          <h2 className="text-3xl font-bold text-orange-500 mb-8 text-center">Available Food Products</h2>
           {products.length === 0 && !isLoading && !error ? (
             <p className="text-center text-lg text-gray-600">No products available yet.</p>
           ) : (
@@ -422,7 +419,7 @@ const Products = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-yellow-200"
+                  className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-orange-200"
                 >
                   <div className="relative">
                     <img
@@ -445,7 +442,7 @@ const Products = () => {
                     <p className="text-sm text-gray-600 mb-4 line-clamp-3">{product.description}</p>
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <span className="text-2xl font-bold text-yellow-600">${product.discountedPrice.toFixed(2)}</span>
+                        <span className="text-2xl font-bold text-orange-600">${product.discountedPrice.toFixed(2)}</span>
                         {product.discountPercentage > 0 && (
                           <span className="text-sm text-gray-500 line-through ml-2">${product.originalPrice.toFixed(2)}</span>
                         )}
@@ -463,22 +460,22 @@ const Products = () => {
                       </p>
                     </div>
                     {/* Seller Details */}
-                    <div className="border-t border-yellow-200 pt-4">
+                    <div className="border-t border-orange-200 pt-4">
                       <h4 className="text-sm font-semibold text-gray-700 mb-2">Seller Information</h4>
                       <p className="text-sm text-gray-600 flex items-center">
-                        <svg className="w-4 h-4 text-yellow-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-4 h-4 text-orange-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M10 2a4 4 0 100 8 4 4 0 000-8zm0 10c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z" />
                         </svg>
                         {product.sellerId?.name || 'Unknown Seller'}
                       </p>
                       <p className="text-sm text-gray-600 flex items-center">
-                        <svg className="w-4 h-4 text-yellow-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-4 h-4 text-orange-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M2 4a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V4zm2 2v8h12V6H4zm2 2h8v4H6V8z" />
                         </svg>
                         {product.sellerId?.email || 'No email provided'}
                       </p>
                       <p className="text-sm text-gray-600 flex items-center">
-                        <svg className="w-4 h-4 text-yellow-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-4 h-4 text-orange-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                         </svg>
                         {product.sellerId?.phoneNumber || 'No phone number provided'}
