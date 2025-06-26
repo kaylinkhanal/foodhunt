@@ -53,7 +53,7 @@ const Products = () => {
   const [error, setError] = useState(null);
 
   const user = useSelector((state) => state.user);
-  const { email, _id, name, phoneNumber, isLoggedIn, role } = user;
+  const {  isLoggedIn, role } = user;
   const products = useSelector((state) => state.product.products);
 
   const dispatch = useDispatch();
@@ -83,9 +83,9 @@ const Products = () => {
     description: '',
     category: 'Other',
     imageUrl: '',
-    sellerId: _id || '',
-    sellerName: name || '',
-    sellerEmail: email || '',
+    sellerId:  '',
+    sellerName: '',
+    sellerEmail:  '',
     originalPrice: 0,
     discountedPrice: '',
     discountPercentage: '',
@@ -528,19 +528,19 @@ const Products = () => {
                         <svg className="w-4 h-4 text-yellow-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M10 2a4 4 0 100 8 4 4 0 000-8zm0 10c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z" />
                         </svg>
-                        {name || 'Unknown Seller'}
+                        {product.sellerId?.name || 'Unknown Seller'}
                       </p>
                       <p className="text-sm text-gray-600 flex items-center">
                         <svg className="w-4 h-4 text-yellow-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M2 4a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V4zm2 2v8h12V6H4zm2 2h8v4H6V8z" />
                         </svg>
-                        {email || 'No email provided'}
+                        {product.sellerId?.email || 'No email provided'}
                       </p>
                       <p className="text-sm text-gray-600 flex items-center">
                         <svg className="w-4 h-4 text-yellow-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                         </svg>
-                        {phoneNumber || 'No phone number provided'}
+                        {product.sellerId?.phoneNumber || 'No phone number provided'}
                       </p>
                     </div>
                   </div>
