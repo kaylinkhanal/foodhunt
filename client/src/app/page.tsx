@@ -1,5 +1,5 @@
 'use client'
-import FoodHuntNavbar from '@/components/navbar'
+import Navbar from '@/components/navbar'
 import React from 'react'
 import { useSelector } from 'react-redux'
 
@@ -8,7 +8,7 @@ const Home = () => {
     <div>
 
       {/* <NavigationMenuDemo/> */}
-      <FoodHuntNavbar />
+      <Navbar />
       
       
       </div>

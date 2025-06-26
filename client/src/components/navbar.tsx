@@ -47,12 +47,11 @@ const bestDeals = [
   { name: "Happy Hours", discount: "30% OFF", time: "4-7 PM" },
 ]
 
-export default function FoodHuntNavbar() {
+export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <Image
               src="/applogo.png"
@@ -63,18 +62,15 @@ export default function FoodHuntNavbar() {
             />
           </Link>
 
-          {/* Desktop Navigation */}
 
           <NavigationMenu className="hidden lg:flex">
             <NavigationMenuList>
 
-              {/* Food Menu */}
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-base font-medium">Food</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className="grid w-[800px] grid-cols-2 gap-6 p-6">
 
-                    {/* Non Veg Section */}
                     <div>
                       <h3 className="mb-4 text-lg font-semibold text-red-600">Non Veg</h3>
                       <div className="grid gap-4">
@@ -98,7 +94,6 @@ export default function FoodHuntNavbar() {
                       </div>
                     </div>
 
-                    {/* Veg Section */}
                     <div>
                       <h3 className="mb-4 text-lg font-semibold text-green-600">Veg</h3>
                       <div className="grid gap-4">
@@ -125,7 +120,6 @@ export default function FoodHuntNavbar() {
                 </NavigationMenuContent>
               </NavigationMenuItem>
 
-              {/* Drinks Menu */}
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-base font-medium">Drinks</NavigationMenuTrigger>
                 <NavigationMenuContent>
@@ -148,10 +142,10 @@ export default function FoodHuntNavbar() {
                       </div>
                     ))}
                   </div>
-                </NavigationMenuContent>
+                </NavigationMenuContent> 
               </NavigationMenuItem>
 
-              {/* Best Deals */}
+              
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-base font-medium text-orange-600">
                   <Star className="mr-1 h-4 w-4" />
@@ -185,7 +179,6 @@ export default function FoodHuntNavbar() {
                 </NavigationMenuContent>
               </NavigationMenuItem>
 
-              {/* Restaurants */}
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
                   <Link
@@ -199,7 +192,6 @@ export default function FoodHuntNavbar() {
             </NavigationMenuList>
           </NavigationMenu>
 
-          {/* Search Bar */}
           <div className="hidden md:flex flex-1 max-w-md mx-8">
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -210,48 +202,25 @@ export default function FoodHuntNavbar() {
             </div>
           </div>
 
-          {/* Right Side Actions */}
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" className="hidden md:flex">
-              <MapPin className="mr-2 h-4 w-4" />
-              Location
-            </Button>
-
             <Button variant="ghost" size="icon" className="relative">
               <ShoppingBag className="h-5 w-5" />
               <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 text-xs">3</Badge>
             </Button>
+            <div className="flex flex-row items-center space-x-4 ml-4">
+            <Link href="/login">
+            <Button variant="outline" className="justify-start bg-black hover:bg-[#c74021] text-blue-50">
+               Sign In
+            </Button>
+          </Link>
 
-            {/* <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
-            </Button> */}
-            <DropdownMenu>
-           <DropdownMenuTrigger><User className="mr-2 h-4 w-4" /></DropdownMenuTrigger>
-          <DropdownMenuContent>
-    
-             <DropdownMenuItem>
-            <Button variant="outline" className="justify-start bg-black  hover:bg-[#c74021] text-blue-50 ">
-                      <User className="mr-2 h-4 w-4 " />
-                      Sign In
-                    </Button></DropdownMenuItem>
-             <DropdownMenuItem><Button variant="outline" className="w-full justify-start  bg-[#faa617] ">
-                      <User className="mr-2 h-4 w-4" />
-                      Sign up
-                    </Button></DropdownMenuItem>
-          {/* hover:bg-yellow-600 hover:bg-orange-600 */}
-           </DropdownMenuContent>
-            </DropdownMenu>
+           <Link href="/register">
+          <Button variant="outline" className="w-full justify-start bg-[#faa617]">
+            Sign up
+          </Button>
+        </Link>
+        </div>
 
-            {/* <Button variant="outline" className="justify-start">
-                      <User className="mr-2 h-4 w-4" />
-                      Sign In
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <User className="mr-2 h-4 w-4" />
-                      Sign up
-                    </Button> */}
-
-            {/* Mobile Menu */}
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="lg:hidden">
@@ -261,11 +230,9 @@ export default function FoodHuntNavbar() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-                {/* ✅ Title added here for accessibility */}
                 <SheetTitle className="text-lg font-semibold">Menu</SheetTitle>
 
                 <div className="flex flex-col space-y-4 mt-6">
-                  {/* Mobile Search */}
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                     <Input type="search" placeholder="Search food nearby..." className="pl-10" />
@@ -273,7 +240,6 @@ export default function FoodHuntNavbar() {
 
                   <Separator />
 
-                  {/* Mobile Navigation Links */}
                   <div className="space-y-4">
                     <Link href="/food" className="block text-lg font-medium">
                       Food
@@ -287,19 +253,6 @@ export default function FoodHuntNavbar() {
                     <Link href="/restaurants" className="block text-lg font-medium">
                       Restaurants
                     </Link>
-                  </div>
-
-                  <Separator />
-
-                  <div className="space-y-2">
-                    <Button variant="outline" className="w-full justify-start">
-                      <MapPin className="mr-2 h-4 w-4" />
-                      Set Location
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <User className="mr-2 h-4 w-4" />
-                      Sign In
-                    </Button>
                   </div>
                 </div>
               </SheetContent>
