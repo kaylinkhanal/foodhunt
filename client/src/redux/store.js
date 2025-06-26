@@ -9,11 +9,13 @@ import counterSlice from './reducerSlices/counterSlice';
 import boxSlice from './reducerSlices/boxSlice';
 import userSlice from './reducerSlices/userSlice';
 import reduxLogger from 'redux-logger';
+import productSlice from './reducerSlices/productSlice'
 
 const rootReducer = combineReducers({
   counter: counterSlice,
   box: boxSlice,
   user: userSlice,
+  product:productSlice
 });
 
 const persistConfig = {
