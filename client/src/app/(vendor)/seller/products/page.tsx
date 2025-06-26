@@ -15,9 +15,6 @@ const productSchema = Yup.object().shape({
   description: Yup.string().min(10).max(500).required('Description is required'),
   category: Yup.string().required('Category is required'),
   imageUrl: Yup.string().url('Invalid URL').required('Image URL is required'),
-  sellerId: Yup.string().required('Seller ID is required'),
-  sellerName: Yup.string().required('Seller name is required'),
-  sellerEmail: Yup.string().email('Invalid email').required('Seller email is required'),
   originalPrice: Yup.number().min(0).required('Original price is required'),
   discountedPrice: Yup.number()
     .min(0)
@@ -51,29 +48,29 @@ const Products = () => {
   const [showForm, setShowForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-
+  const [products, setProducts] = useState([])
   const user = useSelector((state) => state.user);
-  const {  isLoggedIn, role } = user;
-  const products = useSelector((state) => state.product.products);
+  const {  isLoggedIn, role, email, _id } = user;
+
+  const fetchProducts = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const { data } = await axios.get(`${API_BASE_URL}/get-all-products`);
+      setProducts(data)
+    } catch (err) {
+      console.error('Failed to fetch products:', err);
+      setError(err.response?.data?.error || err.message);
+      toast.error(err.response?.data?.error || 'Failed to load products');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const dispatch = useDispatch();
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const { data } = await axios.get(`${API_BASE_URL}/get-all-products`);
-        dispatch(setProducts(data));
-      } catch (err) {
-        console.error('Failed to fetch products:', err);
-        setError(err.response?.data?.error || err.message);
-        toast.error(err.response?.data?.error || 'Failed to load products');
-      } finally {
-        setIsLoading(false);
-      }
-    };
 
     fetchProducts();
   }, [dispatch, API_BASE_URL]);
@@ -83,9 +80,6 @@ const Products = () => {
     description: '',
     category: 'Other',
     imageUrl: '',
-    sellerId:  '',
-    sellerName: '',
-    sellerEmail:  '',
     originalPrice: 0,
     discountedPrice: '',
     discountPercentage: '',
@@ -103,8 +97,8 @@ const Products = () => {
         values.discountPercentage = ((values.originalPrice - values.discountedPrice) / values.originalPrice) * 100;
       }
 
-      const { data } = await axios.post(`${API_BASE_URL}/add-product`, values);
-      dispatch(addProduct(data));
+      const { data } = await axios.post(`${API_BASE_URL}/add-product`, {...values, sellerId: _id});
+      if(data) fetchProducts()
       toast.success('Product added successfully!');
       resetForm();
       setShowForm(false);
@@ -118,6 +112,8 @@ const Products = () => {
       setIsLoading(false);
     }
   };
+
+
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-yellow-100 to-red-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -237,60 +233,6 @@ const Products = () => {
                         />
                         <ErrorMessage
                           name="imageUrl"
-                          component="div"
-                          className="text-red-500 text-sm mt-1"
-                        />
-                      </div>
-
-                      {/* Seller ID */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Seller ID
-                        </label>
-                        <Field
-                          type="text"
-                          name="sellerId"
-                          className="w-full p-3 border border-yellow-500 rounded-lg bg-gray-100 cursor-not-allowed"
-                          readOnly
-                        />
-                        <ErrorMessage
-                          name="sellerId"
-                          component="div"
-                          className="text-red-500 text-sm mt-1"
-                        />
-                      </div>
-
-                      {/* Seller Name */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Seller Name
-                        </label>
-                        <Field
-                          type="text"
-                          name="sellerName"
-                          className="w-full p-3 border border-yellow-500 rounded-lg bg-gray-100 cursor-not-allowed"
-                          readOnly
-                        />
-                        <ErrorMessage
-                          name="sellerName"
-                          component="div"
-                          className="text-red-500 text-sm mt-1"
-                        />
-                      </div>
-
-                      {/* Seller Email */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Seller Email
-                        </label>
-                        <Field
-                          type="email"
-                          name="sellerEmail"
-                          className="w-full p-3 border border-yellow-500 rounded-lg bg-gray-100 cursor-not-allowed"
-                          readOnly
-                        />
-                        <ErrorMessage
-                          name="sellerEmail"
                           component="div"
                           className="text-red-500 text-sm mt-1"
                         />
