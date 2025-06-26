@@ -23,7 +23,7 @@ productRouter.post('/add-product', async (req, res) => {
 //to get all product
 productRouter.get('/get-all-products', async (req, res) => {
   try {
-    const products = await Product.find()
+    const products = await Product.find({sellerId:req.query.sellerId})
       .sort({ createdAt: -1 }) //sort the products based on their created at and decending order
       .populate('sellerId', 'name email phoneNumber'); 
 

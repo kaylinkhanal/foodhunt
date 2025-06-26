@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { setProducts, addProduct } from '@/redux/reducerSlices/productSlice';
 
 const productSchema = Yup.object().shape({
   name: Yup.string().min(3).max(100).required('Name is required'),
@@ -56,7 +55,7 @@ const Products = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const { data } = await axios.get(`${API_BASE_URL}/get-all-products`);
+      const { data } = await axios.get(`${API_BASE_URL}/get-all-products?sellerId=${_id}`);
       setProducts(data)
     } catch (err) {
       console.error('Failed to fetch products:', err);
