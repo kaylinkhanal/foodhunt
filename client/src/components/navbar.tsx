@@ -1,9 +1,11 @@
 "use client"
 
-import * as React from "react"
+import { Search, ShoppingBag, User, MapPin, Clock, Star } from "lucide-react"
 import Link from "next/link"
-import { CircleCheckIcon, CircleHelpIcon, CircleIcon } from "lucide-react"
+import Image from "next/image"
 
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -11,229 +13,300 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
-import Image from "next/image"
-import { Button } from "./ui/button"
-import { useDispatch, useSelector } from "react-redux"
-import { logoutUser } from "@/redux/reducerSlices/userSlice"
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
 
-const components: { title: string; href: string; description: string }[] = [
-  {
-    title: "Alert Dialog",
-    href: "/docs/primitives/alert-dialog",
-    description:
-      "A modal dialog that interrupts the user with important content and expects a response.",
-  },
-  {
-    title: "Hover Card",
-    href: "/docs/primitives/hover-card",
-    description:
-      "For sighted users to preview content available behind a link.",
-  },
-  {
-    title: "Progress",
-    href: "/docs/primitives/progress",
-    description:
-      "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
-  },
-  {
-    title: "Scroll-area",
-    href: "/docs/primitives/scroll-area",
-    description: "Visually or semantically separates content.",
-  },
-  {
-    title: "Tabs",
-    href: "/docs/primitives/tabs",
-    description:
-      "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
-  },
-  {
-    title: "Tooltip",
-    href: "/docs/primitives/tooltip",
-    description:
-      "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-  },
-]
-
-export function NavigationMenuDemo() {
-  const {isLoggedIn} = useSelector(state=>state.user)
-  const dispatch =useDispatch()
-
-  const handleLogout = () =>{
-    dispatch(logoutUser())
-  }
-  return (
-    <NavigationMenu viewport={false}>
-         <div className="flex items-center justify-center space-x-2 mb-4">
-                    <Image src="/applogo.png" alt="App Logo" width={150} height={100} />
-                  </div>
-      <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Home</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid gap-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-              <li className="row-span-3">
-                <NavigationMenuLink asChild>
-                  <a
-                    className="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b p-6 no-underline outline-hidden select-none focus:shadow-md"
-                    href="/"
-                  >
-                    <div className="mt-4 mb-2 text-lg font-medium">
-                      shadcn/ui
-                    </div>
-                    <p className="text-muted-foreground text-sm leading-tight">
-                      Beautifully designed components built with Tailwind CSS.
-                    </p>
-                  </a>
-                </NavigationMenuLink>
-              </li>
-              <ListItem href="/docs" title="Introduction">
-                Re-usable components built using Radix UI and Tailwind CSS.
-              </ListItem>
-              <ListItem href="/docs/installation" title="Installation">
-                How to install dependencies and structure your app.
-              </ListItem>
-              <ListItem href="/docs/primitives/typography" title="Typography">
-                Styles for headings, paragraphs, lists...etc
-              </ListItem>
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Components</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[400px] gap-2 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-              {components.map((component) => (
-                <ListItem
-                  key={component.title}
-                  title={component.title}
-                  href={component.href}
-                >
-                  {component.description}
-                </ListItem>
-              ))}
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-            <Link href="/docs">Docs</Link>
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>List</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[300px] gap-4">
-              <li>
-                <NavigationMenuLink asChild>
-                  <Link href="#">
-                    <div className="font-medium">Components</div>
-                    <div className="text-muted-foreground">
-                      Browse all components in the library.
-                    </div>
-                  </Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  <Link href="#">
-                    <div className="font-medium">Documentation</div>
-                    <div className="text-muted-foreground">
-                      Learn how to use the library.
-                    </div>
-                  </Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  <Link href="#">
-                    <div className="font-medium">Blog</div>
-                    <div className="text-muted-foreground">
-                      Read our latest blog posts.
-                    </div>
-                  </Link>
-                </NavigationMenuLink>
-              </li>
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Simple</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[200px] gap-4">
-              <li>
-                <NavigationMenuLink asChild>
-                  <Link href="#">Components</Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  <Link href="#">Documentation</Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  <Link href="#">Blocks</Link>
-                </NavigationMenuLink>
-              </li>
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>With Icon</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[200px] gap-4">
-              <li>
-                <NavigationMenuLink asChild>
-                  <Link href="#" className="flex-row items-center gap-2">
-                    <CircleHelpIcon />
-                    Backlog
-                  </Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  <Link href="#" className="flex-row items-center gap-2">
-                    <CircleIcon />
-                    To Do
-                  </Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  <Link href="#" className="flex-row items-center gap-2">
-                    <CircleCheckIcon />
-                    Done
-                  </Link>
-                </NavigationMenuLink>
-              </li>
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-             {isLoggedIn ? (
-                <div>
-                 <Button onClick={handleLogout}> Logout</Button>
-                </div>
-             ):(
-                <div className="flex gap-2">
-                  <Link href="/login">
-                          <Button  className="bg-[#F8A619]">Login</Button>
-                  </Link>
-                <Button className="bg-[#CB351D]">Register</Button>
-                </div>
-             ) }
-
-
-    </NavigationMenu>
-  )
+const foodCategories = {
+  nonVeg: [
+    { name: "Chicken", items: ["Grilled Chicken", "Chicken Curry", "Fried Chicken", "Chicken Biryani"] },
+    { name: "Mutton", items: ["Mutton Curry", "Mutton Biryani", "Grilled Mutton", "Mutton Kebab"] },
+    { name: "Pork", items: ["Pork Ribs", "Pork Curry", "Bacon", "Pork Chops"] },
+    { name: "Fish", items: ["Fish Curry", "Grilled Fish", "Fish Fry", "Fish Biryani"] },
+  ],
+  veg: [
+    { name: "Traditional Nepali", items: ["Dal Bhat", "Gundruk", "Aloo Tama","Dhido"] },
+    { name: "Newari Cuisine", items: ["Bara", "Chatamari", "Yomari","Kwati"] },
+    { name: "Chinese", items: ["Veg Fried Rice", "Chow Mein", "Manchurian", "Spring Rolls"] },
+    { name: "Snacks & Street Food", items: ["Sel Roti", "Samosa", "Pani Puri","Jeri"] },
+  ],
 }
 
-function ListItem({
-  title,
-  children,
-  href,
-  ...props
-}: React.ComponentPropsWithoutRef<"li"> & { href: string }) {
+const drinks = [
+  { name: "Hot Beverages", items: ["Coffee", "Tea", "Hot Chocolate", "Masala Chai"] },
+  { name: "Cold Beverages", items: ["Fresh Juice", "Smoothies", "Iced Coffee", "Mocktails"] },
+  { name: "Soft Drinks", items: ["Coke", "Pepsi", "Sprite", "Fanta"] },
+  { name: "Healthy Drinks", items: ["Green Tea", "Herbal Tea", "Coconut Water", "Lemon Water"] },
+]
+
+const bestDeals = [
+  { name: "Flash Sale", discount: "50% OFF", time: "2 hours left" },
+  { name: "Combo Meals", discount: "Buy 1 Get 1", time: "Today only" },
+  { name: "Happy Hours", discount: "30% OFF", time: "4-7 PM" },
+]
+
+export default function FoodHuntNavbar() {
   return (
-    <li {...props}>
-      <NavigationMenuLink asChild>
-        <Link href={href}>
-          <div className="text-sm leading-none font-medium">{title}</div>
-          <p className="text-muted-foreground line-clamp-2 text-sm leading-snug">
-            {children}
-          </p>
-        </Link>
-      </NavigationMenuLink>
-    </li>
+    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+      <div className="container mx-auto px-4">
+        <div className="flex h-16 items-center justify-between">
+          {/* Logo */}
+          <Link href="/" className="flex items-center space-x-2">
+            <Image
+              src="/applogo.png"
+              alt="FoodHunt Logo"
+              width={120}
+              height={40}
+              className="h-20 w-auto"
+            />
+          </Link>
+
+          {/* Desktop Navigation */}
+
+          <NavigationMenu className="hidden lg:flex">
+            <NavigationMenuList>
+
+              {/* Food Menu */}
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="text-base font-medium">Food</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className="grid w-[800px] grid-cols-2 gap-6 p-6">
+
+                    {/* Non Veg Section */}
+                    <div>
+                      <h3 className="mb-4 text-lg font-semibold text-red-600">Non Veg</h3>
+                      <div className="grid gap-4">
+                        {foodCategories.nonVeg.map((category) => (
+                          <div key={category.name}>
+                            <h4 className="mb-2 font-medium text-orange-600">{category.name}</h4>
+                            <div className="grid gap-1">
+                              {category.items.map((item) => (
+                                <NavigationMenuLink key={item} asChild>
+                                  <Link
+                                    href={`/food/${item.toLowerCase().replace(/\s+/g, "-")}`}
+                                    className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                                  >
+                                    {item}
+                                  </Link>
+                                </NavigationMenuLink>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Veg Section */}
+                    <div>
+                      <h3 className="mb-4 text-lg font-semibold text-green-600">Veg</h3>
+                      <div className="grid gap-4">
+                        {foodCategories.veg.map((category) => (
+                          <div key={category.name}>
+                            <h4 className="mb-2 font-medium text-orange-600">{category.name}</h4>
+                            <div className="grid gap-1">
+                              {category.items.map((item) => (
+                                <NavigationMenuLink key={item} asChild>
+                                  <Link
+                                    href={`/food/${item.toLowerCase().replace(/\s+/g, "-")}`}
+                                    className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                                  >
+                                    {item}
+                                  </Link>
+                                </NavigationMenuLink>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              {/* Drinks Menu */}
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="text-base font-medium">Drinks</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className="grid w-[600px] grid-cols-2 gap-6 p-6">
+                    {drinks.map((category) => (
+                      <div key={category.name}>
+                        <h4 className="mb-3 font-medium text-orange-600">{category.name}</h4>
+                        <div className="grid gap-1">
+                          {category.items.map((item) => (
+                            <NavigationMenuLink key={item} asChild>
+                              <Link
+                                href={`/drinks/${item.toLowerCase().replace(/\s+/g, "-")}`}
+                                className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                              >
+                                {item}
+                              </Link>
+                            </NavigationMenuLink>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              {/* Best Deals */}
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="text-base font-medium text-orange-600">
+                  <Star className="mr-1 h-4 w-4" />
+                  Best Deals Today
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className="w-[400px] p-6">
+                    <h3 className="mb-4 text-lg font-semibold text-orange-600">Today's Special Offers</h3>
+                    <div className="grid gap-4">
+                      {bestDeals.map((deal) => (
+                        <NavigationMenuLink key={deal.name} asChild>
+                          <Link
+                            href="/deals"
+                            className="flex items-center justify-between rounded-lg border p-4 hover:bg-orange-50"
+                          >
+                            <div>
+                              <h4 className="font-medium text-gray-900">{deal.name}</h4>
+                              <p className="text-sm text-gray-600 flex items-center">
+                                <Clock className="mr-1 h-3 w-3" />
+                                {deal.time}
+                              </p>
+                            </div>
+                            <Badge variant="destructive" className="bg-orange-500">
+                              {deal.discount}
+                            </Badge>
+                          </Link>
+                        </NavigationMenuLink>
+                      ))}
+                    </div>
+                  </div>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              {/* Restaurants */}
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/restaurants"
+                    className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-base font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50"
+                  >
+                    Restaurants
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+
+          {/* Search Bar */}
+          <div className="hidden md:flex flex-1 max-w-md mx-8">
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <Input type="search" placeholder="Search food nearby..." className="pl-10 pr-4 w-full" />
+              <Button size="sm" className="absolute right-1 top-1/2 -translate-y-1/2 h-7">
+                <MapPin className="h-3 w-3" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Right Side Actions */}
+          <div className="flex items-center space-x-4">
+            <Button variant="ghost" size="sm" className="hidden md:flex">
+              <MapPin className="mr-2 h-4 w-4" />
+              Location
+            </Button>
+
+            <Button variant="ghost" size="icon" className="relative">
+              <ShoppingBag className="h-5 w-5" />
+              <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 text-xs">3</Badge>
+            </Button>
+
+            {/* <Button variant="ghost" size="icon">
+              <User className="h-5 w-5" />
+            </Button> */}
+            <DropdownMenu>
+           <DropdownMenuTrigger><User className="mr-2 h-4 w-4" /></DropdownMenuTrigger>
+          <DropdownMenuContent>
+    
+             <DropdownMenuItem>
+            <Button variant="outline" className="justify-start bg-black  hover:bg-[#c74021] text-blue-50 ">
+                      <User className="mr-2 h-4 w-4 " />
+                      Sign In
+                    </Button></DropdownMenuItem>
+             <DropdownMenuItem><Button variant="outline" className="w-full justify-start  bg-[#faa617] ">
+                      <User className="mr-2 h-4 w-4" />
+                      Sign up
+                    </Button></DropdownMenuItem>
+          {/* hover:bg-yellow-600 hover:bg-orange-600 */}
+           </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* <Button variant="outline" className="justify-start">
+                      <User className="mr-2 h-4 w-4" />
+                      Sign In
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start">
+                      <User className="mr-2 h-4 w-4" />
+                      Sign up
+                    </Button> */}
+
+            {/* Mobile Menu */}
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="lg:hidden">
+                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+                {/* ✅ Title added here for accessibility */}
+                <SheetTitle className="text-lg font-semibold">Menu</SheetTitle>
+
+                <div className="flex flex-col space-y-4 mt-6">
+                  {/* Mobile Search */}
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                    <Input type="search" placeholder="Search food nearby..." className="pl-10" />
+                  </div>
+
+                  <Separator />
+
+                  {/* Mobile Navigation Links */}
+                  <div className="space-y-4">
+                    <Link href="/food" className="block text-lg font-medium">
+                      Food
+                    </Link>
+                    <Link href="/drinks" className="block text-lg font-medium">
+                      Drinks
+                    </Link>
+                    <Link href="/deals" className="block text-lg font-medium text-orange-600">
+                      Best Deals Today
+                    </Link>
+                    <Link href="/restaurants" className="block text-lg font-medium">
+                      Restaurants
+                    </Link>
+                  </div>
+
+                  <Separator />
+
+                  <div className="space-y-2">
+                    <Button variant="outline" className="w-full justify-start">
+                      <MapPin className="mr-2 h-4 w-4" />
+                      Set Location
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start">
+                      <User className="mr-2 h-4 w-4" />
+                      Sign In
+                    </Button>
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+        </div>
+      </div>
+    </header>
   )
 }
