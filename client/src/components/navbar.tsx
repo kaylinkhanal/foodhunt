@@ -218,7 +218,7 @@ export default function Navbar() {
 
             <div>
          <Button onClick={handleLogout} variant="outline" className="justify-start bg-black hover:bg-[#c74021] text-blue-50">
-               Logout
+               Sign In
             </Button>
               </div>
            ): <div className="flex flex-row items-center space-x-4 ml-4">
