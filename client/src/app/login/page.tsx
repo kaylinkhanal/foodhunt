@@ -55,8 +55,8 @@ const Login = () => {
       }else if(data.user.role === 'seller') {
         router.push('/seller/dashboard')
       }
-      else{
-        router.back()
+      else {
+       router.push('/')
       }
     }
     toast(data?.message)

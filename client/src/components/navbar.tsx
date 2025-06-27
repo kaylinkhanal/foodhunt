@@ -209,7 +209,9 @@ export function NavigationMenuDemo() {
                   <Link href="/login">
                           <Button  className="bg-[#F8A619]">Login</Button>
                   </Link>
-                <Button className="bg-[#CB351D]">Register</Button>
+                  <Link href="/register">
+                          <Button  className="bg-[#F8A619]">Register</Button>
+                  </Link>
                 </div>
              ) }
 

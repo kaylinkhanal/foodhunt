@@ -5,7 +5,7 @@ const productRouter = express.Router();
 
 
 //to post product
-productRouter.post('/add-product', async (req, res) => {
+productRouter.post('/products', async (req, res) => {
   try {
     const product = new Product(req.body);
     const savedProduct = await product.save();
@@ -21,12 +21,16 @@ productRouter.post('/add-product', async (req, res) => {
 
 
 //to get all product
-productRouter.get('/get-all-products', async (req, res) => {
+productRouter.get('/products', async (req, res) => {
   try {
-    const products = await Product.find({sellerId:req.query.sellerId})
+    let products
+    if(req.query.sellerId){
+      products = await Product.find({sellerId:req.query.sellerId})
       .sort({ createdAt: -1 }) //sort the products based on their created at and decending order
       .populate('sellerId', 'name email phoneNumber'); 
-
+    }else{
+      products = await Product.find()
+    }
     res.status(200).json(products);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch products' });
@@ -35,7 +39,7 @@ productRouter.get('/get-all-products', async (req, res) => {
 
 
 
-productRouter.get('/:id', async (req, res) => {
+productRouter.get('products/:id', async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ error: 'Product not found' });
