@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 
 const orderSchema = new Schema(
   {
-    userId: {
+    bookedById: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
@@ -20,17 +20,7 @@ const orderSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["Pending", "In Progress", "Completed", "Cancelled"],
-      default: "Pending",
-    },
-    paymentMethod: {
-      type: String,
-      enum: ["Cash on Pickup", "Khalti", "Esewa"],
-      default: "Cash on Pickup",
-    },
-    paymentStatus: {
-      type: String,
-      enum: ["Pending", "Paid", "Failed"],
+      enum: ["Pending", "In Progress", "Completed", "Cancelled", "Booked"],
       default: "Pending",
     },
   },
