@@ -18,6 +18,8 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
+import { useDispatch, useSelector } from "react-redux"
+import { logoutUser } from "@/redux/reducerSlices/userSlice"
 
 const foodCategories = {
   nonVeg: [
@@ -48,6 +50,11 @@ const bestDeals = [
 ]
 
 export default function Navbar() {
+  const {isLoggedIn} = useSelector(state=>state.user)
+  const dispatch = useDispatch()
+  const handleLogout = () => {
+    dispatch(logoutUser())
+  }
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="container mx-auto px-4">
@@ -207,7 +214,14 @@ export default function Navbar() {
               <ShoppingBag className="h-5 w-5" />
               <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 text-xs">3</Badge>
             </Button>
-            <div className="flex flex-row items-center space-x-4 ml-4">
+           {isLoggedIn ? (
+
+            <div>
+         <Button onClick={handleLogout} variant="outline" className="justify-start bg-black hover:bg-[#c74021] text-blue-50">
+               Logout
+            </Button>
+              </div>
+           ): <div className="flex flex-row items-center space-x-4 ml-4">
             <Link href="/login">
             <Button variant="outline" className="justify-start bg-black hover:bg-[#c74021] text-blue-50">
                Sign In
@@ -219,7 +233,7 @@ export default function Navbar() {
             Sign up
           </Button>
         </Link>
-        </div>
+        </div>}
 
             <Sheet>
               <SheetTrigger asChild>
