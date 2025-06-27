@@ -1,5 +1,5 @@
 'use client'
-import { NavigationMenuDemo } from '@/components/navbar'
+import Navbar from '@/components/navbar'
 import React from 'react'
 import { useSelector } from 'react-redux'
 
@@ -7,7 +7,8 @@ const Home = () => {
   return (
     <div>
 
-      <NavigationMenuDemo/>
+      {/* <NavigationMenuDemo/> */}
+      <Navbar />
       
       
       </div>
