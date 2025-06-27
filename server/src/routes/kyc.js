@@ -15,8 +15,27 @@ kycRouter.post('/kycs/:id', async (req, res) => {
   })
 
 
+  kycRouter.get('/kycs', async (req, res) => {
+    let  kyc 
+    if(req.query.status == 'pending'){
+      kyc = await SellerKyc.find({isKycApproved: false}).populate('seller')
+    }else{
+      kyc = await SellerKyc.find().populate('seller')
+    }
+
+    return res.json(kyc)
+  })
+
+
   kycRouter.patch('/kycs/:id', async (req, res) => {
- 
+    const kyc = await SellerKyc.findById(req.params.id)
+    console.log(kyc)
+    kyc.isKycApproved = true
+    await kyc.save()
+    res.json({message: 'KYC approved successfully' })
   })
 
 export default kycRouter
+
+
+

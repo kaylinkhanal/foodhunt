@@ -45,7 +45,6 @@ userRouter.post('/register', async (req, res) => {
 
 
   userRouter.get('/users', async (req, res) => {
-    console.log(req.query.role)
     let data
     if(req.query.role ) {
       data = await User.find({role: req.query.role, isApproved: false })

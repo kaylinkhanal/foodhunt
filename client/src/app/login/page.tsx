@@ -45,7 +45,9 @@ const Login = () => {
   };
   const router = useRouter()
   const dispatch = useDispatch()
+
   const handleSubmit = async(values: typeof initialValues, { setSubmitting }: any) => {
+    
     const {data}= await  axios.post(process.env.NEXT_PUBLIC_API_URL+ '/login', values)
     if(data?.isLoggedIn) {
       if(data.user.role === 'admin') {
@@ -53,8 +55,8 @@ const Login = () => {
       }else if(data.user.role === 'seller') {
         router.push('/seller/dashboard')
       }
-      else{
-        router.back()
+      else {
+       router.push('/')
       }
     }
     toast(data?.message)

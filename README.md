@@ -95,7 +95,7 @@ We are developing Food Hunt in distinct phases to ensure a robust and scalable a
         * Generates a **JWT** upon successful login.
     * ✅ **Get All Users Endpoint**: (For internal use/testing) Retrieves a list of all registered users.
     * ✅ Business Approval UI (pending verification flow).
-    * ⬜ Endpoints for verified businesses to add discounted items.
+    * ✅ Endpoints for verified businesses to add discounted items.
     * ⬜ Endpoints for users to search nearby items.
     * ⬜ Endpoint for booking items.
 
