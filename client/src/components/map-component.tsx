@@ -159,13 +159,13 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
                         <div className="flex items-center justify-between mb-1">
                           <div className="flex flex-col">
                             <span className="text-xs text-gray-500 line-through">
-                              रु{burger.price.toFixed(2)}
+                              रु {burger.price.toFixed(2)}
                             </span>
                             <span
                               className="text-lg font-bold"
                               style={{ color: "#FAA617" }}
                             >
-                              रु{burger.discounted_price.toFixed(2)}
+                              रु {burger.discounted_price.toFixed(2)}
                             </span>
                           </div>
 
@@ -203,7 +203,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
                           <div className="text-right text-xs text-gray-600">
                             Subtotal:{" "}
                             <span className="font-semibold" style={{ color: "#FAA617" }}>
-                              रु{(
+                              रु {(
                                 burger.discounted_price * burger.quantity
                               ).toFixed(2)}
                             </span>
@@ -216,7 +216,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
                   <div className="mt-2 text-right font-semibold">
                     Total:{" "}
                     <span style={{ color: "#FAA617" }}>
-                      रु{totalPrice.toFixed(2)}
+                      रु {totalPrice.toFixed(2)}
                     </span>
                   </div>
                   <Button
