@@ -20,8 +20,7 @@ export default function HomePage() {
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       {" "}
-      {/* Ensure the parent div has dimensions */}
-      <Navbar/>
+
       <Map position={defaultPosition} zoom={14} />
     </div>
   );

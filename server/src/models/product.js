@@ -106,7 +106,9 @@ const productSchema = new Schema(
       type: Boolean,
       default: true, // Automatically set to false if quantity drops to 0 or expiryDate passes
     },
-
+    emoji: {
+      type: String,
+    },
     // Product Status and Timestamps
     status: {
       type: String,
@@ -114,30 +116,31 @@ const productSchema = new Schema(
       default: "active",
     },
   },
+
   {
     timestamps: true, // Adds createdAt and updatedAt fields automatically
   }
 );
 
 // Middleware to update isAvailable and status based on quantity and expiryDate
-productSchema.pre("save", function (next) {
-  if (this.isModified("availableQuantity") || this.isModified("expiryDate")) {
-    if (this.availableQuantity <= 0) {
-      this.isAvailable = false;
-      this.status = "sold-out";
-    } else if (this.expiryDate && this.expiryDate <= new Date()) {
-      this.isAvailable = false;
-      this.status = "expired";
-    } else {
-      // Only set to active/true if it was previously sold-out or expired
-      if (this.status === "sold-out" || this.status === "expired") {
-        this.status = "active";
-        this.isAvailable = true;
-      }
-    }
-  }
-  next();
-});
+// productSchema.pre("save", function (next) {
+//   if (this.isModified("availableQuantity") || this.isModified("expiryDate")) {
+//     if (this.availableQuantity <= 0) {
+//       this.isAvailable = false;
+//       this.status = "sold-out";
+//     } else if (this.expiryDate && this.expiryDate <= new Date()) {
+//       this.isAvailable = false;
+//       this.status = "expired";
+//     } else {
+//       // Only set to active/true if it was previously sold-out or expired
+//       if (this.status === "sold-out" || this.status === "expired") {
+//         this.status = "active";
+//         this.isAvailable = true;
+//       }
+//     }
+//   }
+//   next();
+// });
 
 const Product = mongoose.model("Product", productSchema);
 

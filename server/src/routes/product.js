@@ -24,8 +24,8 @@ productRouter.post('/products', async (req, res) => {
 productRouter.get('/products', async (req, res) => {
   try {
     let products
-    if(req.query.sellerId){
-      products = await Product.find({sellerId:req.query.sellerId})
+    if(req.query?.sellerId){
+      products = await Product.find({sellerId:req.query?.sellerId})
       .sort({ createdAt: -1 }) //sort the products based on their created at and decending order
       .populate('sellerId', 'name email phoneNumber'); 
     }else{
