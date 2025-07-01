@@ -10,6 +10,7 @@ import {
   ShoppingCart,
   DollarSign,
   LogOut,
+  LayoutGrid,
 } from "lucide-react"
 import Image from "next/image"
 import { Button } from "./ui/button"
@@ -26,8 +27,10 @@ const Sidebar = () => {
   const navItems = [
     { label: "Dashboard", path: "/seller/dashboard", icon: BarChart3 },
     { label: "Products", path: "/seller/products", icon: Package },
+    { label: "Categories", path: "/admin/categories", icon: LayoutGrid  },
     { label: "Orders", path: "/seller/orders", icon: ShoppingCart },
     { label: "Revenue", path: "/seller/revenue", icon: DollarSign },
+
   ]
 
   return (
