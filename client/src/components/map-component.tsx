@@ -51,7 +51,7 @@ const createEmojiIcon = (emoji, name) => {
 };
 
 const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
-  const [show, setShow] = useState(false);
+  const [search, setSearch] = useState('');
   const [burgerType, setBurgerType] = useState([
     {
       name: "Classic Beef Burger 🍔",
@@ -65,18 +65,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
       discounted_price: 11.0,
       quantity: 0,
     },
-    {
-      name: "Spicy Chicken Burger 🌶️🐔🍔",
-      price: 11.75,
-      discounted_price: 10.25,
-      quantity: 0,
-    },
-    {
-      name: "Veggie Burger 🌱🍔",
-      price: 9.99,
-      discounted_price: 8.75,
-      quantity: 0,
-    },
+
   ]);
 
   const handleIncrease = (burger) => {
@@ -129,108 +118,103 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
         return (
           <Marker position={item.coordinates} icon={customIcon} key={item.name}>
             <Popup maxWidth={300}>
-              <b>{item.name}</b>
-              <br />
-              {item.emoji} Yummy!
-              <Button
-                className="ml-2"
-                style={{
-                  backgroundColor: show ? "#FAA617" : "#C04430",
-                  color: "white",
-                }}
-                onClick={() => setShow(!show)}
-              >
-                {show ? "Hide Items" : "Show Items"}
-              </Button>
-              {show && (
-                <div>
-                  {burgerType.map((burger, index) => (
-                    <Card
-                      key={index}
-                      className="py-2 my-2 w-full bg-white shadow-lg border border-gray-200"
-                    >
-                      <CardContent className="py-1">
-                        <div className="flex items-center justify-between mb-1">
-                          <h3 className="text-sm font-bold text-gray-800 flex-1">
-                            {burger.name}
-                          </h3>
-                        </div>
-
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="flex flex-col">
-                            <span className="text-xs text-gray-500 line-through">
-                              रु {burger.price.toFixed(2)}
-                            </span>
-                            <span
-                              className="text-lg font-bold"
-                              style={{ color: "#FAA617" }}
-                            >
-                              रु {burger.discounted_price.toFixed(2)}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center gap-1">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleDecrease(burger)}
-                              disabled={burger.quantity === 0}
-                              style={{
-                                borderColor: "#FAA617",
-                                color: "#FAA617",
-                              }}
-                            >
-                              <Minus className="h-4 w-4" />
-                            </Button>
-                            <span className="min-w-[2rem] text-center font-semibold text-lg">
-                              {burger.quantity}
-                            </span>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleIncrease(burger)}
-                              style={{
-                                borderColor: "#FAA617",
-                                color: "#FAA617",
-                              }}
-                            >
-                              <Plus className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-
-                        {burger.quantity > 0 && (
-                          <div className="text-right text-xs text-gray-600">
-                            Subtotal:{" "}
-                            <span className="font-semibold" style={{ color: "#FAA617" }}>
-                              रु {(
-                                burger.discounted_price * burger.quantity
-                              ).toFixed(2)}
-                            </span>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-
-                  <div className="mt-2 text-right font-semibold">
-                    Total:{" "}
-                    <span style={{ color: "#FAA617" }}>
-                      रु {totalPrice.toFixed(2)}
-                    </span>
-                  </div>
-                  <Button
-                    className="mt-2 w-full"
-                    style={{
-                      backgroundColor: "#FAA617",
-                      color: "white",
-                    }}
-                    onClick={handlePlaceOrder}
+              <div className="py-1">
+                <b>{item.name}</b>
+                <br />
+                {item.emoji} Yummy!
+                <br />
+              </div>
+              <div className="flex rounded-lg border-[1px]">
+                <input placeholder="Search food here..." onChange={(e) => { setSearch(e.target.value) }} className="m-1 p-2 outline-none border-none focus:ring-0 flex-grow" type="text" />
+                <Button type="submit" style={{ backgroundColor: '#B7312D' }} className="m-1 p-2 flex-end">Search</Button>
+              </div>
+              <div>
+                {burgerType.map((burger, index) => (
+                  <Card
+                    key={index}
+                    className="py-2 my-2 w-full bg-white shadow-lg border border-gray-200"
                   >
-                    Place Order
-                  </Button>
+                    <CardContent className="py-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <h3 className="text-sm font-bold text-gray-800 flex-1">
+                          {burger.name}
+                        </h3>
+                      </div>
+
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex flex-col">
+                          <span className="text-xs text-gray-500 line-through">
+                            रु {burger.price.toFixed(2)}
+                          </span>
+                          <span
+                            className="text-lg font-bold"
+                            style={{ color: "#FAA617" }}
+                          >
+                            रु {burger.discounted_price.toFixed(2)}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDecrease(burger)}
+                            disabled={burger.quantity === 0}
+                            style={{
+                              borderColor: "#FAA617",
+                              color: "#FAA617",
+                            }}
+                          >
+                            <Minus className="h-4 w-4" />
+                          </Button>
+                          <span className="min-w-[2rem] text-center font-semibold text-lg">
+                            {burger.quantity}
+                          </span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleIncrease(burger)}
+                            style={{
+                              borderColor: "#FAA617",
+                              color: "#FAA617",
+                            }}
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      {burger.quantity > 0 && (
+                        <div className="text-right text-xs text-gray-600">
+                          Subtotal:{" "}
+                          <span className="font-semibold" style={{ color: "#FAA617" }}>
+                            रु {(
+                              burger.discounted_price * burger.quantity
+                            ).toFixed(2)}
+                          </span>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+
+                <div className="mt-2 text-right font-semibold">
+                  Total:{" "}
+                  <span style={{ color: "#FAA617" }}>
+                    रु {totalPrice.toFixed(2)}
+                  </span>
                 </div>
-              )}
+                <Button
+                  className="mt-2 w-full"
+                  style={{
+                    backgroundColor: "#FAA617",
+                    color: "white",
+                  }}
+                  onClick={handlePlaceOrder}
+                >
+                  Place Order
+                </Button>
+              </div>
             </Popup>
           </Marker>
         );
