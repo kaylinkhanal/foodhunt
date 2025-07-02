@@ -11,19 +11,12 @@ const categoryschema = new Schema(
       unique: true,
       trim: true,
     },
-    location: {
-      type: String,
-      required: true,
-    },
-    contact: {
-      type: String,
-    },
     description: {
       type: String,
     },
-    availableMeals: {
-      type: Number,
-      default: 0,
+    emoji: {
+      type: String,
+      default: '🍲',
     },
   },
   { timestamps: true }

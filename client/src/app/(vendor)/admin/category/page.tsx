@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Plus, Search, Edit, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import axios from "axios"
 
 interface Category {
   id: string
@@ -31,47 +32,9 @@ interface Category {
   createdAt: string
 }
 
-const mockCategories: Category[] = [
-  {
-    id: "1",
-    name: "Pizza",
-    description: "Delicious Italian pizzas with various toppings",
-    image: "/placeholder.svg?height=200&width=300&text=Pizza",
-    itemCount: 12,
-    status: "active",
-    createdAt: "2024-01-15",
-  },
-  {
-    id: "2",
-    name: "Burgers",
-    description: "Juicy beef and chicken burgers with fresh ingredients",
-    image: "/placeholder.svg?height=200&width=300&text=Burgers",
-    itemCount: 8,
-    status: "active",
-    createdAt: "2024-01-10",
-  },
-  {
-    id: "3",
-    name: "Desserts",
-    description: "Sweet treats and desserts to satisfy your cravings",
-    image: "/placeholder.svg?height=200&width=300&text=Desserts",
-    itemCount: 15,
-    status: "active",
-    createdAt: "2024-01-05",
-  },
-  {
-    id: "4",
-    name: "momo",
-    description: "juicy veg and nonveg momo",
-    image: "/placeholder.svg?height=200&width=300&text=momo",
-    itemCount: 6,
-    status: "inactive",
-    createdAt: "2024-01-01",
-  },
-]
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>(mockCategories)
+  const [categories, setCategories] = useState<Category[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
@@ -86,21 +49,21 @@ export default function CategoriesPage() {
       category.description.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
-  const handleCreateCategory = () => {
-    if (formData.name && formData.description) {
-      const newCategory: Category = {
-        id: Date.now().toString(),
-        name: formData.name,
-        description: formData.description,
-        image: "",
-        itemCount: 0,
-        status: "active",
-        createdAt: new Date().toISOString().split("T")[0],
-      }
-      setCategories([newCategory, ...categories])
-      setFormData({ name: "", description: "" })
-      setIsCreateDialogOpen(false)
-    }
+const fetchCategories = async  ()=> {
+
+const {data} =  await axios.get('http://localhost:8080/categories')
+setCategories(data)
+}
+
+  useEffect(()=>{
+    fetchCategories()
+  },[])
+
+  const handleCreateCategory =async () => {
+   await axios.post(process.env.NEXT_PUBLIC_API_URL + '/categories',{
+      name: formData.name,
+      description: formData.description,
+    })
   }
 
   const handleEditCategory = (category: Category) => {
@@ -123,8 +86,9 @@ export default function CategoriesPage() {
     }
   }
 
-  const handleDeleteCategory = (id: string) => {
-    setCategories(categories.filter((cat) => cat.id !== id))
+  const handleDeleteCategory = async(id: string) => {
+    const {data} =  await axios.delete('http://localhost:8080/categories/'+id)
+    if(data) fetchCategories()
   }
 
   return (
@@ -287,7 +251,7 @@ export default function CategoriesPage() {
                 </div>
                 <div className="flex gap-2">
                   <Dialog
-                    open={editingCategory?.id === category.id}
+                    open={editingCategory?._id === category._id}
                     onOpenChange={(open) => !open && setEditingCategory(null)}
                   >
                     <DialogTrigger asChild>
@@ -363,7 +327,7 @@ export default function CategoriesPage() {
                           Cancel
                         </AlertDialogCancel>
                         <AlertDialogAction
-                          onClick={() => handleDeleteCategory(category.id)}
+                          onClick={() => handleDeleteCategory(category._id)}
                           className="bg-red-500 hover:bg-red-600 text-white"
                         >
                           Delete

@@ -1,29 +1,36 @@
 import {Router} from "express";
-import  category from "../models/category.js";
-import category from "../models/category.js";
+import  Category from "../models/category.js";
+
 
 const categoryrouter = Router();
 
-categoryrouter.post("/category",async (req, res) => {
+categoryrouter.post("/categories",async (req, res) => {
   try {
-    const { name, location, contact, description, availableMeals } = req.body;
- const category=category({
+    const { name, description } = req.body;
+      const category= new Category({
       name,
-      location,
-      contact,
       description,
-      availableMeals,
     });
     await category.save();
-    res.status(201).json({ message: "category created", restaurant });
+    res.status(201).json({ message: "category created", category });
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ message: "Server error", error });
+  }
+});
+categoryrouter.get("/categories",async (req, res) => {
+  try {
+    const data = await Category.find().sort({ createdAt: -1 });
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }
 });
-categoryrouter.get("/category",async (req, res) => {
+
+categoryrouter.delete("/categories/:id",async (req, res) => {
   try {
-    const restaurants = await category.find().sort({ createdAt: -1 });
-    res.status(200).json(category);
+    const data = await Category.findByIdAndDelete(req.params.id)
+    res.status(200).json({msg: "Deleted success!!"});
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }
