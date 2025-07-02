@@ -8,6 +8,7 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import "leaflet-defaulticon-compatibility";
 import L from "leaflet";
 import { useState } from "react";
+import { Input } from "./ui/input";
 
 interface MapProps {
   position: [number, number]; // [latitude, longitude]
@@ -112,6 +113,10 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
+      <div className="absolute top-4 left-4 z-999">
+      <Input type="Search" placeholder="Search offers for your meal" />
+      </div>
+     
       {burgerLists.map((item) => {
         const customIcon = createEmojiIcon(item.emoji, item.name);
 
