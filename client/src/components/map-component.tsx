@@ -8,7 +8,19 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import "leaflet-defaulticon-compatibility";
 import L from "leaflet";
 import { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
 import { Input } from "./ui/input";
+import { logoutUser } from "@/redux/reducerSlices/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 interface MapProps {
   position: [number, number]; // [latitude, longitude]
@@ -19,29 +31,35 @@ const burgerLists = [
   {
     emoji: "🍔",
     name: "S Café Tinkune",
+    startingPrice: 300,
+    maxDiscount: 90,
     coordinates: [27.686, 85.3503],
   },
   {
     emoji: "🍔",
     name: "AT Burger",
+    startingPrice: 150,
+    maxDiscount: 50,
     coordinates: [27.702, 85.326],
   },
   {
     emoji: "🍔",
     name: "The Burger House & Crunchy Fried Chicken",
+    startingPrice: 301,
+    maxDiscount: 90,
     coordinates: [27.6925, 85.334],
   },
 ];
 
-const createEmojiIcon = (emoji, name) => {
+const createEmojiIcon = (item) => {
   return L.divIcon({
     html: `<div>
-      <div style="font-size: 48px; text-align: center; line-height: 1;">${emoji}</div>
-      <div style="width:120px; font-weight: 800">
-        price: Rs. 500
+      <div style="font-size: 48px; text-align: center; line-height: 1;">${item.emoji}</div>
+      <div style="width:120px; font-size:32px; color: #e69500; font-weight: 800">
+       ${item.maxDiscount} % OFF
       </div>
       <div style="width:120px; font-weight: 800">
-        ${name}
+        Starting Price:${item.startingPrice}
       </div>
     </div>`,
     className: "custom-emoji-icon",
@@ -53,6 +71,8 @@ const createEmojiIcon = (emoji, name) => {
 
 const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
   const [show, setShow] = useState(false);
+  const dispatch = useDispatch()
+  const {isLoggedIn} = useSelector(state=>state.user)
   const [burgerType, setBurgerType] = useState([
     {
       name: "Classic Beef Burger 🍔",
@@ -127,9 +147,30 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
       <div className="absolute top-4 left-4 z-999">
       <Input type="Search" placeholder="Search offers for your meal" />
       </div>
+      <div className="absolute top-4 right-4 z-999">
+      { isLoggedIn ?(      <DropdownMenu >
+        <DropdownMenuTrigger>
+        <Avatar>
+                <AvatarImage src="https://github.com/shadcn.png" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+
+
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="z-999">
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>Profile</DropdownMenuItem>
+          <DropdownMenuItem>Billing</DropdownMenuItem>
+          <DropdownMenuItem>Team</DropdownMenuItem>
+          <DropdownMenuItem onClick={()=> dispatch(logoutUser())}>Logout</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+              ): <div>login and register button</div>}
+      </div>
      
       {burgerLists.map((item) => {
-        const customIcon = createEmojiIcon(item.emoji, item.name);
+        const customIcon = createEmojiIcon(item);
 
         return (
           <Marker position={item.coordinates} icon={customIcon} key={item.name}>

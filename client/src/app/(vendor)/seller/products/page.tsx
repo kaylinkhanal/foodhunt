@@ -86,6 +86,7 @@ const Products = () => {
     availableQuantity: 1,
     isAvailable: true,
     status: 'draft',
+    emoji: ''
   };
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
@@ -255,6 +256,19 @@ const Products = () => {
                         />
                       </div>
 
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Original Price
+                        </label>
+                        <Field
+                          type="number"
+                          name="originalPrice"
+                          className="w-full p-3 border border-yellow-500 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all"
+                          placeholder="Enter original price"
+                        />
+                     
+                      </div>
                       {/* Discounted Price */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
