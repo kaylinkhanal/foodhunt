@@ -177,6 +177,7 @@ const createEmojiIcon = (emoji: string) => {
   });
 };
 const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
+  const [search, setSearch] = useState('');
   const { isLoggedIn } = useSelector((state) => state.user);
   const [show, setShow] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(foodCategories[0]); // Default to first category (Burgers)
@@ -200,18 +201,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
       discounted_price: 11.0,
       quantity: 0,
     },
-    {
-      name: "Spicy Chicken Burger 🌶️🐔🍔",
-      price: 11.75,
-      discounted_price: 10.25,
-      quantity: 0,
-    },
-    {
-      name: "Veggie Burger 🌱🍔",
-      price: 9.99,
-      discounted_price: 8.75,
-      quantity: 0,
-    },
+
   ]);
 
   const handleIncrease = (burger: any) => {
