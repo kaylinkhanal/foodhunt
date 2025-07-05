@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 
 // models/TooGoodToGoRestaurant.js
 import mongoose from 'mongoose';
+=======
+// models/TooGoodToGoRestaurant.js
+import mongoose from "mongoose";
+>>>>>>> d22d641 (feat: user preferences)
 const { Schema } = mongoose;
 
 const categoryschema = new Schema(
@@ -16,10 +21,13 @@ const categoryschema = new Schema(
     },
     emoji: {
       type: String,
-      default: '🍲',
+      default: "🍲",
+    },
+    image: {
+      type: String,
     },
   },
   { timestamps: true }
 );
 
-export default mongoose.model('category', categoryschema);
+export default mongoose.model("category", categoryschema);
