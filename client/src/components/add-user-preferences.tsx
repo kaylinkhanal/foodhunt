@@ -269,7 +269,9 @@ export default function UserPreferences() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1 sm:gap-2">
           {categories.map((category) => {
             const isSelected = selectedCategoryIds.includes(category._id);
-            const imageUrl = category.image || categoryImages[category.name];
+            const imageUrl = category.image
+              ? `${process.env.NEXT_PUBLIC_API_URL}/category-uploads/${category.image}`
+              : categoryImages[category.name];
             return (
               <div
                 key={category._id}

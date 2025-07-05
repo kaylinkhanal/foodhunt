@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-
-// models/TooGoodToGoRestaurant.js
-import mongoose from 'mongoose';
-=======
 // models/TooGoodToGoRestaurant.js
 import mongoose from "mongoose";
->>>>>>> d22d641 (feat: user preferences)
 const { Schema } = mongoose;
 
 const categoryschema = new Schema(

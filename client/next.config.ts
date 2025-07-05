@@ -16,6 +16,10 @@ const nextConfig: NextConfig = {
       "raw.githubusercontent.com",
       "rosepng.com",
       "purepng.com",
+      // Extract just the hostname from the API URL
+      ...(process.env.NEXT_PUBLIC_API_URL
+        ? [new URL(process.env.NEXT_PUBLIC_API_URL).hostname]
+        : []),
       // Add any other domains you're using
     ],
   },
