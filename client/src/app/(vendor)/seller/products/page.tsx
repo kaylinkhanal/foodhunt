@@ -84,6 +84,7 @@ const Products = () => {
 
       const { data } = await axios.post(`${API_BASE_URL}/products`, {...values, sellerId: _id});
       if(data) fetchProducts()
+        
       toast.success('Product added successfully!');
       resetForm();
       setShowForm(false);
