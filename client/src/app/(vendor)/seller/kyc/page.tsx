@@ -18,6 +18,7 @@ import axios from 'axios';
 
 import { useRouter } from 'next/navigation';
 import {  useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
 
 
 
@@ -32,16 +33,24 @@ const validationSchema = Yup.object({
 
 const SellerKycForm = () => {
     const {_id} = useSelector((state) => state.user);
+    const [coords, setCoords] = useState({})
   const initialValues = {
     location: '',
     panId: '',
     registrationDate: '', // Will store formatted date string
   };
   const router = useRouter();
+  useEffect(()=>{
+    if(navigator?.geolocation){
+      navigator.geolocation.getCurrentPosition((item)=>{
+        setCoords({lat: item.coords.latitude, lng: item.coords.longitude})
+      })
+    }
 
+  },[])
 
   const handleSubmit = async (values: typeof initialValues, { setSubmitting }: any) => {
-    const {data} = await axios.post(process.env.NEXT_PUBLIC_API_URL+ '/kycs/' +_id, values)
+    const {data} = await axios.post(process.env.NEXT_PUBLIC_API_URL+ '/kycs/' +_id, {...values,coords})
     alert(data.message)
   };
 
@@ -53,6 +62,7 @@ const SellerKycForm = () => {
           <h2 className="text-2xl font-bold text-foreground">Seller KYC Submission</h2>
           <CardDescription>Please provide your business and registration details.</CardDescription>
         </div>
+
 
         {/* KYC Form */}
         <Card className="shadow-xl border-0 bg-card/80 backdrop-blur-sm">
