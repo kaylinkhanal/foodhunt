@@ -56,7 +56,7 @@ const Products = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const { data } = await axios.get(`${API_BASE_URL}/get-all-products?sellerId=${_id}`);
+      const { data } = await axios.get(`${API_BASE_URL}/products?sellerId=${_id}`);
       setProducts(data);
     } catch (err) {
       console.error('Failed to fetch products:', err);
@@ -96,7 +96,7 @@ const Products = () => {
           ((values.originalPrice - values.discountedPrice) / values.originalPrice) * 100;
       }
 
-      const { data } = await axios.post(`${API_BASE_URL}/add-product`, { ...values, sellerId: _id });
+      const { data } = await axios.post(`${API_BASE_URL}/products`, { ...values, sellerId: _id });
       if (data) fetchProducts();
 
       toast.success('Product added successfully!');
