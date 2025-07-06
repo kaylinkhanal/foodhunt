@@ -6,6 +6,8 @@ import kycRouter from "./routes/kyc.js";
 import dotenv from "dotenv";
 import productRouter from "./routes/product.js";
 import orderRouter from "./routes/order.js";
+import categoryRouter from "./routes/category.js";
+
 dotenv.config();
 
 const port = process.env.PORT;
@@ -18,6 +20,9 @@ app.use(userRouter);
 app.use(kycRouter);
 app.use(productRouter);
 app.use(orderRouter);
+app.use(categoryRouter);
+
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
