@@ -1,10 +1,14 @@
 import { Router } from "express"
 import SellerKyc from "../models/sellerKyc.js"
+import User from "../models/user.js"
 
 const kycRouter = Router()
 
 kycRouter.post('/kycs/:id', async (req, res) => {
     SellerKyc.create({seller:req.params.id, isKycSubmitted: true, ...req.body})
+    const seller = await User.findById(req.params.id)
+    seller.coords = req.body.coords
+    seller.save()
     return res.send({message: 'KYC details submitted successfully'})
   })
 

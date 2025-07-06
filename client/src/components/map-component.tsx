@@ -11,7 +11,7 @@ import "leaflet-defaulticon-compatibility";
 import L from "leaflet";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -177,6 +177,17 @@ const createEmojiIcon = (emoji: string) => {
   });
 };
 const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
+  // const [productList, setProductList] = useState([])
+  // const [foodSearch, setFoodSearch]= useState('')
+  // const fetchProducts = async () => {
+  //   const {data} = await axios.get('http://localhost:8080/products?name=' +  foodSearch)
+  //   setProductList(data)
+  // }
+  // useEffect(()=>{
+  //   fetchProducts()
+  // },[])
+  
+  // const [search, setSearch] = useState('');
   const { isLoggedIn } = useSelector((state) => state.user);
   const [show, setShow] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(foodCategories[0]); // Default to first category (Burgers)
@@ -200,18 +211,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
       discounted_price: 11.0,
       quantity: 0,
     },
-    {
-      name: "Spicy Chicken Burger 🌶️🐔🍔",
-      price: 11.75,
-      discounted_price: 10.25,
-      quantity: 0,
-    },
-    {
-      name: "Veggie Burger 🌱🍔",
-      price: 9.99,
-      discounted_price: 8.75,
-      quantity: 0,
-    },
+
   ]);
 
   const handleIncrease = (burger: any) => {
@@ -517,3 +517,5 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
 };
 
 export default MapComponent;
+
+

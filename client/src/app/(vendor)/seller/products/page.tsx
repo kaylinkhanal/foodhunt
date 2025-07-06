@@ -47,32 +47,22 @@ const Products = () => {
   const [showForm, setShowForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [products, setProducts] = useState([])
   const user = useSelector((state) => state.user);
   const {  isLoggedIn, role, email, _id } = user;
 
+  const [products, setProducts] = useState([])
   const fetchProducts = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
       const { data } = await axios.get(`${API_BASE_URL}/products?sellerId=${_id}`);
       setProducts(data)
-    } catch (err) {
-      console.error('Failed to fetch products:', err);
-      setError(err.response?.data?.error || err.message);
-      toast.error(err.response?.data?.error || 'Failed to load products');
-    } finally {
-      setIsLoading(false);
-    }
   };
 
+  useEffect(() => {
+    fetchProducts();
+  }, []);
   const dispatch = useDispatch();
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-  useEffect(() => {
 
-    fetchProducts();
-  }, [dispatch, API_BASE_URL]);
 
   const initialValues = {
     name: '',
