@@ -7,7 +7,8 @@ const userSchema = new Schema({
   name: String,
   role: String,
   avatar: String,
-  password: String
+  password: String,
+  coords: {}
 });
 const User = mongoose.model('User', userSchema);
 export default User;
