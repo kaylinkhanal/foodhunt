@@ -10,6 +10,7 @@ import {
   ShoppingCart,
   DollarSign,
   LogOut,
+  User
 } from "lucide-react"
 import Image from "next/image"
 import { Button } from "./ui/button"
@@ -23,7 +24,9 @@ const Sidebar = () => {
     router.push("/login")
   }
 
+
   const navItems = [
+    { label: "Profile", path: "/seller/profile", icon: User },
     { label: "Dashboard", path: "/seller/dashboard", icon: BarChart3 },
     { label: "Products", path: "/seller/products", icon: Package },
     { label: "Orders", path: "/seller/orders", icon: ShoppingCart },
@@ -35,25 +38,25 @@ const Sidebar = () => {
       <div className="flex items-center justify-center p-6 bg-gradient-to-r from-orange-500 to-orange-600">
         <div className="flex items-center gap-3">
           <div
-  style={{
-    width: '60px',
-    height: '60px',
-    borderRadius: '50%',
-    overflow: 'hidden',
-    backgroundColor: 'white', 
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }}
->
-  <Image
-    src="/applogo.png"
-    alt="App Logo"
-    width={60}
-    height={60}
-    style={{ objectFit: 'cover' }}
-  />
-</div>
+            style={{
+              width: '60px',
+              height: '60px',
+              borderRadius: '50%',
+              overflow: 'hidden',
+              backgroundColor: 'white',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Image
+              src="/applogo.png"
+              alt="App Logo"
+              width={60}
+              height={60}
+              style={{ objectFit: 'cover' }}
+            />
+          </div>
 
           <h1 className="text-2xl font-bold text-white tracking-wide">
             Food Hunt

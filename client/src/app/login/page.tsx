@@ -29,14 +29,14 @@ const validationSchema = Yup.object({
     .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
     .matches(/\d/, 'Password must contain at least one number')
     .required('Password is required'),
- 
+
 });
 
 const Login = () => {
   const { isLoggedIn } = useSelector((state: any) => state.user);
-  useEffect(()=>{
-    if(isLoggedIn) router.push('/')
-  },[])
+  useEffect(() => {
+    if (isLoggedIn) router.push('/')
+  }, [])
 
 
   const initialValues = {
@@ -46,21 +46,21 @@ const Login = () => {
   const router = useRouter()
   const dispatch = useDispatch()
 
-  const handleSubmit = async(values: typeof initialValues, { setSubmitting }: any) => {
-    
-    const {data}= await  axios.post(process.env.NEXT_PUBLIC_API_URL+ '/login', values)
-    if(data?.isLoggedIn) {
-      if(data.user.role === 'admin') {
-        router.push('/admin/dashboard') 
-      }else if(data.user.role === 'seller') {
+  const handleSubmit = async (values: typeof initialValues, { setSubmitting }: any) => {
+
+    const { data } = await axios.post(process.env.NEXT_PUBLIC_API_URL + '/login', values)
+    if (data?.isLoggedIn) {
+      if (data.user.role === 'admin') {
+        router.push('/admin/dashboard')
+      } else if (data.user.role === 'seller') {
         router.push('/seller/dashboard')
       }
       else {
-       router.push('/')
+        router.push('/')
       }
     }
     toast(data?.message)
-    if(data) {
+    if (data) {
       debugger;
       dispatch(addLoginDetails(data))
     }
@@ -106,7 +106,7 @@ const Login = () => {
                     <ErrorMessage name="email" component="div" className="text-destructive text-sm" />
                   </div>
 
-                
+
 
                   {/* Password */}
                   <div className="space-y-2">
@@ -125,7 +125,7 @@ const Login = () => {
                     <ErrorMessage name="password" component="div" className="text-destructive text-sm" />
                   </div>
 
-           
+
                   {/* Submit Button */}
                   <Button
                     type="submit"
@@ -150,7 +150,7 @@ const Login = () => {
           </CardContent>
         </Card>
 
-        
+
       </div>
     </div>
   );

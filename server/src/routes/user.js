@@ -44,13 +44,11 @@ userRouter.post("/login", async (req, res) => {
 userRouter.get("/users", async (req, res) => {
   let data;
   if (req.query.role) {
-    data = await User.find({ role: req.query.role, isApproved: false });
+    data = await User.find({ role: req.query.role });
   } else {
     data = await User.find();
   }
   return res.send(data);
 });
-
-
 
 export default userRouter;

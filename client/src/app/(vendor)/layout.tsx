@@ -1,15 +1,20 @@
 import Sidebar from '@/components/sidebar'
 import React from 'react'
 
-const Layout = ({children}) => {
+const Layout = ({ children }) => {
   return (
     <div >
-        <div className='flex gap-2'>
-        <Sidebar/>
-        {children}
-        </div>
-  
-        </div>
+      <div className="flex h-screen">
+        <aside className="w-64 bg-gray-800">
+          {/* your sidebar */}
+          <Sidebar />
+        </aside>
+
+        <main className="flex-1 overflow-y-auto bg-white">
+          {children}
+        </main>
+      </div>
+    </div>
   )
 }
 

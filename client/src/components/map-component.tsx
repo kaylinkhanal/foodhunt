@@ -24,6 +24,7 @@ import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "@/redux/reducerSlices/userSlice";
 import MapSidebar from "./map-sidebar";
+import { useRouter } from "next/navigation";
 
 interface MapProps {
   position: [number, number]; // [latitude, longitude]
@@ -116,6 +117,7 @@ const foodCategories = [
 ];
 
 const createEmojiIcon = (emoji: string) => {
+
   return L.divIcon({
     html: `
       <div class="relative flex flex-col items-center">
@@ -186,14 +188,14 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
   // useEffect(()=>{
   //   fetchProducts()
   // },[])
-  
+
   // const [search, setSearch] = useState('');
   const { isLoggedIn } = useSelector((state) => state.user);
   const [show, setShow] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(foodCategories[0]); // Default to first category (Burgers)
   const [isSearchFocused, setIsSearchFocused] = useState(false); // Track input focus
   const dispatch = useDispatch();
-
+  const router = useRouter()
   const handleLogout = () => {
     dispatch(logoutUser());
   };
@@ -249,7 +251,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
 
   const handleCategoryClick = (category: typeof foodCategories[0]) => {
     setSelectedCategory(category);
-    setIsSearchFocused(false); 
+    setIsSearchFocused(false);
   };
 
   return (
@@ -397,11 +399,10 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
               <Button
                 key={index}
                 variant={selectedCategory.name === category.name ? "default" : "outline"}
-                className={`flex items-center space-x-2 ${
-                  selectedCategory.name === category.name
-                    ? "bg-orange-400 text-white"
-                    : "bg-orange-400 text-white border-0"
-                } rounded-full px-4 py-2`}
+                className={`flex items-center space-x-2 ${selectedCategory.name === category.name
+                  ? "bg-orange-400 text-white"
+                  : "bg-orange-400 text-white border-0"
+                  } rounded-full px-4 py-2`}
                 onClick={() => handleCategoryClick(category)}
               >
                 <span>{category.emoji}</span>
@@ -505,7 +506,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
           <DropdownMenuContent className="z-[1100]">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push('/customerprofile')}>Profile</DropdownMenuItem>
             <DropdownMenuItem>Billing</DropdownMenuItem>
             <DropdownMenuItem>Team</DropdownMenuItem>
             <DropdownMenuItem>Subscription</DropdownMenuItem>
