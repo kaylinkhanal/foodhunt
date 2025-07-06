@@ -20,23 +20,9 @@ const productSchema = new Schema(
     },
     // Todo: Category model exists, so it would be better to store relation with category array and product
     category: {
-      type: String,
-      required: true,
-      trim: true,
-      enum: [
-        "Main Course",
-        "Appetizer",
-        "Dessert",
-        "Beverage",
-        "Bakery",
-        "Vegetarian",
-        "Non-Vegetarian Items",
-        "Vegan",
-        "Gluten-Free",
-        "Drinks",
-        "Other",
-      ],
-      default: "Other",
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+      required: true
     },
     imageUrl: {
       type: String,

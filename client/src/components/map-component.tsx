@@ -17,7 +17,7 @@ import "leaflet-defaulticon-compatibility";
 import L from "leaflet";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,6 +30,7 @@ import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "@/redux/reducerSlices/userSlice";
 import MapSidebar from "./map-sidebar";
+import axios from "axios";
 
 interface MapProps {
   position: [number, number]; // [latitude, longitude]
@@ -185,8 +186,19 @@ const createEmojiIcon = (emoji: string) => {
     popupAnchor: [0, -50], // Popup above icon
   });
 };
-const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
-  const [search, setSearch] = useState("");
+const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
+  const {_id} = useSelector(state=> state.user)
+  const [productList, setProductList] = useState([])
+  const [foodSearch, setFoodSearch]= useState('')
+  const fetchProducts = async () => {
+    const {data} = await axios.get('http://localhost:8080/products?name=' +  foodSearch + '&userId=' +_id )
+    setProductList(data)
+  }
+  useEffect(()=>{
+    fetchProducts()
+  },[])
+  
+  // const [search, setSearch] = useState('');
   const { isLoggedIn } = useSelector((state) => state.user);
   const [show, setShow] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(foodCategories[0]); // Default to first category (Burgers)
@@ -268,13 +280,16 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
           attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {selectedCategory.locations.map((item) => {
-          const customIcon = createEmojiIcon(selectedCategory.emoji);
+        {JSON.stringify(productList)}
+        {productList.map((item) => {
+          if(!item.sellerId?.coords?.lat || !item.sellerId?.coords?.lng) return null;
+          const customIcon = createEmojiIcon(item.category?.emoji);
           return (
             <Marker
-              position={item.coordinates}
+              position={[item.sellerId?.coords?.lat, item.sellerId?.coords?.lng]}
               icon={customIcon}
-              key={item.name}
+              key={item._id
+              }
             >
               <Popup maxWidth={300}>
                 <b>{item.name}</b>
@@ -518,3 +533,5 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
 };
 
 export default MapComponent;
+
+

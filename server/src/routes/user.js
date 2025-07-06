@@ -51,6 +51,10 @@ userRouter.get("/users", async (req, res) => {
   return res.send(data);
 });
 
+userRouter.get("/users/:id", async (req, res) => {
+  const  data = await User.findById(req.params.id);
+  return res.send(data);
+});
 userRouter.patch("/users/:id/add-preferences", async (req, res) => {
   try {
     const { userPreferences } = req.body;

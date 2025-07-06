@@ -3,8 +3,10 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircleIcon, Clock } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 const Dashboard = () => {
+   const router = useRouter()
   const [kycStatus, setKycStatus] = useState({
     isKycSubmitted: false,
     isKycApproved: false,
@@ -56,7 +58,9 @@ const Dashboard = () => {
               </AlertTitle>
               <AlertDescription className="text-yellow-700 text-base">
                 <p className="mb-4">To access all features, please complete your KYC verification.</p>
-                <button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-medium px-6 py-2 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
+                <button 
+                  onClick={()=> router.push('/seller/kyc')}
+                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-medium px-6 py-2 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
                   Fill KYC Now
                 </button>
               </AlertDescription>

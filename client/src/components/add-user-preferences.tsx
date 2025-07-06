@@ -155,16 +155,6 @@ export default function UserPreferences() {
   // Effect to fetch categories from the backend
   useEffect(() => {
     const fetchCategories = async () => {
-      if (!userId) {
-        toast("User not logged in. Cannot save preferences.");
-        router.push("/");
-      }
-
-      if (userRole !== "user") {
-        toast("Food preferences are only for Users.");
-        router.push("/");
-      }
-
       try {
         setLoading(true);
         const response = await axios.get(

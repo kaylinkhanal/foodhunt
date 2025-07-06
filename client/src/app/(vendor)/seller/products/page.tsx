@@ -30,16 +30,6 @@ const productSchema = Yup.object().shape({
   status: Yup.string().oneOf(['active', 'sold-out', 'expired', 'draft', 'unavailable']),
 });
 
-const categories = [
-  'Snacks',
-  'Veg Items',
-  'Non-Veg Items',
-  'Drinks',
-  'Desserts',
-  'Bakery',
-  'Frozen Foods',
-  'Other',
-];
 
 const statuses = ['active', 'Sold-Out', 'Expired', 'Draft', 'Unavailable'];
 
@@ -47,32 +37,28 @@ const Products = () => {
   const [showForm, setShowForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [products, setProducts] = useState([])
   const user = useSelector((state) => state.user);
   const {  isLoggedIn, role, email, _id } = user;
-
+  const [categories, setCategories] = useState([])
+  const fetchCategories = async () => {
+      const { data } = await axios.get(`${API_BASE_URL}/categories`);
+      setCategories(data)
+  };
+  const [products, setProducts] = useState([])
   const fetchProducts = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
       const { data } = await axios.get(`${API_BASE_URL}/products?sellerId=${_id}`);
       setProducts(data)
-    } catch (err) {
-      console.error('Failed to fetch products:', err);
-      setError(err.response?.data?.error || err.message);
-      toast.error(err.response?.data?.error || 'Failed to load products');
-    } finally {
-      setIsLoading(false);
-    }
   };
+
+  useEffect(() => {
+    fetchProducts();
+    fetchCategories();
+  }, []);
 
   const dispatch = useDispatch();
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-  useEffect(() => {
 
-    fetchProducts();
-  }, [dispatch, API_BASE_URL]);
 
   const initialValues = {
     name: '',
@@ -207,8 +193,8 @@ const Products = () => {
                           className="w-full p-3 border border-yellow-500 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all"
                         >
                           {categories.map((cat) => (
-                            <option key={cat} value={cat}>
-                              {cat}
+                            <option key={cat._id} value={cat._id}>
+                              {cat.name}
                             </option>
                           ))}
                         </Field>

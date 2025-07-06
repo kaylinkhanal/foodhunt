@@ -64,6 +64,8 @@ setCategories(data)
       name: formData.name,
       description: formData.description,
     })
+    fetchCategories()
+
   }
 
   const handleEditCategory = (category: Category) => {

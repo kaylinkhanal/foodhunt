@@ -24,4 +24,4 @@ const categoryschema = new Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("category", categoryschema);
+export default mongoose.model("Category", categoryschema);
