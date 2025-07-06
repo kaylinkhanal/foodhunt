@@ -1,5 +1,7 @@
 import express from 'express';
 import Product from '../models/product.js';
+import category from '../models/category.js';
+import User from '../models/user.js';
 
 const productRouter = express.Router();
 
@@ -31,13 +33,21 @@ productRouter.get('/products', async (req, res) => {
     }else if(req.query.name){
     
       const searchRegex = new RegExp(req.query.name, 'i');
-      products = await Product.find({name: searchRegex }).populate('sellerId')
+      products = await Product.find({name: searchRegex }).populate('sellerId').populate('category')
+    }else if(req.query.userId){
+      const user = await User.findById(req.query.userId)
+      const allProducts = await Product.find().populate('sellerId category')
+       products = allProducts.filter(item =>{
+        return user.userPreferences.includes(item.category._id)
+      })
+
     }
     else{
-      products = await Product.find().populate('sellerId')
+      products = await Product.find().populate('sellerId').populate('category')
     }
     res.status(200).json(products);
   } catch (err) {
+    console.log(err)
     res.status(500).json({ error: 'Failed to fetch products' });
   }
 });

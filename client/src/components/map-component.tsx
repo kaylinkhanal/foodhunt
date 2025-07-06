@@ -1,6 +1,12 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Minus, Plus } from "lucide-react";
@@ -25,6 +31,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "@/redux/reducerSlices/userSlice";
 import MapSidebar from "./map-sidebar";
 import UserProfile from "./userProfile";
+import axios from "axios";
 
 interface MapProps {
   position: [number, number]; // [latitude, longitude]
@@ -38,16 +45,19 @@ const foodCategories = [
     locations: [
       { name: "S Café Tinkune", coordinates: [27.686, 85.3503] },
       { name: "AT Burger", coordinates: [27.702, 85.326] },
-      { name: "The Burger House & Crunchy Fried Chicken", coordinates: [27.6925, 85.334] },
+      {
+        name: "The Burger House & Crunchy Fried Chicken",
+        coordinates: [27.6925, 85.334],
+      },
     ],
   },
   {
     name: "Pizza",
     emoji: "🍕",
     locations: [
-      { name: "Pizza Palace", coordinates: [27.695, 85.340] },
-      { name: "Domino's", coordinates: [27.700, 85.330] },
-      { name: "Pizza Hut", coordinates: [27.690, 85.345] },
+      { name: "Pizza Palace", coordinates: [27.695, 85.34] },
+      { name: "Domino's", coordinates: [27.7, 85.33] },
+      { name: "Pizza Hut", coordinates: [27.69, 85.345] },
     ],
   },
   {
@@ -55,14 +65,14 @@ const foodCategories = [
     emoji: "🍣",
     locations: [
       { name: "Sushi Haven", coordinates: [27.688, 85.338] },
-      { name: "Tokyo Sushi", coordinates: [27.705, 85.320] },
+      { name: "Tokyo Sushi", coordinates: [27.705, 85.32] },
     ],
   },
   {
     name: "Pasta",
     emoji: "🍝",
     locations: [
-      { name: "Pasta Place", coordinates: [27.680, 85.355] },
+      { name: "Pasta Place", coordinates: [27.68, 85.355] },
       { name: "Italian Bistro", coordinates: [27.698, 85.325] },
     ],
   },
@@ -177,16 +187,17 @@ const createEmojiIcon = (emoji: string) => {
     popupAnchor: [0, -50], // Popup above icon
   });
 };
-const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
-  // const [productList, setProductList] = useState([])
-  // const [foodSearch, setFoodSearch]= useState('')
-  // const fetchProducts = async () => {
-  //   const {data} = await axios.get('http://localhost:8080/products?name=' +  foodSearch)
-  //   setProductList(data)
-  // }
-  // useEffect(()=>{
-  //   fetchProducts()
-  // },[])
+const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
+  const {_id} = useSelector(state=> state.user)
+  const [productList, setProductList] = useState([])
+  const [foodSearch, setFoodSearch]= useState('')
+  const fetchProducts = async () => {
+    const {data} = await axios.get('http://localhost:8080/products?name=' +  foodSearch + '&userId=' +_id )
+    setProductList(data)
+  }
+  useEffect(()=>{
+    fetchProducts()
+  },[])
   
   // const [search, setSearch] = useState('');
   const { isLoggedIn } = useSelector((state) => state.user);
@@ -213,7 +224,6 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
       discounted_price: 11.0,
       quantity: 0,
     },
-
   ]);
 
   const handleIncrease = (burger: any) => {
@@ -243,15 +253,13 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
 
   const handlePlaceOrder = () => {
     alert("Order placed successfully!");
-    setBurgerType((prev) =>
-      prev.map((item) => ({ ...item, quantity: 0 }))
-    );
+    setBurgerType((prev) => prev.map((item) => ({ ...item, quantity: 0 })));
     setShow(false);
   };
 
-  const handleCategoryClick = (category: typeof foodCategories[0]) => {
+  const handleCategoryClick = (category: (typeof foodCategories)[0]) => {
     setSelectedCategory(category);
-    setIsSearchFocused(false); 
+    setIsSearchFocused(false);
   };
 
 
@@ -283,13 +291,16 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
           attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {selectedCategory.locations.map((item) => {
-          const customIcon = createEmojiIcon(selectedCategory.emoji);
+        {JSON.stringify(productList)}
+        {productList.map((item) => {
+          if(!item.sellerId?.coords?.lat || !item.sellerId?.coords?.lng) return null;
+          const customIcon = createEmojiIcon(item.category?.emoji);
           return (
             <Marker
-              position={item.coordinates}
+              position={[item.sellerId?.coords?.lat, item.sellerId?.coords?.lng]}
               icon={customIcon}
-              key={item.name}
+              key={item._id
+              }
             >
               <Popup maxWidth={300}>
                 <b>{item.name}</b>
@@ -366,7 +377,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
                                 className="font-semibold"
                                 style={{ color: "#FAA617" }}
                               >
-                                Rs {" "}
+                                Rs{" "}
                                 {(
                                   burger.discounted_price * burger.quantity
                                 ).toFixed(2)}
@@ -407,7 +418,11 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
             {foodCategories.map((category, index) => (
               <Button
                 key={index}
-                variant={selectedCategory.name === category.name ? "default" : "outline"}
+                variant={
+                  selectedCategory.name === category.name
+                    ? "default"
+                    : "outline"
+                }
                 className={`flex items-center space-x-2 ${
                   selectedCategory.name === category.name
                     ? "bg-orange-400 text-white"
@@ -423,7 +438,6 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
           <ScrollBar
             orientation="horizontal"
             className="h-2  bg-white rounded-full hidden"
-            thumbClassName="rounded-full"
           />
         </ScrollArea>
       </div>
@@ -440,7 +454,9 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
         {isSearchFocused && (
           <Card className="absolute top-12 left-1/2 transform -translate-x-1/2 w-[300px] bg-white shadow-lg z-[1001]">
             <CardHeader>
-              <CardTitle className="text-lg font-semibold">Suggested Categories</CardTitle>
+              <CardTitle className="text-lg font-semibold">
+                Suggested Categories
+              </CardTitle>
             </CardHeader>
             <CardContent className="p-2">
               {foodCategories.map((category, index) => (
