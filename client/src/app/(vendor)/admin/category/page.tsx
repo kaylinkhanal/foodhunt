@@ -74,6 +74,7 @@ export default function CategoriesPage() {
       emoji: formData.emoji,
     });
     fetchCategories();
+    setIsCreateDialogOpen(false);
   };
 
   const handleEditCategory = (category: Category) => {
