@@ -28,8 +28,13 @@ productRouter.get('/products', async (req, res) => {
       products = await Product.find({sellerId:req.query?.sellerId})
       .sort({ createdAt: -1 }) //sort the products based on their created at and decending order
       .populate('sellerId', 'name email phoneNumber'); 
-    }else{
-      products = await Product.find()
+    }else if(req.query.name){
+    
+      const searchRegex = new RegExp(req.query.name, 'i');
+      products = await Product.find({name: searchRegex }).populate('sellerId')
+    }
+    else{
+      products = await Product.find().populate('sellerId')
     }
     res.status(200).json(products);
   } catch (err) {

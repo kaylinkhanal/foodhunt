@@ -3,6 +3,7 @@ const { Schema } = mongoose;
 
 const sellerKycSchema = new Schema({
   location: String, 
+  coords: {},
   panId: String,
   registrationDate: String,
   seller: { type: Schema.Types.ObjectId, ref: 'User' },
