@@ -24,6 +24,7 @@ import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "@/redux/reducerSlices/userSlice";
 import MapSidebar from "./map-sidebar";
+import UserProfile from "./userProfile";
 
 interface MapProps {
   position: [number, number]; // [latitude, longitude]
@@ -190,6 +191,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
   // const [search, setSearch] = useState('');
   const { isLoggedIn } = useSelector((state) => state.user);
   const [show, setShow] = useState(false);
+   const [isUserProfileOpen, setIsUserProfileOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(foodCategories[0]); // Default to first category (Burgers)
   const [isSearchFocused, setIsSearchFocused] = useState(false); // Track input focus
   const dispatch = useDispatch();
@@ -251,6 +253,15 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
     setSelectedCategory(category);
     setIsSearchFocused(false); 
   };
+
+
+  const handleProfileClick = () => {
+    setIsUserProfileOpen(true);
+  };
+  const handleCloseUserProfile = () => {
+    setIsUserProfileOpen(false);
+  };
+
 
   return (
     <div className="relative w-full h-screen">
@@ -505,13 +516,18 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 13 }) => {
           <DropdownMenuContent className="z-[1100]">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
+            <DropdownMenuItem
+            onClick={handleProfileClick}
+            >Profile</DropdownMenuItem>
             <DropdownMenuItem>Billing</DropdownMenuItem>
             <DropdownMenuItem>Team</DropdownMenuItem>
             <DropdownMenuItem>Subscription</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+       <UserProfile
+        isOpen={isUserProfileOpen} 
+        onClose={handleCloseUserProfile} />
     </div>
   );
 };
