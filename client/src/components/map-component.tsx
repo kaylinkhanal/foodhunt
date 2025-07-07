@@ -280,7 +280,6 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
           attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {JSON.stringify(productList)}
         {productList.map((item) => {
           if(!item.sellerId?.coords?.lat || !item.sellerId?.coords?.lng) return null;
           const customIcon = createEmojiIcon(item.category?.emoji);
