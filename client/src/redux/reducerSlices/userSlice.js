@@ -7,6 +7,7 @@ const initialState = {
   role: "",
   location: "",
   userPreferences: [],
+  phoneNumber: "",
 };
 
 export const userSlice = createSlice({
@@ -26,6 +27,9 @@ export const userSlice = createSlice({
         _id: action.payload?.user._id,
         location: action.payload?.user.location,
         userPreferences: action.payload?.user?.userPreferences,
+        phoneNumber: action.payload?.user.phoneNumber,
+
+
       };
     },
     updateUserPreferences: (state, action) => {

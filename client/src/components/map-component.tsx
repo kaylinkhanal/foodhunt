@@ -31,6 +31,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "@/redux/reducerSlices/userSlice";
 import MapSidebar from "./map-sidebar";
 import axios from "axios";
+import ProfilePage from "./profile";
+
 
 interface MapProps {
   position: [number, number]; // [latitude, longitude]
@@ -191,6 +193,8 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
   const [productList, setProductList] = useState([]);
   const [foodSearch, setFoodSearch] = useState("");
   const userPreferences = useSelector((state) => state.user.userPreferences);
+  const [showProfile, setShowProfile] = useState(false);
+
 
   const fetchProducts = async () => {
     if (!userPreferences || userPreferences.length === 0 || !_id) {
@@ -214,6 +218,13 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
   useEffect(() => {
     fetchProducts();
   }, []);
+
+
+  useEffect(() => {
+  const handler = () => setShowProfile(false);
+  window.addEventListener("close-profile", handler);
+  return () => window.removeEventListener("close-profile", handler);
+}, []);
 
   // const [search, setSearch] = useState('');
   const { isLoggedIn } = useSelector((state) => state.user);
@@ -543,14 +554,22 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
           <DropdownMenuContent className="z-[1100]">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
+            <DropdownMenuItem onClick={()=>setShowProfile(true)}>Profile</DropdownMenuItem>
             <DropdownMenuItem>Billing</DropdownMenuItem>
             <DropdownMenuItem>Team</DropdownMenuItem>
             <DropdownMenuItem>Subscription</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+    
+    {showProfile && (
+  <div className="absolute top-24 right-4 z-[2000]">
+    <ProfilePage />
+  </div>
+)}
+
     </div>
+    
   );
 };
 
