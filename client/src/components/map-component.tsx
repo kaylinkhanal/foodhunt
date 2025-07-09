@@ -37,99 +37,99 @@ interface MapProps {
   zoom?: number;
 }
 
-const foodCategories = [
-  {
-    name: "Burgers",
-    emoji: "🍔",
-    locations: [
-      { name: "S Café Tinkune", coordinates: [27.686, 85.3503] },
-      { name: "AT Burger", coordinates: [27.702, 85.326] },
-      {
-        name: "The Burger House & Crunchy Fried Chicken",
-        coordinates: [27.6925, 85.334],
-      },
-    ],
-  },
-  {
-    name: "Pizza",
-    emoji: "🍕",
-    locations: [
-      { name: "Pizza Palace", coordinates: [27.695, 85.34] },
-      { name: "Domino's", coordinates: [27.7, 85.33] },
-      { name: "Pizza Hut", coordinates: [27.69, 85.345] },
-    ],
-  },
-  {
-    name: "Sushi",
-    emoji: "🍣",
-    locations: [
-      { name: "Sushi Haven", coordinates: [27.688, 85.338] },
-      { name: "Tokyo Sushi", coordinates: [27.705, 85.32] },
-    ],
-  },
-  {
-    name: "Pasta",
-    emoji: "🍝",
-    locations: [
-      { name: "Pasta Place", coordinates: [27.68, 85.355] },
-      { name: "Italian Bistro", coordinates: [27.698, 85.325] },
-    ],
-  },
-  {
-    name: "Tacos",
-    emoji: "🌮",
-    locations: [
-      { name: "Taco Time", coordinates: [27.687, 85.342] },
-      { name: "Mexican Grill", coordinates: [27.703, 85.328] },
-    ],
-  },
-  {
-    name: "Desserts",
-    emoji: "🍰",
-    locations: [
-      { name: "Sweet Treats", coordinates: [27.691, 85.337] },
-      { name: "Cake Corner", coordinates: [27.699, 85.331] },
-    ],
-  },
-  {
-    name: "Coffee",
-    emoji: "☕",
-    locations: [
-      { name: "Coffee Co.", coordinates: [27.694, 85.343] },
-      { name: "Bean Brew", coordinates: [27.701, 85.324] },
-    ],
-  },
-  {
-    name: "Salads",
-    emoji: "🥗",
-    locations: [
-      { name: "Green Bowl", coordinates: [27.689, 85.339] },
-      { name: "Fresh Greens", coordinates: [27.704, 85.327] },
-    ],
-  },
-  {
-    name: "Sandwiches",
-    emoji: "🥪",
-    locations: [
-      { name: "Sandwich Stop", coordinates: [27.693, 85.341] },
-      { name: "Sub Shack", coordinates: [27.702, 85.329] },
-    ],
-  },
-  {
-    name: "BBQ",
-    emoji: "🍖",
-    locations: [
-      { name: "BBQ Barn", coordinates: [27.685, 85.347] },
-      { name: "Smokehouse", coordinates: [27.697, 85.323] },
-    ],
-  },
-];
+// const foodCategories = [
+//   {
+//     name: "Burgers",
+//     emoji: "🍔",
+//     locations: [
+//       { name: "S Café Tinkune", coordinates: [27.686, 85.3503] },
+//       { name: "AT Burger", coordinates: [27.702, 85.326] },
+//       {
+//         name: "The Burger House & Crunchy Fried Chicken",
+//         coordinates: [27.6925, 85.334],
+//       },
+//     ],
+//   },
+//   {
+//     name: "Pizza",
+//     emoji: "🍕",
+//     locations: [
+//       { name: "Pizza Palace", coordinates: [27.695, 85.34] },
+//       { name: "Domino's", coordinates: [27.7, 85.33] },
+//       { name: "Pizza Hut", coordinates: [27.69, 85.345] },
+//     ],
+//   },
+//   {
+//     name: "Sushi",
+//     emoji: "🍣",
+//     locations: [
+//       { name: "Sushi Haven", coordinates: [27.688, 85.338] },
+//       { name: "Tokyo Sushi", coordinates: [27.705, 85.32] },
+//     ],
+//   },
+//   {
+//     name: "Pasta",
+//     emoji: "🍝",
+//     locations: [
+//       { name: "Pasta Place", coordinates: [27.68, 85.355] },
+//       { name: "Italian Bistro", coordinates: [27.698, 85.325] },
+//     ],
+//   },
+//   {
+//     name: "Tacos",
+//     emoji: "🌮",
+//     locations: [
+//       { name: "Taco Time", coordinates: [27.687, 85.342] },
+//       { name: "Mexican Grill", coordinates: [27.703, 85.328] },
+//     ],
+//   },
+//   {
+//     name: "Desserts",
+//     emoji: "🍰",
+//     locations: [
+//       { name: "Sweet Treats", coordinates: [27.691, 85.337] },
+//       { name: "Cake Corner", coordinates: [27.699, 85.331] },
+//     ],
+//   },
+//   {
+//     name: "Coffee",
+//     emoji: "☕",
+//     locations: [
+//       { name: "Coffee Co.", coordinates: [27.694, 85.343] },
+//       { name: "Bean Brew", coordinates: [27.701, 85.324] },
+//     ],
+//   },
+//   {
+//     name: "Salads",
+//     emoji: "🥗",
+//     locations: [
+//       { name: "Green Bowl", coordinates: [27.689, 85.339] },
+//       { name: "Fresh Greens", coordinates: [27.704, 85.327] },
+//     ],
+//   },
+//   {
+//     name: "Sandwiches",
+//     emoji: "🥪",
+//     locations: [
+//       { name: "Sandwich Stop", coordinates: [27.693, 85.341] },
+//       { name: "Sub Shack", coordinates: [27.702, 85.329] },
+//     ],
+//   },
+//   {
+//     name: "BBQ",
+//     emoji: "🍖",
+//     locations: [
+//       { name: "BBQ Barn", coordinates: [27.685, 85.347] },
+//       { name: "Smokehouse", coordinates: [27.697, 85.323] },
+//     ],
+//   },
+// ];
 
-const createEmojiIcon = (emoji: string) => {
+const createEmojiIcon = (emoji, discountPercentage) => {
   return L.divIcon({
     html: `
       <div class="relative flex flex-col items-center">
-        <div class="discount-text" style="font-size: 18px; text-align: center; font-weight: bold;">50% OFF</div>
+        <div class="discount-text" style="font-size: 18px; text-align: center; font-weight: bold;">${discountPercentage.toFixed(2)}% OFF</div>
         <div class="emoji-container" style="font-size: 48px; text-align: center; line-height: 1; position: relative;">
           ${emoji}
           <span class="ripple"></span>
@@ -187,21 +187,70 @@ const createEmojiIcon = (emoji: string) => {
   });
 };
 const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
-  const {_id} = useSelector(state=> state.user)
-  const [productList, setProductList] = useState([])
-  const [foodSearch, setFoodSearch]= useState('')
-  const fetchProducts = async () => {
-    const {data} = await axios.get('http://localhost:8080/products?name=' +  foodSearch + '&userId=' +_id )
-    setProductList(data)
-  }
-  useEffect(()=>{
-    fetchProducts()
-  },[])
+  const { _id } = useSelector((state) => state.user);
+  const [productList, setProductList] = useState([]);
+  const [productsOfSelectedCategory,setProductsOfSelectedCategory] = useState([])
+
   
+  const [foodSearch, setFoodSearch] = useState("");
+  const userPreferences = useSelector((state) => state.user.userPreferences);
+  const [foodCategories,setFoodCategories] = useState([])
+  const fetchProducts = async () => {
+    if (!userPreferences || userPreferences.length === 0 || !_id) {
+      setProductList([]); // Clear products if no preferences or user ID
+      console.log(
+        "Cannot fetch products: No user preferences or user ID available."
+      );
+      return;
+    }
+    const allFetchedProducts = []; // To accumulate all products from different queries
+    for (const item of userPreferences) {
+      const { data } = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/products?name=${item}&userId=${_id}`
+      );
+
+      allFetchedProducts.push(...data);
+    }
+
+    setProductList(allFetchedProducts);
+  };
+
+  const fetchCategories = async () => {
+    const { data } = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/categories`
+    );
+    setFoodCategories(data)
+
+  };
+
+  const fetchProductChip = async () => {
+    const { data } = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/product-chips`
+    );
+    setProductsOfSelectedCategory(data)
+
+  };
+
+
+
+  const fetchProductsByProductIds = async (id) => {
+    const { data } = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/categories?productIds=${id.join(',')}`
+    );
+    setProductsOfSelectedCategory(data)
+
+  };
+
+  useEffect(() => {
+    fetchProducts();
+    fetchCategories();
+    fetchProductChip()
+  }, []);
+
   // const [search, setSearch] = useState('');
   const { isLoggedIn } = useSelector((state) => state.user);
   const [show, setShow] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(foodCategories[0]); // Default to first category (Burgers)
+  const [selectedCategory, setSelectedCategory] = useState([]); // Default to first category (Burgers)
   const [isSearchFocused, setIsSearchFocused] = useState(false); // Track input focus
   const dispatch = useDispatch();
 
@@ -255,7 +304,8 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
     setShow(false);
   };
 
-  const handleCategoryClick = (category: (typeof foodCategories)[0]) => {
+  const handleCategoryClick = (category) => {
+    fetchProductsByProductIds(category.originalIds)
     setSelectedCategory(category);
     setIsSearchFocused(false);
   };
@@ -265,7 +315,6 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
       {/* Sidebar Component */}
       <MapSidebar
         foodCategories={foodCategories}
-        selectedCategory={selectedCategory}
         onCategoryClick={handleCategoryClick}
       />
 
@@ -280,15 +329,21 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
           attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <div className="z-1200 absolute top-10 bg-white hidden">
+          {JSON.stringify(productList)}
+        </div>
         {productList.map((item) => {
-          if(!item.sellerId?.coords?.lat || !item.sellerId?.coords?.lng) return null;
-          const customIcon = createEmojiIcon(item.category?.emoji);
+          if (!item.sellerId?.coords?.lat || !item.sellerId?.coords?.lng)
+            return null;
+          const customIcon = createEmojiIcon(item.category?.emoji, item.discountPercentage);
           return (
             <Marker
-              position={[item.sellerId?.coords?.lat, item.sellerId?.coords?.lng]}
+              position={[
+                item.sellerId?.coords?.lat,
+                item.sellerId?.coords?.lng,
+              ]}
               icon={customIcon}
-              key={item._id
-              }
+              key={item._id}
             >
               <Popup maxWidth={300}>
                 <b>{item.name}</b>
@@ -403,7 +458,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
       <div className="absolute  top-4 left-1/2 transform -translate-x-1/3 z-[1000] w-[1000px]">
         <ScrollArea className="w-full whitespace-nowrap rounded-full scrollbar-hidden">
           <div className="flex space-x-2 p-2">
-            {foodCategories.map((category, index) => (
+            {productsOfSelectedCategory.length > 0 && productsOfSelectedCategory.map((category, index) => (
               <Button
                 key={index}
                 variant={
@@ -532,5 +587,3 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
 };
 
 export default MapComponent;
-
-

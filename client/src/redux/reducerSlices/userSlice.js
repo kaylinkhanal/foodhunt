@@ -25,6 +25,7 @@ export const userSlice = createSlice({
         role: action.payload?.user.role,
         _id: action.payload?.user._id,
         location: action.payload?.user.location,
+        userPreferences: action.payload?.user?.userPreferences,
       };
     },
     updateUserPreferences: (state, action) => {

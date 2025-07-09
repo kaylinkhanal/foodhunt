@@ -14,7 +14,6 @@ const port = process.env.PORT;
 const app = express();
 
 connect();
-app.use("/category-uploads", express.static("category-uploads"));
 app.use(cors());
 app.use(express.json());
 app.use(userRouter);
