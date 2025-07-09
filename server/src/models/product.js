@@ -18,11 +18,10 @@ const productSchema = new Schema(
       minlength: 10,
       maxlength: 500,
     },
-    // Todo: Category model exists, so it would be better to store relation with category array and product
     category: {
       type: Schema.Types.ObjectId,
       ref: "Category",
-      required: true
+      required: true,
     },
     imageUrl: {
       type: String,

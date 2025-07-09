@@ -17,9 +17,6 @@ const categoryschema = new Schema(
       type: String,
       default: "🍲",
     },
-    image: {
-      type: String,
-    },
   },
   { timestamps: true }
 );

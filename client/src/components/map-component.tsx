@@ -187,17 +187,34 @@ const createEmojiIcon = (emoji: string) => {
   });
 };
 const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
-  const {_id} = useSelector(state=> state.user)
-  const [productList, setProductList] = useState([])
-  const [foodSearch, setFoodSearch]= useState('')
+  const { _id } = useSelector((state) => state.user);
+  const [productList, setProductList] = useState([]);
+  const [foodSearch, setFoodSearch] = useState("");
+  const userPreferences = useSelector((state) => state.user.userPreferences);
+
   const fetchProducts = async () => {
-    const {data} = await axios.get('http://localhost:8080/products?name=' +  foodSearch + '&userId=' +_id )
-    setProductList(data)
-  }
-  useEffect(()=>{
-    fetchProducts()
-  },[])
-  
+    if (!userPreferences || userPreferences.length === 0 || !_id) {
+      setProductList([]); // Clear products if no preferences or user ID
+      console.log(
+        "Cannot fetch products: No user preferences or user ID available."
+      );
+      return;
+    }
+    const allFetchedProducts = []; // To accumulate all products from different queries
+    for (const item of userPreferences) {
+      const { data } = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/products?name=${item}&userId=${_id}`
+      );
+
+      allFetchedProducts.push(...data);
+    }
+
+    setProductList(allFetchedProducts);
+  };
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
   // const [search, setSearch] = useState('');
   const { isLoggedIn } = useSelector((state) => state.user);
   const [show, setShow] = useState(false);
@@ -280,16 +297,21 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
           attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {JSON.stringify(productList)}
+        <div className="z-1200 absolute top-10 bg-white hidden">
+          {JSON.stringify(productList)}
+        </div>
         {productList.map((item) => {
-          if(!item.sellerId?.coords?.lat || !item.sellerId?.coords?.lng) return null;
+          if (!item.sellerId?.coords?.lat || !item.sellerId?.coords?.lng)
+            return null;
           const customIcon = createEmojiIcon(item.category?.emoji);
           return (
             <Marker
-              position={[item.sellerId?.coords?.lat, item.sellerId?.coords?.lng]}
+              position={[
+                item.sellerId?.coords?.lat,
+                item.sellerId?.coords?.lng,
+              ]}
               icon={customIcon}
-              key={item._id
-              }
+              key={item._id}
             >
               <Popup maxWidth={300}>
                 <b>{item.name}</b>
@@ -533,5 +555,3 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
 };
 
 export default MapComponent;
-
-

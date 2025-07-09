@@ -1,36 +1,53 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
-import { toast } from 'sonner';
+import React, { useState, useEffect } from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { toast } from "sonner";
 
 const productSchema = Yup.object().shape({
-  name: Yup.string().min(3).max(100).required('Name is required'),
-  description: Yup.string().min(10).max(500).required('Description is required'),
-  category: Yup.string().required('Category is required'),
-  imageUrl: Yup.string().url('Invalid URL').required('Image URL is required'),
-  originalPrice: Yup.number().min(0).required('Original price is required'),
+  name: Yup.string().min(3).max(100).required("Name is required"),
+  description: Yup.string()
+    .min(10)
+    .max(500)
+    .required("Description is required"),
+  category: Yup.string().required("Category is required"),
+  imageUrl: Yup.string().url("Invalid URL").required("Image URL is required"),
+  originalPrice: Yup.number().min(0).required("Original price is required"),
   discountedPrice: Yup.number()
     .min(0)
-    .required('Discounted price is required')
-    .test('is-less-than-original', 'Must be ≤ original price', function (value) {
-      return value <= this.parent.originalPrice;
-    }),
+    .required("Discounted price is required")
+    .test(
+      "is-less-than-original",
+      "Must be ≤ original price",
+      function (value) {
+        return value <= this.parent.originalPrice;
+      }
+    ),
   discountPercentage: Yup.number().min(0).max(100),
   expiryDate: Yup.date()
-    .min(new Date(), 'Expiry date must be in the future')
-    .required('Expiry date is required'),
-  availableQuantity: Yup.number().min(1).required('Quantity is required'),
+    .min(new Date(), "Expiry date must be in the future")
+    .required("Expiry date is required"),
+  availableQuantity: Yup.number().min(1).required("Quantity is required"),
   isAvailable: Yup.boolean(),
-  status: Yup.string().oneOf(['active', 'sold-out', 'expired', 'draft', 'unavailable']),
+  status: Yup.string().oneOf([
+    "active",
+    "sold-out",
+    "expired",
+    "draft",
+    "unavailable",
+  ]),
 });
 
+<<<<<<< HEAD
 const statuses = ['active', 'Sold-Out', 'Expired', 'Draft', 'Unavailable'];
+=======
+const statuses = ["active", "Sold-Out", "Expired", "Draft", "Unavailable"];
+>>>>>>> 590406608446d698059c346f06dae3134a624eae
 
 const Products = () => {
   const [showForm, setShowForm] = useState(false);
@@ -40,6 +57,7 @@ const Products = () => {
   const [categories, setCategories] = useState([]);
   const user = useSelector((state) => state.user);
   const { isLoggedIn, role, email, _id } = user;
+<<<<<<< HEAD
   const dispatch = useDispatch();
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -65,6 +83,19 @@ const Products = () => {
     } finally {
       setIsLoading(false);
     }
+=======
+  const [categories, setCategories] = useState([]);
+  const fetchCategories = async () => {
+    const { data } = await axios.get(`${API_BASE_URL}/categories`);
+    setCategories(data);
+  };
+  const [products, setProducts] = useState([]);
+  const fetchProducts = async () => {
+    const { data } = await axios.get(
+      `${API_BASE_URL}/products?sellerId=${_id}`
+    );
+    setProducts(data);
+>>>>>>> 590406608446d698059c346f06dae3134a624eae
   };
 
   useEffect(() => {
@@ -73,18 +104,29 @@ const Products = () => {
     // eslint-disable-next-line
   }, []);
 
+<<<<<<< HEAD
   const initialValues = {
     name: '',
     description: '',
     category: '',
     imageUrl: '',
+=======
+  const dispatch = useDispatch();
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+  const initialValues = {
+    name: "",
+    description: "",
+    category: "",
+    imageUrl: "",
+>>>>>>> 590406608446d698059c346f06dae3134a624eae
     originalPrice: 0,
-    discountedPrice: '',
-    discountPercentage: '',
-    expiryDate: '',
+    discountedPrice: "",
+    discountPercentage: "",
+    expiryDate: "",
     availableQuantity: 1,
     isAvailable: true,
-    status: 'draft',
+    status: "draft",
   };
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
@@ -93,6 +135,7 @@ const Products = () => {
     try {
       if (!values.discountPercentage && values.originalPrice > 0) {
         values.discountPercentage =
+<<<<<<< HEAD
           ((values.originalPrice - values.discountedPrice) / values.originalPrice) * 100;
       }
 
@@ -100,11 +143,24 @@ const Products = () => {
       if (data) fetchProducts();
 
       toast.success('Product added successfully!');
+=======
+          ((values.originalPrice - values.discountedPrice) /
+            values.originalPrice) *
+          100;
+      }
+
+      const { data } = await axios.post(`${API_BASE_URL}/products`, {
+        ...values,
+        sellerId: _id,
+      });
+      if (data) fetchProducts();
+      toast.success("Product added successfully!");
+>>>>>>> 590406608446d698059c346f06dae3134a624eae
       resetForm();
       setShowForm(false);
     } catch (err) {
-      console.error('Error adding product:', err);
-      const errorMessage = err.response?.data?.error || 'Failed to add product';
+      console.error("Error adding product:", err);
+      const errorMessage = err.response?.data?.error || "Failed to add product";
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -122,8 +178,15 @@ const Products = () => {
           transition={{ duration: 0.5 }}
           className="text-center mb-8"
         >
+<<<<<<< HEAD
           <h1 className="text-4xl font-bold text-orange-600">Add Product</h1>
           <p className="text-gray-600 mt-2">Showcase your food items with a vibrant and inviting form.</p>
+=======
+          <h1 className="text-4xl font-bold text-red-600">Add Product</h1>
+          <p className="text-gray-600 mt-2">
+            Showcase your food items with a vibrant and inviting form.
+          </p>
+>>>>>>> 590406608446d698059c346f06dae3134a624eae
         </motion.div>
 
         {error && (
@@ -140,14 +203,22 @@ const Products = () => {
           </div>
         )}
 
+<<<<<<< HEAD
         <motion.div whileHover={{ scale: 1.02 }} className="flex justify-center mb-6">
           {isLoggedIn && role === 'seller' ? (
+=======
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          className="flex justify-center mb-6"
+        >
+          {isLoggedIn && role === "seller" ? (
+>>>>>>> 590406608446d698059c346f06dae3134a624eae
             <Button
               onClick={() => setShowForm(!showForm)}
               className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition-all duration-300"
               disabled={isLoading}
             >
-              {showForm ? 'Close Form' : 'Add New Food Product'}
+              {showForm ? "Close Form" : "Add New Food Product"}
             </Button>
           ) : (
             <p className="text-center text-lg text-red-500 font-medium">
@@ -157,10 +228,10 @@ const Products = () => {
         </motion.div>
 
         <AnimatePresence>
-          {showForm && isLoggedIn && role === 'seller' && (
+          {showForm && isLoggedIn && role === "seller" && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+              animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.5 }}
               className="bg-white p-8 rounded-2xl shadow-xl border border-orange-500 mb-12"
@@ -202,7 +273,13 @@ const Products = () => {
                           name="category"
                           className="w-full p-3 border border-orange-500 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
                         >
+<<<<<<< HEAD
                           <option value="">Select a category</option>
+=======
+                          <option value="" disabled>
+                            Select a category
+                          </option>
+>>>>>>> 590406608446d698059c346f06dae3134a624eae
                           {categories.map((cat) => (
                             <option key={cat._id} value={cat._id}>
                               {cat.name}
@@ -263,13 +340,16 @@ const Products = () => {
                           className="w-full p-3 border border-orange-500 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
                           placeholder="Enter discounted price"
                           onChange={(e) => {
-                            setFieldValue('discountedPrice', e.target.value);
+                            setFieldValue("discountedPrice", e.target.value);
                             const original = values.originalPrice;
                             const discounted = parseFloat(e.target.value);
                             if (original > 0 && discounted <= original) {
-                              setFieldValue('discountPercentage', ((original - discounted) / original) * 100);
+                              setFieldValue(
+                                "discountPercentage",
+                                ((original - discounted) / original) * 100
+                              );
                             } else {
-                              setFieldValue('discountPercentage', 0);
+                              setFieldValue("discountPercentage", 0);
                             }
                           }}
                         />
@@ -291,7 +371,11 @@ const Products = () => {
                           className="w-full p-3 border border-orange-500 rounded-lg bg-gray-100 cursor-not-allowed"
                           placeholder="Calculated automatically"
                           readOnly
-                          value={values.discountPercentage ? values.discountPercentage.toFixed(2) : ''}
+                          value={
+                            values.discountPercentage
+                              ? values.discountPercentage.toFixed(2)
+                              : ""
+                          }
                         />
                         <ErrorMessage
                           name="discountPercentage"
@@ -396,7 +480,9 @@ const Products = () => {
                         disabled={isSubmitting || isLoading}
                         className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg transition-all duration-300"
                       >
-                        {isSubmitting || isLoading ? 'Submitting...' : 'Submit Food Product'}
+                        {isSubmitting || isLoading
+                          ? "Submitting..."
+                          : "Submit Food Product"}
                       </Button>
                     </div>
                   </Form>
@@ -407,10 +493,19 @@ const Products = () => {
         </AnimatePresence>
 
         {/* Display fetched products */}
+<<<<<<< HEAD
         <div className="mt-12 p-8 w-full">
           <h2 className="text-3xl font-bold text-orange-500 mb-8 text-center">Available Food Products</h2>
+=======
+        <div className="mt-12 p-8 bg-yellow-500 rounded-2xl shadow-2xl border border-yellow-500">
+          <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+            Available Food Products
+          </h2>
+>>>>>>> 590406608446d698059c346f06dae3134a624eae
           {products.length === 0 && !isLoading && !error ? (
-            <p className="text-center text-lg text-gray-600">No products available yet.</p>
+            <p className="text-center text-lg text-gray-600">
+              No products available yet.
+            </p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {products.map((product) => (
@@ -426,7 +521,10 @@ const Products = () => {
                       src={product.imageUrl}
                       alt={product.name}
                       className="w-full h-64 object-cover"
-                      onError={(e) => (e.currentTarget.src = 'https://placehold.co/400x300/e0e0e0/ffffff?text=No+Image')}
+                      onError={(e) =>
+                        (e.currentTarget.src =
+                          "https://placehold.co/400x300/e0e0e0/ffffff?text=No+Image")
+                      }
                     />
                     {product.discountPercentage > 0 && (
                       <span className="absolute top-4 right-4 bg-white text-red-500 text-xs font-bold px-3 py-1 rounded-full">
@@ -438,47 +536,92 @@ const Products = () => {
                     </span>
                   </div>
                   <div className="p-6">
-                    <h3 className="text-xl font-semibold text-gray-800 mb-2">{product.name}</h3>
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-3">{product.description}</p>
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                      {product.name}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+                      {product.description}
+                    </p>
                     <div className="flex items-center justify-between mb-4">
                       <div>
+<<<<<<< HEAD
                         <span className="text-2xl font-bold text-orange-600">${product.discountedPrice.toFixed(2)}</span>
+=======
+                        <span className="text-2xl font-bold text-yellow-600">
+                          ${product.discountedPrice.toFixed(2)}
+                        </span>
+>>>>>>> 590406608446d698059c346f06dae3134a624eae
                         {product.discountPercentage > 0 && (
-                          <span className="text-sm text-gray-500 line-through ml-2">${product.originalPrice.toFixed(2)}</span>
+                          <span className="text-sm text-gray-500 line-through ml-2">
+                            ${product.originalPrice.toFixed(2)}
+                          </span>
                         )}
                       </div>
                       <span className="text-sm bg-gray-200 text-gray-700 px-2 py-1 rounded-full">
-                        {product.status.charAt(0).toUpperCase() + product.status.slice(1)}
+                        {product.status.charAt(0).toUpperCase() +
+                          product.status.slice(1)}
                       </span>
                     </div>
                     <div className="space-y-2 mb-4">
                       <p className="text-sm text-gray-600">
-                        <span className="font-medium">Expires:</span> {new Date(product.expiryDate).toLocaleDateString()}
+                        <span className="font-medium">Expires:</span>{" "}
+                        {new Date(product.expiryDate).toLocaleDateString()}
                       </p>
                       <p className="text-sm text-gray-600">
-                        <span className="font-medium">Quantity:</span> {product.availableQuantity}
+                        <span className="font-medium">Quantity:</span>{" "}
+                        {product.availableQuantity}
                       </p>
                     </div>
                     {/* Seller Details */}
+<<<<<<< HEAD
                     <div className="border-t border-orange-200 pt-4">
                       <h4 className="text-sm font-semibold text-gray-700 mb-2">Seller Information</h4>
                       <p className="text-sm text-gray-600 flex items-center">
                         <svg className="w-4 h-4 text-orange-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+=======
+                    <div className="border-t border-yellow-200 pt-4">
+                      <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                        Seller Information
+                      </h4>
+                      <p className="text-sm text-gray-600 flex items-center">
+                        <svg
+                          className="w-4 h-4 text-yellow-500 mr-2"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+>>>>>>> 590406608446d698059c346f06dae3134a624eae
                           <path d="M10 2a4 4 0 100 8 4 4 0 000-8zm0 10c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z" />
                         </svg>
-                        {product.sellerId?.name || 'Unknown Seller'}
+                        {product.sellerId?.name || "Unknown Seller"}
                       </p>
                       <p className="text-sm text-gray-600 flex items-center">
+<<<<<<< HEAD
                         <svg className="w-4 h-4 text-orange-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+=======
+                        <svg
+                          className="w-4 h-4 text-yellow-500 mr-2"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+>>>>>>> 590406608446d698059c346f06dae3134a624eae
                           <path d="M2 4a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V4zm2 2v8h12V6H4zm2 2h8v4H6V8z" />
                         </svg>
-                        {product.sellerId?.email || 'No email provided'}
+                        {product.sellerId?.email || "No email provided"}
                       </p>
                       <p className="text-sm text-gray-600 flex items-center">
+<<<<<<< HEAD
                         <svg className="w-4 h-4 text-orange-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+=======
+                        <svg
+                          className="w-4 h-4 text-yellow-500 mr-2"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+>>>>>>> 590406608446d698059c346f06dae3134a624eae
                           <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                         </svg>
-                        {product.sellerId?.phoneNumber || 'No phone number provided'}
+                        {product.sellerId?.phoneNumber ||
+                          "No phone number provided"}
                       </p>
                     </div>
                   </div>
