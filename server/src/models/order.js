@@ -23,6 +23,11 @@ const orderSchema = new Schema(
       enum: ["Pending", "In Progress", "Completed", "Cancelled", "Booked"],
       default: "Pending",
     },
+    paymentMethod: {
+      type: String,
+      enum: ["Cash", "Card", "Online"],
+      default: "Cash",
+    },
   },
   {
     timestamps: true,
@@ -31,5 +36,3 @@ const orderSchema = new Schema(
 
 const Order = mongoose.model("Order", orderSchema);
 export default Order;
-
-//We can further add field like Coupon Code ,Rating and so on
