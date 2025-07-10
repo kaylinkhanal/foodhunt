@@ -346,50 +346,38 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
               key={item._id}
             >
               <Popup maxWidth={300}>
-                <b>{item.name}</b>
-                <br />
-                {selectedCategory.emoji} Yummy!
-                <Button
-                  className="ml-2"
-                  style={{
-                    backgroundColor: show ? "#FAA617" : "#C04430",
-                    color: "white",
-                  }}
-                  onClick={() => setShow(!show)}
-                >
-                  {show ? "Hide Items" : "Show Items"}
-                </Button>
-                {show && (
+       
+                {selectedCategory.emoji} 
                   <div>
-                    {burgerType.map((burger, index) => (
+
                       <Card
-                        key={index}
+                        // key={index}
                         className="py-2 my-2 w-full bg-white shadow-lg border border-gray-200"
                       >
                         <CardContent className="py-1">
                           <div className="flex items-center justify-between mb-1">
                             <h3 className="text-sm font-bold text-gray-800 flex-1">
-                              {burger.name}
+                           {item.name}
                             </h3>
                           </div>
                           <div className="flex items-center justify-between mb-1">
                             <div className="flex flex-col">
                               <span className="text-xs text-gray-500 line-through">
-                                Rs {burger.price.toFixed(2)}
+                                Rs111
                               </span>
                               <span
                                 className="text-lg font-bold"
                                 style={{ color: "#FAA617" }}
                               >
-                                Rs {burger.discounted_price.toFixed(2)}
+                                Rs 122
                               </span>
                             </div>
                             <div className="flex items-center gap-1">
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => handleDecrease(burger)}
-                                disabled={burger.quantity === 0}
+                                // onClick={() => handleDecrease(burger)}
+                                // disabled={burger.quantity === 0}
                                 style={{
                                   borderColor: "#FAA617",
                                   color: "#FAA617",
@@ -398,12 +386,12 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                                 <Minus className="h-4 w-4" />
                               </Button>
                               <span className="min-w-[2rem] text-center font-semibold text-lg">
-                                {burger.quantity}
+                               123
                               </span>
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => handleIncrease(burger)}
+                                // onClick={() => handleIncrease(burger)}
                                 style={{
                                   borderColor: "#FAA617",
                                   color: "#FAA617",
@@ -413,7 +401,6 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                               </Button>
                             </div>
                           </div>
-                          {burger.quantity > 0 && (
                             <div className="text-right text-xs text-gray-600">
                               Subtotal:{" "}
                               <span
@@ -421,15 +408,12 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                                 style={{ color: "#FAA617" }}
                               >
                                 Rs{" "}
-                                {(
-                                  burger.discounted_price * burger.quantity
-                                ).toFixed(2)}
+                                4231
                               </span>
                             </div>
-                          )}
                         </CardContent>
                       </Card>
-                    ))}
+    
                     <div className="mt-2 text-right font-semibold">
                       Total:{" "}
                       <span style={{ color: "#FAA617" }}>
@@ -447,7 +431,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                       Place Order
                     </Button>
                   </div>
-                )}
+       
               </Popup>
             </Marker>
           );
