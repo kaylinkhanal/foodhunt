@@ -4,7 +4,7 @@ import Order from "../models/order.js";
 const orderRouter = Router();
 
 orderRouter.post("/orders", async (req, res) => {
-  const { bookedById, productId, quantity, paymentMethod } = req.body;
+  const { bookedById, productId, quantity, paymentMethod, price } = req.body;
 
   if (!bookedById || !productId || !quantity) {
     return res.status(400).send({ message: "Missing required fields" });
@@ -16,6 +16,7 @@ orderRouter.post("/orders", async (req, res) => {
     productId,
     quantity,
     paymentMethod,
+    price,
   });
 
   await order.save();

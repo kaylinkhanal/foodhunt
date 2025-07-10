@@ -185,6 +185,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
       bookedById: _id,
       productId: item._id,
       quantity: item.quantity,
+      price: item.quantity * item.discountedPrice,
       paymentMethod: 'Cash',
     };
 
@@ -195,6 +196,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
       );
 
       toast(response.data.message);
+      updateProduct(item)
     } catch (error) {
       console.error("Failed to place order:", error);
       toast("Failed to place order");
@@ -348,7 +350,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                       color: "white",
                     }}
                     disabled={item.availableQuantity < 1}
-                    onClick={() => { handlePlaceOrder(item), updateProduct(item) }}
+                    onClick={() => { handlePlaceOrder(item) }}
                   >
                     Place Order
                   </Button>

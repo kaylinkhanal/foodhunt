@@ -28,6 +28,7 @@ const orderSchema = new Schema(
       enum: ["Cash", "Card", "Online"],
       default: "Cash",
     },
+    price: Number,
   },
   {
     timestamps: true,
