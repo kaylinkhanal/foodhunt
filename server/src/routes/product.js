@@ -3,7 +3,7 @@ import Product from "../models/product.js";
 import category from "../models/category.js";
 import User from "../models/user.js";
 import CapitalizeWords from "../utils/capitalizeWords.js";
-
+import runPrompt from '../utils/generalizeChipName.js'
 const productRouter = express.Router();
 
 //to post product
@@ -64,4 +64,10 @@ productRouter.get("products/:id", async (req, res) => {
   }
 });
 
+
+productRouter.get('/product-chips',async (req,res)=>{
+  const product =await Product.find()
+const productChipInfo =await runPrompt(product)
+  res.json(productChipInfo)
+})
 export default productRouter;

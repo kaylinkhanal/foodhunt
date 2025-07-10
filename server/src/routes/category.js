@@ -1,6 +1,7 @@
 import { Router } from "express";
 import Category from "../models/category.js";
 import CapitalizeWords from "../utils/capitalizeWords.js";
+import Product from "../models/product.js";
 
 const categoryrouter = Router();
 
@@ -30,6 +31,15 @@ categoryrouter.get("/categories", async (req, res) => {
   }
 });
 
+
+categoryrouter.get("/categories/:categoryId/products", async (req, res) => {
+  try {
+    const data = await Product.find({category: req.params.categoryId})
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+});
 // DELETE - Delete a category
 categoryrouter.delete("/categories/:id", async (req, res) => {
   try {

@@ -14,7 +14,7 @@ interface SidebarProps {
   onCategoryClick: (category: { name: string; emoji: string; locations: { name: string; coordinates: [number, number] }[] }) => void;
 }
 
-const MapSidebar: React.FC<SidebarProps> = ({ foodCategories, selectedCategory, onCategoryClick,  }) => {
+const MapSidebar: React.FC<SidebarProps> = ({ foodCategories, onCategoryClick,  }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleLocationClick = (coordinates) => {
@@ -95,42 +95,21 @@ const MapSidebar: React.FC<SidebarProps> = ({ foodCategories, selectedCategory, 
             <CardContent className="p-4">
               <h3 className="text-lg font-semibold mb-2">Categories</h3>
               <ScrollArea className="h-[200px] w-full">
-                {foodCategories.map((category, index) => (
+                {foodCategories.map((item, index) => (
                   <Button
                     key={index}
-                    variant={selectedCategory.name === category.name ? "default" : "ghost"}
-                    className={`w-full justify-start text-left mb-1 ${
-                      selectedCategory.name === category.name
-                        ? "bg-[#f85000] text-white"
-                        : "hover:bg-[#f85000] hover:text-white"
-                    }`}
+                  
                     onClick={() => {
-                      onCategoryClick(category);
+                      onCategoryClick(item);
                       setIsOpen(false); 
                     }}
                   >
-                    <span className="mr-2">{category.emoji}</span>
-                    <span>{category.name}</span>
+                    <span className="mr-2">{item.emoji}</span>
+                    <span>{item.name}</span>
                   </Button>
                 ))}
               </ScrollArea>
-              <h3 className="text-lg font-semibold mt-4 mb-2">
-                {selectedCategory.name} Locations
-              </h3>
-              <ScrollArea className="h-[calc(100vh-300px)] w-full">
-                {selectedCategory.locations.map((location, index) => (
-                  <div key={index} className="mb-2">
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start text-left hover:bg-[#f85000] hover:text-white"
-                      onClick={() => handleLocationClick(location.coordinates)}
-                    >
-                      <span className="mr-2">{selectedCategory.emoji}</span>
-                      <span>{location.name}</span>
-                    </Button>
-                  </div>
-                ))}
-              </ScrollArea>
+       
             </CardContent>
           </Card>
         </div>
