@@ -84,7 +84,10 @@ const Register = () => {
       <div className="w-full max-w-md space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
-          <div className="flex items-center justify-center space-x-2 mb-4">
+          <div
+            className="flex items-center justify-center space-x-2 mb-4 cursor-pointer"
+            onClick={() => router.push("/")}
+          >
             <Image src="/applogo.png" alt="App Logo" width={200} height={200} />
           </div>
           <h2 className="text-2xl font-bold text-foreground">Create Account</h2>

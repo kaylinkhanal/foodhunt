@@ -223,7 +223,11 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
       allFetchedProducts.push(...data);
     }
 
-    setProductList(allFetchedProducts);
+    const reducedArr = allFetchedProducts.map((item)=> {
+      item.quantity = 1
+     return item
+    })
+    setProductList(reducedArr)
   };
 
 
@@ -236,9 +240,9 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
 
   };
 
-  const fetchProductChip = async () => {
+  const fetchProductChip = async (catId= '') => {
     const { data } = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/product-chips`
+      `${process.env.NEXT_PUBLIC_API_URL}/product-chips?categoryId=${catId}`
     );
     setProductsOfSelectedCategory(data)
     setAllChipProducts(data);
@@ -256,29 +260,12 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
 
   const fetchProductsByProductIds = async (id) => {
     const { data } = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/categories?productIds=${id?.join(',')}`
+      `${process.env.NEXT_PUBLIC_API_URL}/product-search?productIds=${id.join(',')}`
     );
-    setProductsOfSelectedCategory(data)
+    setProductList(data)
 
   };
 
-  const filterProductsForMapAndChips = (categoryId: string | null) => {
-    // Filters `allProductChips` and updates both map markers and top display chips
-    if (!categoryId) { 
-        setDisplayedProductChips(allChipProducts);
-        setProductsOfSelectedCategory(allChipProducts); // Set top chips to all
-        return;
-    }
-    const filtered = allProductChips.filter(
-      (chip) => chip.category === categoryId
-    );
-    console.log('Client-side Filtered products for category:', categoryId, filtered);
-    setFilteredProducts(filtered);
-      console.log('filtered Products are', filteredProducts);
-    setDisplayedProductChips(filtered); // Update map markers
-    setProductsOfSelectedCategory(filtered); // Update top display chips
-  };
-  
   useEffect(() => {
     fetchProducts();
     fetchCategories();
@@ -305,54 +292,65 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
     },
   ]);
 
-  const handleIncrease = (burger: any) => {
-    setBurgerType((prev) =>
-      prev.map((item) =>
-        item.name === burger.name
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      )
-    );
-  };
+ 
 
-  const handleDecrease = (burger: any) => {
-    setBurgerType((prev) =>
-      prev.map((item) =>
-        item.name === burger.name
-          ? { ...item, quantity: Math.max(0, item.quantity - 1) }
-          : item
-      )
-    );
-  };
 
   const totalPrice = burgerType.reduce(
     (sum, item) => sum + item.discounted_price * item.quantity,
     0
   );
 
-  const handlePlaceOrder = () => {
-    alert("Order placed successfully!");
-    setBurgerType((prev) => prev.map((item) => ({ ...item, quantity: 0 })));
-    setShow(false);
+  const handlePlaceOrder = (item) => {
+    debugger;
+    // // api call { 
+    //   userId,
+    //   productId,
+    //   quantity,
+    //   paymentMethod,  
+  // }
   };
 
   const handleCategoryClick = (category) => {
-    console.log('selected category is', category);
-    
-    fetchProductsByProductIds(category.originalIds)
+    fetchProductsByProductIds(category.product_ids)
     setSelectedCategory(category);
     setIsSearchFocused(false);
-    fetchProductsByCategory(category._id);
-    filterProductsForMapAndChips(category._id);
-    
   };
+
+  const handleSidebarCategoryClick = (category) => {
+fetchProductChip(category._id)
+  } 
+
+  const handleDecrement = (clickedItem)=> {
+    const temp = [...productList]
+   const reducedArr = temp.map((item)=> {
+    if(item._id === clickedItem._id && item.quantity!==1) {
+      item.quantity--
+    }
+    return item
+   })
+   debugger;
+   setProductList(reducedArr)
+
+  }
+
+  const handleIncrement = (clickedItem)=> {
+    const temp = [...productList]
+    const reducedArr = temp.map((item)=> {
+     if(item._id === clickedItem._id && item.quantity< item.availableQuantity) {
+       item.quantity++
+     }
+     return item
+    })
+    debugger;
+    setProductList(reducedArr)
+  }
 
   return (
     <div className="relative w-full h-screen">
       {/* Sidebar Component */}
       <MapSidebar
         foodCategories={foodCategories}
-        onCategoryClick={handleCategoryClick}
+        onCategoryClick={handleSidebarCategoryClick}
       />
 
       {/* Map Layer */}
@@ -383,50 +381,38 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
               key={item._id}
             >
               <Popup maxWidth={300}>
-                <b>{item.name}</b>
-                <br />
-                {selectedCategory.emoji} Yummy!
-                <Button
-                  className="ml-2"
-                  style={{
-                    backgroundColor: show ? "#FAA617" : "#C04430",
-                    color: "white",
-                  }}
-                  onClick={() => setShow(!show)}
-                >
-                  {show ? "Hide Items" : "Show Items"}
-                </Button>
-                {show && (
+       
+                {selectedCategory.emoji} 
                   <div>
-                    {burgerType.map((burger, index) => (
+
                       <Card
-                        key={index}
+                        // key={index}
                         className="py-2 my-2 w-full bg-white shadow-lg border border-gray-200"
                       >
                         <CardContent className="py-1">
                           <div className="flex items-center justify-between mb-1">
                             <h3 className="text-sm font-bold text-gray-800 flex-1">
-                              {burger.name}
+                              Avaialble items in stock: {item.availableQuantity}
+                           {item.name}
                             </h3>
                           </div>
                           <div className="flex items-center justify-between mb-1">
                             <div className="flex flex-col">
                               <span className="text-xs text-gray-500 line-through">
-                                Rs {burger.price.toFixed(2)}
+                                Rs111
                               </span>
                               <span
                                 className="text-lg font-bold"
                                 style={{ color: "#FAA617" }}
                               >
-                                Rs {burger.discounted_price.toFixed(2)}
+                                Rs {item.discountedPrice}
                               </span>
                             </div>
                             <div className="flex items-center gap-1">
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => handleDecrease(burger)}
-                                disabled={burger.quantity === 0}
+                                onClick={()=> handleDecrement(item)}
                                 style={{
                                   borderColor: "#FAA617",
                                   color: "#FAA617",
@@ -435,12 +421,12 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                                 <Minus className="h-4 w-4" />
                               </Button>
                               <span className="min-w-[2rem] text-center font-semibold text-lg">
-                                {burger.quantity}
+                             {item.quantity}
                               </span>
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => handleIncrease(burger)}
+                                onClick={() => handleIncrement(item)}
                                 style={{
                                   borderColor: "#FAA617",
                                   color: "#FAA617",
@@ -450,7 +436,6 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                               </Button>
                             </div>
                           </div>
-                          {burger.quantity > 0 && (
                             <div className="text-right text-xs text-gray-600">
                               Subtotal:{" "}
                               <span
@@ -458,15 +443,12 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                                 style={{ color: "#FAA617" }}
                               >
                                 Rs{" "}
-                                {(
-                                  burger.discounted_price * burger.quantity
-                                ).toFixed(2)}
+                                {item.discountedPrice * item.quantity}
                               </span>
                             </div>
-                          )}
                         </CardContent>
                       </Card>
-                    ))}
+    
                     <div className="mt-2 text-right font-semibold">
                       Total:{" "}
                       <span style={{ color: "#FAA617" }}>
@@ -479,12 +461,12 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                         backgroundColor: "#FAA617",
                         color: "white",
                       }}
-                      onClick={handlePlaceOrder}
+                      onClick={()=> handlePlaceOrder(item)}
                     >
                       Place Order
                     </Button>
                   </div>
-                )}
+       
               </Popup>
             </Marker>
           );

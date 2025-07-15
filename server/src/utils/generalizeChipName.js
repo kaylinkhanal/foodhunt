@@ -1,84 +1,150 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'; // Note: lowercase 'ai'
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI('AIzaSyD5KfSrvYyQO_MFJ2gJYtT7Mso8px7wBvY'); // Use your actual API key
-
-async function runPrompt(productData) {
+async function runPrompt(product) {
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-  const productJsonString = JSON.stringify(productData);
+  // Your detailed prompt string, including input JSON and expected output example
+  const prompt = `You are a highly skilled data processor, based in Nepal, specializing in food item categorization and generalization. You analyze JSON arrays of food product data, identify commonalities, and consolidate entries based on category and **carefully generalized** names. Your goal is to produce a clean, consistent, and easily parsable JSON output that groups similar products, **preserving the dish's core specialty while removing descriptive fluff, flavors, and non-essential cooking methods.**
 
-  const prompt = `Your response MUST be valid JSON and contain ONLY the JSON array result. Do NOT include any explanatory text, conversational phrases, code blocks (e.g., \`\`\`python, \`\`\`json), or comments.
+  **Input Data Format:**
 
-You have to process the following product data: ${productJsonString}
+  The input will be a JSON array of food product objects. Each object will contain the following fields:
 
-**Context and Generalization Rules (Think like a human categorizer):**
-The goal is to create a set of simplified, commonly understood product categories from varied names, while maintaining important distinctions like meat type.
+  *   \`_id\`: (String) Unique identifier for the product.
+  *   \`name\`: (String) Name of the product.
+  *   \`category\`: (String) The category ID this product belongs to.
 
-1.  **Initial Cleaning:** Remove " Special" (with leading space), and any leading/trailing spaces from all product names.
-2.  **Determine Core Product Type & Specific Variant:** For each product name, first identify its main item (e.g., "Momo", "Cheesecake", "Burger"). Then, identify any specific variant (e.g., "Veg", "Chicken", "Buff", "Beef").
-3.  **Construct the Final 'Generalized Name':**
-    * **Cheesecakes:** Any product containing "cheesecake" (case-insensitive) should be generalized to "Cheesecake".
-    * **Cupcakes:** Any product containing "cupcake" (case-insensitive) should be generalized to "Cupcake".
-    * **Momo Variants:**
-        * If the cleaned name contains "veg" (case-insensitive), generalize to "Momo (Veg)".
-        * If the cleaned name contains "chicken" (case-insensitive) AND "momo" (case-insensitive), generalize to "Chicken Momo". This covers "Steam chicken Momo", "Spicy Fried Chicken Momo", "Chicken Momo", etc.
-        * If the cleaned name contains "buff" (case-insensitive) AND "momo" (case-insensitive), generalize to "Buff Momo". This ensures Buff Momo is separate from Chicken Momo.
-        * If the cleaned name contains "pork" (case-insensitive) AND "momo" (case-insensitive), generalize to "Pork Momo".
-        * If the cleaned name contains "momo" (case-insensitive) but no specific dietary/meat type is clearly identified (e.g., "Plain Momo"), generalize to "Momo".
-    * **Pizza Variants:**
-        * "Chicken Heaven Pizza" and its variations (like "Chicken Heaven Pizza Special", "Thin crust Chicken heaven", "Spicy Chicken Heaven") should all generalize to "Chicken Heaven Pizza".
-    * **Burger Variants:**
-        * "Beef Burger" and "Spicy Beef Burger" should generalize to "Beef Burger".
-4.  **Default Generalization:** If a product name doesn't fit any specific rule above, its 'generalized name' is simply its cleaned original name.
+  **Processing Rules:**
 
-**Given the following JSON array of product objects, process them as follows:**
+  1.  **Consolidation:** Group products that share the same **generalized name** and **category ID**.
 
-1.  **Generate 'Generalized Name':** For each product, apply the rules above to create its unique and appropriate 'generalized name'.
-2.  **Group and Collect IDs:** Iterate through the input list. Group products by their *final* 'generalized name'. For each unique 'generalized name':
-    * **Set the \`name\` field:** This \`name\` field in the output object MUST be the *generalized name* you just determined (e.g., "Chicken Momo", "Momo (Veg)", "Cheesecake").
-    * Retain the \`category\` of the *first* product encountered that maps to this generalized name.
-    * Collect *all* original \`_id\` values from *all* products that map to this generalized name into an array called \`originalIds\`.
-3.  **Output Format:** Provide the final result as a pure JSON array, where each object represents a unique generalized product. Each object should contain:
-    * \`name\` (the determined generalized name)
-    * \`category\` (the category of the first product in that group)
-    * \`originalIds\` (an array of all \`_id\`s that map to this generalized product name)
+  2.  **Name Generalization (Key Rules):**
+      *   **Remove Non-Essential Descriptors:** Remove generic adjectives (\`Spicy\`, \`Cheesy\`, \`Crunchy\`), size descriptors (\`Large\`, \`Triple\`), \`Feast\`.
+          *   Example: \`"Triple Chicken Feast"\` becomes \`"Chicken"\`.
+      *   **Remove Non-Essential Cooking Methods:** Remove cooking methods that describe preparation but aren't the core identity of the dish. This requires cultural context.
+          *   Example: \`"Grilled Chicken Burger"\` becomes \`"Chicken Burger"\` and \`"Fried Chicken Wings"\` becomes \'"Chicken Wings"\`.
+          *   **Contextual Example (Nepali):** The word \`"Jhaneko"\` is a descriptive cooking method, not part of the core name. Therefore, \`"Mutton Jhaneko Sekuwa"\` generalizes to \`"Mutton Sekuwa"\`.
+      *   **Preserve Integral Cooking Methods:** Do *not* remove cooking methods that define the dish's identity.
+          *   Example: \`"Tandoori Chicken"\` remains \`"Tandoori Chicken"\`. \`"Jhol Momo"\` remains \`"Jhol Momo"\`.
+      *   **Distinguish Flavors/Toppings from Specialty:** Remove flavors or simple toppings, but preserve the core specialty of the dish.
+          *   Example: \`"Malai Chicken Tikka Pizza"\` generalizes to \`"Chicken Tikka Pizza"\`. Here, \`"Malai"\` is a flavor/style, but \`"Chicken Tikka"\` is the core specialty.
+          *   Example: \`"Veg Exotica Pizza"\` remains as \`"Veg Exotica Pizza""\` because Exotica might specialty that signifies core ingredients.
+          *   Example: \`"Cheese Garlic Bread"\` and \`"Mexican Garlic Bread"\` both generalize to \`"Garlic Bread"\`.
+          *   Example: \`"Caramel Mocha"\` becomes \`"Mocha"\`. \`"Honey Latte"\` becomes \`"Latte"\`.
+          *   Example: \`"Spiced Ham Burger"\` becomes \`"Ham Burger"\`.
+      *   **Correct Typos:** Correct common misspellings (e.g., "piza" to "pizza", "kima" to "keema", "chicekn" to "chicken").
 
-Input JSON (example includes various momos and cheesecakes to test new rules):
-${productJsonString}
+  3.  **Category Awareness:** If a product name is very generic (e.g., "The Veggie Supreme"), but its category ID is clearly associated with a dish type (e.g., a category containing many other items named "Pizza"), append the dish type.
+      *   Example: \`"The Veggie Supreme"\` in a pizza category becomes \`"Veggie Pizza"\`.
+      *   Example: \`"Chicken & Corn Delight"\` in a pizza category becomes \`"Chicken & Corn Pizza"\`. \`"Spiced Chicken Meatballs"\` in a pizza category becomes \`"Chicken Meatballs Pizza"\`. \`"Chicken Pepper Crunch"\` in a pizza category becomes \`"Chicken Pepper Pizza"\`.
 
-Expected Output based on your desired logic (this is a guiding example for the model):
-[
-  {
-    "name": "Cheesecake",
-    "category": "686a329ee7a04be1ab6a9858",
-    "originalIds": ["686e108be000b43358ecfd5d", "686e0ffce000b43358ecfd59", "686a3bc548c679475e3d813e"]
-  },
-  {
-    "name": "Momo (Veg)",
-    "category": "686a32b7e7a04be1ab6a985d",
-    "originalIds": ["686a3c2d48c679475e3d8142"]
-  },
-  {
-    "name": "Chicken Momo",
-    "category": "686a32b7e7a04be1ab6a985d",
-    "originalIds": ["686e114be000b43358ecfd61", "686e11f8e000b43358ecfd65"]
-  },
-  {
-    "name": "Buff Momo",
-    "category": "686a32b7e7a04be1ab6a985d",
-    "originalIds": ["686e27dd4f4e9955039eb854"] // Assuming this is the ID for Buff Momo
-  }
-]
-`;
+  4.  **Product Consolidation:** Group all products with the same final generalized name and category ID into a single entry in the output.
 
+  **Output Format:**
+
+  The output must be a single, valid JSON array of objects. It must be directly parsable by \`JSON.parse()\` **without any markdown formatting (e.g., no \\\`\\\`\\\`)**.
+  \`\`\`json
+  [
+    {
+      "name": "Generalized Product Name",
+      "category": "Category ID",
+      "product_ids": ["_id1", "_id2", "_id3", ...]
+    }
+  ]
+  \`\`\`
+
+  **Advanced Examples Demonstrating Nuance:**
+
+  **Input:**
+  \`\`\`json
+  [
+      { "_id": "686e60bbafbfd74bba541d49", "name": "Malai Chicken Tikka", "category": "686a2eac5d16d18f4cbce43e" },
+      { "_id": "686e60e4afbfd74bba541d4d", "name": "Chicken Tikka", "category": "686a2eac5d16d18f4cbce43e" },
+      { "_id": "686e610aafbfd74bba541d51", "name": "Triple Chicken Feast", "category": "686a2eac5d16d18f4cbce43e" },
+      { "_id": "686e6500afbfd74bba541d7d", "name": "Mutton Jhaneko Sekuwa", "category": "686e5822f85cf66e548da674" },
+      { "_id": "686e6524afbfd74bba541d81", "name": "Chickekn Jhaneko Sekuwa", "category": "686e5822f85cf66e548da674" },
+      { "_id": "686e6551afbfd74bba541d85", "name": "Chicken Sekuwa", "category": "686e5822f85cf66e548da674" },
+      { "_id": "686e614bafbfd74bba541d55", "name": "Cheese Garlic Bread", "category": "686e513f64914a54f0d95a7f" },
+      { "_id": "686e6189afbfd74bba541d59", "name": "Mexican Garlic Bread", "category": "686e513f64914a54f0d95a7f" },
+      { "_id": "686e6849afbfd74bba541dc3", "name": "Honey Latte", "category": "686e674cafbfd74bba541da6" },
+      { "_id": "686e681eafbfd74bba541dbf", "name": "Cade Latte", "category": "686e674cafbfd74bba541da6" }
+  ]
+  \`\`\`
+  **Output:**
+  \`\`\`json
+  [
+    {
+      "name": "Chicken Tikka Pizza",
+      "category": "686a2eac5d16d18f4cbce43e",
+      "product_ids": [
+        "686e60bbafbfd74bba541d49",
+        "686e60e4afbfd74bba541d4d"
+      ]
+    },
+    {
+      "name": "Chicken Pizza",
+      "category": "686a2eac5d16d18f4cbce43e",
+      "product_ids": [
+        "686e610aafbfd74bba541d51"
+      ]
+    },
+    {
+      "name": "Mutton Sekuwa",
+      "category": "686e5822f85cf66e548da674",
+      "product_ids": [
+        "686e6500afbfd74bba541d7d"
+      ]
+    },
+    {
+      "name": "Chicken Sekuwa",
+      "category": "686e5822f85cf66e548da674",
+      "product_ids": [
+        "686e6524afbfd74bba541d81",
+        "686e6551afbfd74bba541d85"
+      ]
+    },
+    {
+      "name": "Garlic Bread",
+      "category": "686e513f64914a54f0d95a7f",
+      "product_ids": [
+        "686e614bafbfd74bba541d55",
+        "686e6189afbfd74bba541d59"
+      ]
+    },
+    {
+      "name": "Latte",
+      "category": "686e674cafbfd74bba541da6",
+      "product_ids": [
+        "686e6849afbfd74bba541dc3",
+        "686e681eafbfd74bba541dbf"
+      ]
+    }
+  ]
+  \`\`\`
+
+  **Data to Process:**
+  ${product}`;
   const result = await model.generateContent(prompt);
   const response = await result.response;
-  let cleanedJsonString = response.candidates[0].content.parts[0].text.trim();
+  let cleanedJsonString = response.candidates[0].content.parts[0].text.trim(); // Remove leading/trailing whitespace
 
-  if (cleanedJsonString.startsWith('```json\n') && cleanedJsonString.endsWith('\n```')) {
-    cleanedJsonString = cleanedJsonString.substring(7, cleanedJsonString.length - 4);
-  } else if (cleanedJsonString.startsWith('```\n') && cleanedJsonString.endsWith('\n```')) {
-    cleanedJsonString = cleanedJsonString.substring(4, cleanedJsonString.length - 4);
+  if (
+    cleanedJsonString.startsWith("```json\n") &&
+    cleanedJsonString.endsWith("\n```")
+  ) {
+    cleanedJsonString = cleanedJsonString.substring(
+      7,
+      cleanedJsonString.length - 4
+    );
+  } else if (
+    cleanedJsonString.startsWith("```\n") &&
+    cleanedJsonString.endsWith("\n```")
+  ) {
+    cleanedJsonString = cleanedJsonString.substring(
+      4,
+      cleanedJsonString.length - 4
+    );
   }
   const plainJavaScriptObject = JSON.parse(cleanedJsonString);
 

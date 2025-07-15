@@ -74,6 +74,8 @@ export default function CategoriesPage() {
       emoji: formData.emoji,
     });
     fetchCategories();
+    setShowEmojiPicker(false);
+    setFormData({ name: "", description: "", emoji: "" });
     setIsCreateDialogOpen(false);
   };
 
@@ -101,6 +103,7 @@ export default function CategoriesPage() {
         )
       );
       setEditingCategory(null);
+      setShowEmojiPicker(false);
       setFormData({ name: "", description: "", emoji: "" });
     }
   };

@@ -3,7 +3,7 @@ import Product from "../models/product.js";
 import category from "../models/category.js";
 import User from "../models/user.js";
 import CapitalizeWords from "../utils/capitalizeWords.js";
-import runPrompt from '../utils/generalizeChipName.js'
+import runPrompt from "../utils/generalizeChipName.js";
 const productRouter = express.Router();
 
 //to post product
@@ -65,9 +65,42 @@ productRouter.get("products/:id", async (req, res) => {
 });
 
 
-productRouter.get('/product-chips',async (req,res)=>{
-  const product =await Product.find()
-const productChipInfo =await runPrompt(product)
-  res.json(productChipInfo)
+productRouter.get("products/category/:categoryId", async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ error: "Product not found" });
+    res.status(200).json(product);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch product" });
+  }
+});
+
+productRouter.get("/product-chips", async (req, res) => {
+  let product
+  if(req.query.categoryId) {
+     product = await Product.find({category: req.query.categoryId}).select("_id name category");
+  }else{
+     product = await Product.find().select("_id name category");
+
+  }
+  if(product.length == 0) return res.json([])
+  const productChipInfo = await runPrompt(product);
+  res.json(productChipInfo);
+});
+
+
+
+
+
+productRouter.get("/product-search", async (req, res) => {
+
+  const matchedProducts = await Product.find({
+    _id: { $in: req.query?.productIds?.split(',')}
+}).populate('sellerId category')
+  res.json(matchedProducts)
 })
+
+
 export default productRouter;
+
+

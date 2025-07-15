@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Menu, X, Heart, UserCog, Clock } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface SidebarProps {
   foodCategories: {
@@ -10,26 +11,28 @@ interface SidebarProps {
     emoji: string;
     locations: { name: string; coordinates: [number, number] }[];
   }[];
-  selectedCategory: { name: string; emoji: string; locations: { name: string; coordinates: [number, number] }[] };
-  onCategoryClick: (category: { name: string; emoji: string; locations: { name: string; coordinates: [number, number] }[] }) => void;
+  selectedCategory: {
+    name: string;
+    emoji: string;
+    locations: { name: string; coordinates: [number, number] }[];
+  };
+  onCategoryClick: (category: {
+    name: string;
+    emoji: string;
+    locations: { name: string; coordinates: [number, number] }[];
+  }) => void;
 }
 
-const MapSidebar: React.FC<SidebarProps> = ({ foodCategories, onCategoryClick,  }) => {
+const MapSidebar: React.FC<SidebarProps> = ({
+  foodCategories,
+  onCategoryClick,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
-
-  const handleLocationClick = (coordinates) => {
-   
-  };
-
-
-
+  const router = useRouter();
+  const handleLocationClick = (coordinates) => {};
 
   const handleFavoriteFoods = () => {
     console.log("Show Your Favorite Foods");
-  };
-
-  const handlePreferences = () => {
-   console.log("Show Your Preferences");
   };
 
   const handleRecentSearches = () => {
@@ -54,7 +57,9 @@ const MapSidebar: React.FC<SidebarProps> = ({ foodCategories, onCategoryClick,  
           >
             <Heart className="h-6 w-6" />
           </Button>
-          <span className="text-white text-sm font-semibold text-center">Your Favorite </span>
+          <span className="text-white text-sm font-semibold text-center">
+            Your Favorite{" "}
+          </span>
         </div>
         <div className="flex flex-col items-center mb-4">
           <Button
@@ -64,17 +69,21 @@ const MapSidebar: React.FC<SidebarProps> = ({ foodCategories, onCategoryClick,  
           >
             <Clock className="h-6 w-6" />
           </Button>
-          <span className="text-white text-sm font-semibold text-center">Recent </span>
+          <span className="text-white text-sm font-semibold text-center">
+            Recent{" "}
+          </span>
         </div>
         <div className="flex flex-col items-center mb-4">
           <Button
             variant="ghost"
             className="text-white hover:bg-[#d74000]"
-            onClick={handlePreferences}
+            onClick={() => router.push("/user-preferences")}
           >
             <UserCog className="h-6 w-6" />
           </Button>
-          <span className="text-white text-sm font-semibold text-center">Your Preferences</span>
+          <span className="text-white text-sm font-semibold text-center">
+            Your Preferences
+          </span>
         </div>
       </div>
 
@@ -83,7 +92,9 @@ const MapSidebar: React.FC<SidebarProps> = ({ foodCategories, onCategoryClick,  
         <div className="fixed top-0 left-0 w-[300px] h-full bg-white shadow-xl z-[1003] transition-transform duration-300 ease-in-out transform translate-x-0">
           <Card className="h-full">
             <CardHeader className="flex justify-between items-center p-4 border-b">
-              <CardTitle className="text-xl font-bold text-[#f85000]">Food Hunt</CardTitle>
+              <CardTitle className="text-xl font-bold text-[#f85000]">
+                Food Hunt
+              </CardTitle>
               <Button
                 variant="ghost"
                 className="text-[#f85000] hover:bg-[#f85000] hover:text-white"
@@ -98,10 +109,9 @@ const MapSidebar: React.FC<SidebarProps> = ({ foodCategories, onCategoryClick,  
                 {foodCategories.map((item, index) => (
                   <Button
                     key={index}
-                  
                     onClick={() => {
                       onCategoryClick(item);
-                      setIsOpen(false); 
+                      setIsOpen(false);
                     }}
                   >
                     <span className="mr-2">{item.emoji}</span>
@@ -109,7 +119,6 @@ const MapSidebar: React.FC<SidebarProps> = ({ foodCategories, onCategoryClick,  
                   </Button>
                 ))}
               </ScrollArea>
-       
             </CardContent>
           </Card>
         </div>
