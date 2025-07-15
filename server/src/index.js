@@ -10,7 +10,7 @@ import categoryRouter from "./routes/category.js";
 
 dotenv.config();
 
-const port = process.env.PORT || 8080 ;
+const port = process.env.PORT;
 const app = express();
 
 connect();
