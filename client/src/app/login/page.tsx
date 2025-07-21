@@ -79,7 +79,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/20 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-300 to-gray-500 flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
@@ -165,7 +165,7 @@ const Login = () => {
             {/* Login Link */}
             <div className="mt-6 text-center">
               <p className="text-sm text-muted-foreground">
-                Dont have an accoutn yet?{" "}
+                Don't have an account yet?{" "}
                 <Link
                   href="/register"
                   className="text-primary hover:text-primary/80 font-medium transition-colors"

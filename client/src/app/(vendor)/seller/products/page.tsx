@@ -16,7 +16,6 @@ const productSchema = Yup.object().shape({
     .max(500)
     .required("Description is required"),
   category: Yup.string().required("Category is required"),
-  imageUrl: Yup.string().url("Invalid URL").required("Image URL is required"),
   originalPrice: Yup.number().min(0).required("Original price is required"),
   discountedPrice: Yup.number()
     .min(0)
@@ -76,7 +75,6 @@ const Products = () => {
     name: "",
     description: "",
     category: "",
-    imageUrl: "",
     originalPrice: 0,
     discountedPrice: "",
     discountPercentage: "",
@@ -86,21 +84,36 @@ const Products = () => {
     status: "draft",
   };
 
+  const [uplodedFiles, setUplodedFiles] = useState([])
+
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     setIsLoading(true);
     setError(null);
     try {
+ 
+
       if (!values.discountPercentage && values.originalPrice > 0) {
         values.discountPercentage =
           ((values.originalPrice - values.discountedPrice) /
             values.originalPrice) *
           100;
       }
+      const formData = new FormData()
+      formData.append('uplodedFiles', uplodedFiles)
+      formData.append('name', values.name);
+      formData.append('description', values.description);
+      formData.append('category', values.category);
+      formData.append('originalPrice', values.originalPrice);
+      formData.append('discountedPrice', values.discountedPrice);
+      formData.append('discountPercentage', values.discountPercentage);
+      formData.append('expiryDate', values.expiryDate);
+      formData.append('availableQuantity', values.availableQuantity);
+      formData.append('isAvailable', values.isAvailable);
+      formData.append('status', values.status);
+      formData.append('sellerId', _id);
 
-      const { data } = await axios.post(`${API_BASE_URL}/products`, {
-        ...values,
-        sellerId: _id,
-      });
+
+      const { data } = await axios.post(`${API_BASE_URL}/products`, formData);
       if (data) fetchProducts();
       toast.success("Product added successfully!");
       resetForm();
@@ -232,7 +245,8 @@ const Products = () => {
                           Image URL
                         </label>
                         <Field
-                          type="url"
+                          type="file"
+                          onChange = {(e)=> setUplodedFiles(e.target.files[0])}
                           name="imageUrl"
                           className="w-full p-3 border border-yellow-500 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all"
                           placeholder="https://example.com/food-image.jpg"

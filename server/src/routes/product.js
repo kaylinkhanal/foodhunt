@@ -5,17 +5,29 @@ import User from "../models/user.js";
 import CapitalizeWords from "../utils/capitalizeWords.js";
 import runPrompt from "../utils/generalizeChipName.js";
 const productRouter = express.Router();
+import multer   from 'multer'
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads')
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname)
+  }
+})
+
+const upload = multer({ storage: storage })
 
 //to post product
-productRouter.post("/products", async (req, res) => {
+productRouter.post("/products", upload.single('uplodedFiles'), async (req, res) => {
   try {
     // To caplitalize name. P.s. incase of patch/put requests same should be done to maintain consistency
     const productData = { ...req.body };
-    productData.name = CapitalizeWords(productData.name);
 
+
+    productData.name = CapitalizeWords(productData.name);
+    productData.imageName = req.file?.filename 
     const product = new Product(productData);
     const savedProduct = await product.save();
-    console.log("product details are", savedProduct);
 
     res.status(201).json(savedProduct);
   } catch (err) {
@@ -67,6 +79,7 @@ productRouter.get("products/:id", async (req, res) => {
 
 productRouter.get("products/category/:categoryId", async (req, res) => {
   try {
+
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ error: "Product not found" });
     res.status(200).json(product);
