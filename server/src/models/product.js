@@ -23,17 +23,9 @@ const productSchema = new Schema(
       ref: "Category",
       required: true,
     },
-    imageUrl: {
+    imageName: {
       type: String,
-      required: true,
-      trim: true,
-      validate: {
-        // Basic URL validation
-        validator: function (v) {
-          return /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i.test(v);
-        },
-        message: (props) => `${props.value} is not a valid URL!`,
-      },
+   
     },
 
     //seller info
