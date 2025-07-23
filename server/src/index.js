@@ -12,7 +12,7 @@ dotenv.config();
 
 const port = process.env.PORT;
 const app = express();
-
+app.use('/images',express.static('uploads'));
 connect();
 app.use(cors());
 app.use(express.json());
@@ -21,8 +21,6 @@ app.use(kycRouter);
 app.use(productRouter);
 app.use(orderRouter);
 app.use(categoryRouter);
-
-
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

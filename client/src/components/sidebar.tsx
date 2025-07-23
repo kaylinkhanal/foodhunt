@@ -1,9 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { logoutUser } from "@/redux/reducerSlices/userSlice"
 import { useRouter } from "next/navigation"
+import   navItems from '@/config/navItems.json'
 import {
   BarChart3,
   Package,
@@ -17,18 +18,18 @@ import { Button } from "./ui/button"
 const Sidebar = () => {
   const dispatch = useDispatch()
   const router = useRouter()
-
-  const handleLogout = () => {
+  const {role} = useSelector(state=>state.user)
+    const handleLogout = () => {
     dispatch(logoutUser())
     router.push("/login")
   }
 
-  const navItems = [
-    { label: "Dashboard", path: "/seller/dashboard", icon: BarChart3 },
-    { label: "Products", path: "/seller/products", icon: Package },
-    { label: "Orders", path: "/seller/orders", icon: ShoppingCart },
-    { label: "Revenue", path: "/seller/revenue", icon: DollarSign },
-  ]
+  // const navItems = [
+  //   { label: "Dashboard", path: "/seller/dashboard", icon: BarChart3 },
+  //   { label: "Products", path: "/seller/products", icon: Package },
+  //   { label: "Orders", path: "/seller/orders", icon: ShoppingCart },
+  //   { label: "Revenue", path: "/seller/revenue", icon: DollarSign },
+  // ]
 
   return (
     <div className="flex flex-col h-screen w-64 bg-white shadow-xl border-r border-orange-100">
@@ -62,13 +63,13 @@ const Sidebar = () => {
       </div>
 
       <nav className="flex-1 px-4 py-6 space-y-2">
-        {navItems.map(({ label, path, icon: Icon }, id) => (
+        {navItems[role]?.map(({ label, path, icon: Icon }, id) => (
           <Link
             key={id}
             href={path}
             className="group flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium hover:bg-orange-50 hover:text-orange-600 transition-all"
           >
-            <Icon className="w-5 h-5 text-gray-500 group-hover:text-orange-500 transition-colors" />
+            {/* <Icon className="w-5 h-5 text-gray-500 group-hover:text-orange-500 transition-colors" /> */}
             <span>{label}</span>
             <span className="ml-auto w-2 h-2 rounded-full bg-orange-400 opacity-0 group-hover:opacity-100 transition-opacity"></span>
           </Link>

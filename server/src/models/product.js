@@ -19,35 +19,13 @@ const productSchema = new Schema(
       maxlength: 500,
     },
     category: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "Category",
       required: true,
-      trim: true,
-      enum: [
-        "Main Course",
-        "Appetizer",
-        "Dessert",
-        "Beverage",
-        "Bakery",
-        "Vegetarian",
-        "Non-Vegetarian Items",
-        "Vegan",
-        "Gluten-Free",
-        "Drinks",
-        "Other",
-      ],
-      default: "Other",
     },
-    imageUrl: {
+    imageName: {
       type: String,
-      required: true,
-      trim: true,
-      validate: {
-        // Basic URL validation
-        validator: function (v) {
-          return /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i.test(v);
-        },
-        message: (props) => `${props.value} is not a valid URL!`,
-      },
+   
     },
 
     //seller info
