@@ -111,9 +111,15 @@ productRouter.get("/product-chips", async (req, res) => {
 });
 
 productRouter.get("/product-search", async (req, res) => {
-  const matchedProducts = await Product.find({
-    _id: { $in: req.query?.productIds?.split(",") },
-  }).populate("sellerId category");
+  let matchedProducts
+  if(req.query?.productIds){
+   matchedProducts = await Product.find({
+      _id: { $in: req.query?.productIds?.split(",") },
+    }).populate("sellerId category");
+  }else{
+    matchedProducts = await Product.find({}).populate("sellerId category");
+  }
+
   res.json(matchedProducts);
 });
 

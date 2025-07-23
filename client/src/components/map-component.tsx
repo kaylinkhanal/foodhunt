@@ -109,27 +109,22 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
   const userPreferences = useSelector((state) => state.user.userPreferences);
   const [foodCategories, setFoodCategories] = useState([])
   const fetchProducts = async () => {
-    if (!userPreferences || userPreferences.length === 0 || !_id) {
-      setProductList([]); // Clear products if no preferences or user ID
-      console.log(
-        "Cannot fetch products: No user preferences or user ID available."
-      );
-      return;
-    }
     const allFetchedProducts = []; // To accumulate all products from different queries
     for (const item of userPreferences) {
       const { data } = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/products?name=${item}&userId=${_id}`
       );
+  
+      const reducedArr = data.map((item) => {
 
+        item.quantity = 1
+        return item
+      })
+      setProductList(reducedArr)
       allFetchedProducts.push(...data);
     }
 
-    const reducedArr = allFetchedProducts.map((item) => {
-      item.quantity = 1
-      return item
-    })
-    setProductList(reducedArr)
+
   };
 
   const fetchCategories = async () => {
@@ -151,15 +146,23 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
 
 
   const fetchProductsByProductIds = async (id) => {
-    const { data } = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/product-search?productIds=${id.join(',')}`
-    );
-    setProductList(data)
 
+      const { data } = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/product-search?productIds=${id ? id?.join(','): ''}`
+      );
+      const reducedArr = data.map((item) => {
+        item.quantity = 1
+        return item
+      })
+      setProductList(reducedArr)
+
+   
   };
 
   useEffect(() => {
+    debugger;
     fetchProducts();
+    fetchProductsByProductIds(null)
     fetchCategories();
     fetchProductChip()
   }, []);

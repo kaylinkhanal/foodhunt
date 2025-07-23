@@ -1,5 +1,6 @@
 import { Router } from "express";
 import Order from "../models/order.js";
+import Product from "../models/product.js";
 
 const orderRouter = Router();
 
@@ -9,7 +10,9 @@ orderRouter.post("/orders", async (req, res) => {
   if (!bookedById || !productId || !quantity) {
     return res.status(400).send({ message: "Missing required fields" });
   }
-
+  const product = await Product.findById(productId);
+  product.availableQuantity -= quantity
+  await product.save();
   // Assuming you have an Order model
   const order = new Order({
     bookedById,
