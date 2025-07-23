@@ -12,7 +12,7 @@ dotenv.config();
 
 const port = process.env.PORT;
 const app = express();
-
+app.use('/images',express.static('uploads'));
 connect();
 app.use(cors());
 app.use(express.json());

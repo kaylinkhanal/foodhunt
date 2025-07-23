@@ -1,24 +1,30 @@
 import { Router } from "express";
 import Order from "../models/order.js";
+import Product from "../models/product.js";
 
 const orderRouter = Router();
 
 orderRouter.post("/orders", async (req, res) => {
-  try {
-    const { userId, productId, quantity, paymentMethod } = req.body;
+  const { bookedById, productId, quantity, paymentMethod, price } = req.body;
 
-    const newOrder = new Order({
-      userId,
-      productId,
-      quantity,
-      paymentMethod,
-    });
-
-    await newOrder.save();
-    res.status(201).json({ message: "Order created", order: newOrder });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to create order" });
+  if (!bookedById || !productId || !quantity) {
+    return res.status(400).send({ message: "Missing required fields" });
   }
+  const product = await Product.findById(productId);
+  product.availableQuantity -= quantity
+  await product.save();
+  // Assuming you have an Order model
+  const order = new Order({
+    bookedById,
+    productId,
+    quantity,
+    paymentMethod,
+    price,
+  });
+
+  await order.save();
+
+  res.send({ message: "Order placed successfully", order });
 });
 
 orderRouter.get("/orders", async (req, res) => {
