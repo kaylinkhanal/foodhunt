@@ -35,6 +35,17 @@ productRouter.post("/products", upload.single('uplodedFiles'), async (req, res) 
   }
 });
 
+productRouter.patch("/products/update/:id", async (req, res) => {
+  const data = await Product.findById(req.params.id);
+  if (!data) {
+    return res.status(404).send({ message: "Product not found" });
+  }
+  if (data.availableQuantity <= 0) data.isAvailable = false;
+  data.availableQuantity = req.body.availableQuantity;
+  await data.save();
+  res.send({ message: "Available qaunity updated succesfylly", data });
+});
+
 //to get all product
 productRouter.get("/products", async (req, res) => {
   try {
@@ -74,7 +85,6 @@ productRouter.get("products/:id", async (req, res) => {
   }
 });
 
-
 productRouter.get("products/category/:categoryId", async (req, res) => {
   try {
 
@@ -87,31 +97,24 @@ productRouter.get("products/category/:categoryId", async (req, res) => {
 });
 
 productRouter.get("/product-chips", async (req, res) => {
-  let product
-  if(req.query.categoryId) {
-     product = await Product.find({category: req.query.categoryId}).select("_id name category");
-  }else{
-     product = await Product.find().select("_id name category");
-
+  let product;
+  if (req.query.categoryId) {
+    product = await Product.find({ category: req.query.categoryId }).select(
+      "_id name category"
+    );
+  } else {
+    product = await Product.find().select("_id name category");
   }
-  if(product.length == 0) return res.json([])
+  if (product.length == 0) return res.json([]);
   const productChipInfo = await runPrompt(product);
   res.json(productChipInfo);
 });
 
-
-
-
-
 productRouter.get("/product-search", async (req, res) => {
-
   const matchedProducts = await Product.find({
-    _id: { $in: req.query?.productIds?.split(',')}
-}).populate('sellerId category')
-  res.json(matchedProducts)
-})
-
+    _id: { $in: req.query?.productIds?.split(",") },
+  }).populate("sellerId category");
+  res.json(matchedProducts);
+});
 
 export default productRouter;
-
-
