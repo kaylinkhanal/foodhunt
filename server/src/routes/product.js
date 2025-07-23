@@ -22,8 +22,6 @@ productRouter.post("/products", upload.single('uplodedFiles'), async (req, res) 
   try {
     // To caplitalize name. P.s. incase of patch/put requests same should be done to maintain consistency
     const productData = { ...req.body };
-
-
     productData.name = CapitalizeWords(productData.name);
     productData.imageName = req.file?.filename 
     const product = new Product(productData);

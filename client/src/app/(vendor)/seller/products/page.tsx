@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "sonner";
+import Image from "next/image";
 
 const productSchema = Yup.object().shape({
   name: Yup.string().min(3).max(100).required("Name is required"),
@@ -459,15 +460,18 @@ const Products = () => {
                   className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-yellow-200"
                 >
                   <div className="relative">
-                    <img
-                      src={product.imageUrl}
+                    {product.imageName ?    <Image
+                      src={`http://localhost:8080/images/${product.imageName}`}
                       alt={product.name}
+                      width={100}
+                      height={100}
                       className="w-full h-64 object-cover"
                       onError={(e) =>
                         (e.currentTarget.src =
                           "https://placehold.co/400x300/e0e0e0/ffffff?text=No+Image")
                       }
-                    />
+                    /> : "iMage not found"}
+                 
                     {product.discountPercentage > 0 && (
                       <span className="absolute top-4 right-4 bg-white text-red-500 text-xs font-bold px-3 py-1 rounded-full">
                         {product.discountPercentage.toFixed(0)}% OFF
