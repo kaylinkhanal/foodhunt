@@ -32,6 +32,7 @@ import { logoutUser } from "@/redux/reducerSlices/userSlice";
 import MapSidebar from "./map-sidebar";
 import axios from "axios";
 import { toast } from "sonner";
+import { log } from "util";
 
 interface MapProps {
   position: [number, number]; // [latitude, longitude]
@@ -219,6 +220,8 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
 
   const handleCategoryClick = (category) => {
     fetchProductsByProductIds(category.product_ids)
+    console.log('products by products id are from category', category);
+    
     setSelectedCategory(category);
     setIsSearchFocused(false);
   };
