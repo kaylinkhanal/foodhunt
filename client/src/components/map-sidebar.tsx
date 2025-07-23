@@ -4,6 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Menu, X, Heart, UserCog, Clock } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface SidebarProps {
   foodCategories: {
@@ -29,6 +30,7 @@ const MapSidebar: React.FC<SidebarProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+
   const handleLocationClick = (coordinates) => {};
 
   const handleFavoriteFoods = () => {
@@ -41,88 +43,136 @@ const MapSidebar: React.FC<SidebarProps> = ({
 
   return (
     <>
-      <div className="fixed top-0 left-0 w-[80px] h-full bg-[#f85000] gap-8 flex flex-col justify-start items-center z-[1002] p-2">
-        <Button
-          variant="ghost"
-          className="text-white hover:bg-[#d74000] mb-6"
-          onClick={() => setIsOpen(true)}
+      {/* Mini Sidebar */}
+      <motion.div 
+        initial={{ x: 0 }}
+        className="fixed top-0 left-0 w-[80px] h-full bg-gradient-to-b from-[#f85000] to-[#d74000] flex flex-col justify-start items-center z-[1002] p-4 shadow-lg"
+      >
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
         >
-          <Menu className="h-6 w-6" />
-        </Button>
-        <div className="flex flex-col items-center mb-4">
           <Button
             variant="ghost"
-            className="text-white hover:bg-[#d74000]"
-            onClick={handleFavoriteFoods}
+            className="text-white hover:bg-white/20 rounded-full w-12 h-12 flex items-center justify-center mb-8 transition-colors duration-300"
+            onClick={() => setIsOpen(true)}
           >
-            <Heart className="h-6 w-6" />
+            <Menu className="h-6 w-6" />
           </Button>
-          <span className="text-white text-sm font-semibold text-center">
-            Your Favorite{" "}
-          </span>
-        </div>
-        <div className="flex flex-col items-center mb-4">
-          <Button
-            variant="ghost"
-            className="text-white hover:bg-[#d74000]"
-            onClick={handleRecentSearches}
+        </motion.div>
+
+        <div className="flex flex-col items-center space-y-6">
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="flex flex-col items-center"
           >
-            <Clock className="h-6 w-6" />
-          </Button>
-          <span className="text-white text-sm font-semibold text-center">
-            Recent{" "}
-          </span>
-        </div>
-        <div className="flex flex-col items-center mb-4">
-          <Button
-            variant="ghost"
-            className="text-white hover:bg-[#d74000]"
-            onClick={() => router.push("/user-preferences")}
+            <Button
+              variant="ghost"
+              className="text-white hover:bg-white/20 rounded-full w-12 h-12 flex items-center justify-center transition-colors duration-300"
+              onClick={handleFavoriteFoods}
+            >
+              <Heart className="h-6 w-6" />
+            </Button>
+            <span className="text-white text-xs font-medium text-center mt-1 tracking-wide">
+              Favorites
+            </span>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="flex flex-col items-center"
           >
-            <UserCog className="h-6 w-6" />
-          </Button>
-          <span className="text-white text-sm font-semibold text-center">
-            Your Preferences
-          </span>
+            <Button
+              variant="ghost"
+              className="text-white hover:bg-white/20 rounded-full w-12 h-12 flex items-center justify-center transition-colors duration-300"
+              onClick={handleRecentSearches}
+            >
+              <Clock className="h-6 w-6" />
+            </Button>
+            <span className="text-white text-xs font-medium text-center mt-1 tracking-wide">
+              Recent
+            </span>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="flex flex-col items-center"
+          >
+            <Button
+              variant="ghost"
+              className="text-white hover:bg-white/20 rounded-full w-12 h-12 flex items-center justify-center transition-colors duration-300"
+              onClick={() => router.push("/user-preferences")}
+            >
+              <UserCog className="h-6 w-6" />
+            </Button>
+            <span className="text-white text-xs font-medium text-center mt-1 tracking-wide">
+              Preferences
+            </span>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Large Sidebar */}
-      {isOpen && (
-        <div className="fixed top-0 left-0 w-[300px] h-full bg-white shadow-xl z-[1003] transition-transform duration-300 ease-in-out transform translate-x-0">
-          <Card className="h-full">
-            <CardHeader className="flex justify-between items-center p-4 border-b">
-              <CardTitle className="text-xl font-bold text-[#f85000]">
-                Food Hunt
-              </CardTitle>
-              <Button
-                variant="ghost"
-                className="text-[#f85000] hover:bg-[#f85000] hover:text-white"
-                onClick={() => setIsOpen(false)}
-              >
-                <X className="h-6 w-6" />
-              </Button>
-            </CardHeader>
-            <CardContent className="p-4">
-              <h3 className="text-lg font-semibold mb-2">Categories</h3>
-              <ScrollArea className="h-[200px] w-full">
-                {foodCategories.map((item, index) => (
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ x: "-100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "-100%" }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="fixed top-0 left-0 w-[300px] h-full bg-white shadow-2xl z-[1003]"
+          >
+            <Card className="h-full border-none bg-gradient-to-br from-gray-50 to-gray-100">
+              <CardHeader className="flex flex-row justify-between items-center p-6 border-b border-gray-200">
+                <CardTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#f85000] to-[#d74000]">
+                  Food Hunt
+                </CardTitle>
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
                   <Button
-                    key={index}
-                    onClick={() => {
-                      onCategoryClick(item);
-                      setIsOpen(false);
-                    }}
+                    variant="ghost"
+                    className="text-[#f85000] hover:bg-[#f85000]/10 rounded-full w-10 h-10 flex items-center justify-center transition-colors duration-300"
+                    onClick={() => setIsOpen(false)}
                   >
-                    <span className="mr-2">{item.emoji}</span>
-                    <span>{item.name}</span>
+                    <X className="h-6 w-6" />
                   </Button>
-                ))}
-              </ScrollArea>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+                </motion.div>
+              </CardHeader>
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Categories</h3>
+                <ScrollArea className="h-[calc(100vh-200px)] w-full pr-4">
+                  <div className="space-y-2">
+                    {foodCategories.map((item, index) => (
+                      <motion.div
+                        key={index}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start text-left py-3 px-4 rounded-lg hover:bg-[#f85000]/10 text-gray-800 hover:text-[#f85000] transition-all duration-300"
+                          onClick={() => {
+                            onCategoryClick(item);
+                            setIsOpen(false);
+                          }}
+                        >
+                          <span className="mr-3 text-lg">{item.emoji}</span>
+                          <span className="font-medium">{item.name}</span>
+                        </Button>
+                      </motion.div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };
