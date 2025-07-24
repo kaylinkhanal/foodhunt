@@ -11,7 +11,7 @@ orderRouter.post("/orders", async (req, res) => {
     return res.status(400).send({ message: "Missing required fields" });
   }
   const product = await Product.findById(productId);
-  product.availableQuantity -= quantity
+  product.availableQuantity -= quantity;
   await product.save();
   // Assuming you have an Order model
   const order = new Order({
@@ -38,22 +38,31 @@ orderRouter.get("/orders", async (req, res) => {
   }
 });
 
-
 orderRouter.get("/orders/:userId", async (req, res) => {
-    const orders = await Order.find({bookedById: req.params.userId}).populate({ 
-      path: 'productId',
-      populate: {
-        path: 'sellerId',
-        model: 'User'
-      } 
-   })
-    res.json(orders);
+  const orders = await Order.find({ bookedById: req.params.userId }).populate({
+    path: "productId",
+    populate: {
+      path: "sellerId",
+      model: "User",
+    },
+  });
+  res.json(orders);
 });
 
-
 orderRouter.patch("/orders/:orderId", async (req, res) => {
-// create cancel api 
-// available quantify should increase back
+  try {
+    const order = await Order.findById(req.params.orderId);
+    if (!order) {
+      return res.status(400).send({ message: "The given order is not found." });
+    }
+    order.status = "Cancelled";
+    order.save();
+    res.status(200).json({ message: "Order Cancelled" });
+  } catch (err) {
+    return res.status(500).json({ error: "Server Error." });
+  }
+  // create cancel api
+  // available quantify should increase back
 });
 
 export default orderRouter;
