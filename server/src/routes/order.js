@@ -38,4 +38,16 @@ orderRouter.get("/orders", async (req, res) => {
   }
 });
 
+
+orderRouter.get("/orders/:userId", async (req, res) => {
+    const orders = await Order.find({bookedById: req.params.userId}).populate({ 
+      path: 'productId',
+      populate: {
+        path: 'sellerId',
+        model: 'User'
+      } 
+   })
+    res.json(orders);
+});
+
 export default orderRouter;

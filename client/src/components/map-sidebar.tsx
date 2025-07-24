@@ -2,8 +2,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Menu, X, Heart, UserCog, Clock } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 interface SidebarProps {
   foodCategories: {
@@ -27,6 +28,18 @@ const MapSidebar: React.FC<SidebarProps> = ({
   foodCategories,
   onCategoryClick,
 }) => {
+
+  const [orders,setOrders] = useState([]);
+
+  const fetchOrders =async() => {
+    const {data} =  await axios.get('http://localhost:8080/orders/685cb8d8e2463d42edf37c1e');
+    setOrders(data);
+  }
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const handleLocationClick = (coordinates) => {};
@@ -103,6 +116,17 @@ const MapSidebar: React.FC<SidebarProps> = ({
                 <X className="h-6 w-6" />
               </Button>
             </CardHeader>
+          {orders.map((item)=>{
+            return (
+              <div>
+                <CardContent className="p-4 border-b">
+                  <h3 className="text-lg font-semibold mb-2">{item.productId.name}</h3>
+                  <p className="text-gray-600">{item.description}</p>
+                  <p className="text-gray-800 font-bold mt-2">Price: ${item.price}</p>
+                </CardContent>
+              </div>
+            )
+          })}
             <CardContent className="p-4">
               <h3 className="text-lg font-semibold mb-2">Categories</h3>
               <ScrollArea className="h-[200px] w-full">
