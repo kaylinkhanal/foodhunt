@@ -38,4 +38,22 @@ orderRouter.get("/orders", async (req, res) => {
   }
 });
 
+
+orderRouter.get("/orders/:userId", async (req, res) => {
+    const orders = await Order.find({bookedById: req.params.userId}).populate({ 
+      path: 'productId',
+      populate: {
+        path: 'sellerId',
+        model: 'User'
+      } 
+   })
+    res.json(orders);
+});
+
+
+orderRouter.patch("/orders/:orderId", async (req, res) => {
+// create cancel api 
+// available quantify should increase back
+});
+
 export default orderRouter;

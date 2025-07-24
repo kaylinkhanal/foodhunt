@@ -2,9 +2,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Menu, X, Heart, UserCog, Clock } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
 
 interface SidebarProps {
   foodCategories: {
@@ -28,6 +28,18 @@ const MapSidebar: React.FC<SidebarProps> = ({
   foodCategories,
   onCategoryClick,
 }) => {
+
+  const [orders,setOrders] = useState([]);
+
+  const fetchOrders =async() => {
+    const {data} =  await axios.get('http://localhost:8080/orders/685cb8d8e2463d42edf37c1e');
+    setOrders(data);
+  }
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 
@@ -116,24 +128,36 @@ const MapSidebar: React.FC<SidebarProps> = ({
       </motion.div>
 
       {/* Large Sidebar */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ x: "-100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "-100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed top-0 left-0 w-[300px] h-full bg-white shadow-2xl z-[1003]"
-          >
-            <Card className="h-full border-none bg-gradient-to-br from-gray-50 to-gray-100">
-              <CardHeader className="flex flex-row justify-between items-center p-6 border-b border-gray-200">
-                <CardTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#f85000] to-[#d74000]">
-                  Food Hunt
-                </CardTitle>
-                <motion.div
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                >
+      {isOpen && (
+        <div className="fixed top-0 left-0 w-[300px] h-full bg-white shadow-xl z-[1003] transition-transform duration-300 ease-in-out transform translate-x-0">
+          <Card className="h-full">
+            <CardHeader className="flex justify-between items-center p-4 border-b">
+              <CardTitle className="text-xl font-bold text-[#f85000]">
+                Food Hunt
+              </CardTitle>
+              <Button
+                variant="ghost"
+                className="text-[#f85000] hover:bg-[#f85000] hover:text-white"
+                onClick={() => setIsOpen(false)}
+              >
+                <X className="h-6 w-6" />
+              </Button>
+            </CardHeader>
+          {orders.map((item)=>{
+            return (
+              <div>
+                <CardContent className="p-4 border-b">
+                  <h3 className="text-lg font-semibold mb-2">{item.productId.name}</h3>
+                  <p className="text-gray-600">{item.description}</p>
+                  <p className="text-gray-800 font-bold mt-2">Price: ${item.price}</p>
+                </CardContent>
+              </div>
+            )
+          })}
+            <CardContent className="p-4">
+              <h3 className="text-lg font-semibold mb-2">Categories</h3>
+              <ScrollArea className="h-[200px] w-full">
+                {foodCategories.map((item, index) => (
                   <Button
                     variant="ghost"
                     className="text-[#f85000] hover:bg-[#f85000]/10 rounded-full w-10 h-10 flex items-center justify-center transition-colors duration-300"
