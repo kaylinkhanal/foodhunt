@@ -132,28 +132,20 @@ productRouter.patch(
     try {
       const { productid, quantity } = req.params;
       const parsedQuantity = parseInt(quantity);
-
-      // Check if quantity is a valid positive number
       if (isNaN(parsedQuantity) || parsedQuantity <= 0) {
         return res.status(400).json({ message: "Invalid quantity provided." });
       }
-
       const updatedProduct = await Product.findById(productid);
       if (!updatedProduct) {
         return res
           .status(400)
           .json({ message: "Product for the given id is not found." });
       }
-
-      // Update the available quantity
       updatedProduct.availableQuantity += parsedQuantity;
-
-      // Save the updated product and wait for it to complete
       await updatedProduct.save();
-
       return res.status(200).json({ message: "Successfully updated Product." });
     } catch (err) {
-      console.error(err); // Optional: Log the error for debugging
+      console.error(err);
       return res.status(500).json({ error: "Server Error." });
     }
   }
