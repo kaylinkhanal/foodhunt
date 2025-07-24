@@ -50,4 +50,10 @@ orderRouter.get("/orders/:userId", async (req, res) => {
     res.json(orders);
 });
 
+
+orderRouter.patch("/orders/:orderId", async (req, res) => {
+// create cancel api 
+// available quantify should increase back
+});
+
 export default orderRouter;
