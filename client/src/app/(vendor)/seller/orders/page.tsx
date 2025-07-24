@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,136 +8,110 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Bell, ChefHat, Clock, DollarSign, Eye, MoreHorizontal, Phone, Search, User } from "lucide-react"
+import { Bell, ChefHat, Clock, DollarSign, Eye, MoreHorizontal, Search, User } from "lucide-react"
+import axios from "axios"
 
-type OrderStatus = "pending" | "preparing" | "ready" | "delivered" | "cancelled"
+type OrderStatus = "Pending" | "Preparing" | "Ready" | "Delivered" | "Cancelled"
 
 interface OrderItem {
-  id: string
+  _id: string
   name: string
   quantity: number
-  price: number
-  notes?: string
+  discountedPrice: number
 }
 
 interface Order {
-  id: string
-  customerName: string
-  customerPhone: string
-  customerAddress: string
+  _id: string
+  bookedById: { email: string }
   items: OrderItem[]
-  total: number
+  price: number
   status: OrderStatus
-  orderTime: string
-  estimatedTime?: string
+  createdAt: string
+  paymentMethod: string
 }
 
-const mockOrders: Order[] = [
-  {
-    id: "ORD-001",
-    customerName: "ram sharma",
-    customerPhone: "9801234567",
-    customerAddress: "fresh frams",
-    items: [
-      { id: "1", name: "Margherita Pizza", quantity: 2, price: 24.98 },
-      { id: "2", name: "Caesar Salad", quantity: 1, price: 12.99 },
-      { id: "3", name: "Garlic Bread", quantity: 1, price: 6.99 },
-    ],
-    total: 44.96,
-    status: "pending",
-    orderTime: "2024-01-15 12:30 PM",
-    estimatedTime: "45 min",
-  },
-  {
-    id: "ORD-002",
-    customerName: "Sarah sharma",
-    customerPhone: "987226543",
-    customerAddress: "tinkune chowk ",
-    items: [
-      { id: "4", name: "Chicken Burger", quantity: 1, price: 15.99 },
-      { id: "5", name: "French Fries", quantity: 2, price: 11.98 },
-      { id: "6", name: "Coca Cola", quantity: 2, price: 5.98 },
-    ],
-    total: 33.95,
-    status: "preparing",
-    orderTime: "2024-01-15 12:15 PM",
-    estimatedTime: "30 min",
-  },
-  {
-    id: "ORD-003",
-    customerName: "khusi sharma",
-    customerPhone: "9014567890",
-    customerAddress: "sinamangal",
-    items: [
-      { id: "7", name: "Spaghetti Carbonara", quantity: 1, price: 18.99 },
-      { id: "8", name: "Tiramisu", quantity: 1, price: 8.99 },
-    ],
-    total: 27.98,
-    status: "ready",
-    orderTime: "2024-01-15 11:45 AM",
-    estimatedTime: "Ready",
-  },
-  {
-    id: "ORD-004",
-    customerName: "Rita karki",
-    customerPhone: "9823210987",
-    customerAddress: "gwarko,stupa",
-    items: [
-      { id: "9", name: "Vegetable Stir Fry", quantity: 1, price: 16.99 },
-      { id: "10", name: "Spring Rolls", quantity: 3, price: 14.97 },
-    ],
-    total: 31.96,
-    status: "delivered",
-    orderTime: "2024-01-15 11:30 AM",
-  },
-]
-
 const statusColors = {
-  pending: "bg-yellow-100 text-yellow-800 border-yellow-200",
-  preparing: "bg-blue-100 text-blue-800 border-blue-200",
-  ready: "bg-green-100 text-green-800 border-green-200",
-  delivered: "bg-gray-100 text-gray-800 border-gray-200",
-  cancelled: "bg-red-100 text-red-800 border-red-200",
+  Pending: "bg-yellow-100 text-yellow-800 border-yellow-200",
+  Preparing: "bg-blue-100 text-blue-800 border-blue-200",
+  Ready: "bg-green-100 text-green-800 border-green-200",
+  Delivered: "bg-gray-100 text-gray-800 border-gray-200",
+  Cancelled: "bg-red-100 text-red-800 border-red-200",
 }
 
 export default function SellerOrderPage() {
-  const [orders, setOrders] = useState<Order[]>(mockOrders)
+  const [orders, setOrders] = useState<Order[]>([])
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
 
-  const updateOrderStatus = (orderId: string, newStatus: OrderStatus) => {
-    setOrders(orders.map((order) => (order.id === orderId ? { ...order, status: newStatus } : order)))
+  const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
+    try {
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/orders/${orderId}`, { status: newStatus })
+      setOrders(orders.map((order) => (order._id === orderId ? { ...order, status: newStatus } : order)))
+    } catch (error) {
+      console.error('Error updating order status:', error)
+    }
   }
+
+  const fetchOrders = async () => {
+    try {
+      const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/orders`)
+      console.log('orders data are', data)
+      // Transform API response to match Order interface
+      const Orders: Order[] = data.map((apiOrder: any) => ({
+        _id: apiOrder._id,
+        bookedById: { email: apiOrder.bookedById.email },
+        items: [
+          {
+            _id: apiOrder.productId._id,
+            name: apiOrder.productId.name,
+            quantity: apiOrder.quantity,
+            discountedPrice: apiOrder.productId.discountedPrice || apiOrder.price / apiOrder.quantity, // Fallback to price/quantity
+          },
+        ],
+        price: apiOrder.price,
+        status: apiOrder.status as OrderStatus,
+        createdAt: apiOrder.createdAt,
+        paymentMethod: apiOrder.paymentMethod,
+      }))
+      setOrders(Orders)
+    } catch (error) {
+      console.error('Error fetching orders:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchOrders()
+  }, [])
 
   const filteredOrders = orders.filter((order) => {
     const matchesStatus = statusFilter === "all" || order.status === statusFilter
     const matchesSearch =
-      order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.id.toLowerCase().includes(searchTerm.toLowerCase())
+      order.bookedById.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order._id.toLowerCase().includes(searchTerm.toLowerCase())
     return matchesStatus && matchesSearch
   })
 
   const getStatusIcon = (status: OrderStatus) => {
     switch (status) {
-      case "pending":
+      case "Pending":
         return <Clock className="h-4 w-4" />
-      case "preparing":
+      case "Preparing":
         return <ChefHat className="h-4 w-4" />
-      case "ready":
+      case "Ready":
         return <Bell className="h-4 w-4" />
       default:
         return null
     }
   }
 
-  const pendingCount = orders.filter((o) => o.status === "pending").length
-  const preparingCount = orders.filter((o) => o.status === "preparing").length
-  const readyCount = orders.filter((o) => o.status === "ready").length
-  const todayRevenue = orders.filter((o) => o.status === "delivered").reduce((sum, o) => sum + o.total, 0)
+  const pendingCount = orders.filter((o) => o.status === "Pending").length
+  const preparingCount = orders.filter((o) => o.status === "Preparing").length
+  const readyCount = orders.filter((o) => o.status === "Ready").length
+  const todayRevenue = orders.filter((o) => o.status === "Delivered").reduce((sum, o) => sum + o.price, 0)
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen  w-full bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -215,7 +189,7 @@ export default function SellerOrderPage() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
-                  placeholder="Search by customer name or order ID..."
+                  placeholder="Search by customer email or order ID..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -227,11 +201,11 @@ export default function SellerOrderPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Orders</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="preparing">Preparing</SelectItem>
-                  <SelectItem value="ready">Ready</SelectItem>
-                  <SelectItem value="delivered">Delivered</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="Preparing">Preparing</SelectItem>
+                  <SelectItem value="Ready">Ready</SelectItem>
+                  <SelectItem value="Delivered">Delivered</SelectItem>
+                  <SelectItem value="Cancelled">Cancelled</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -251,7 +225,7 @@ export default function SellerOrderPage() {
                     <TableHead>Order ID</TableHead>
                     <TableHead>Customer</TableHead>
                     <TableHead>Items</TableHead>
-                    <TableHead>Total</TableHead>
+                    <TableHead>Price</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Time</TableHead>
                     <TableHead>Actions</TableHead>
@@ -259,24 +233,20 @@ export default function SellerOrderPage() {
                 </TableHeader>
                 <TableBody>
                   {filteredOrders.map((order) => (
-                    <TableRow key={order.id}>
-                      <TableCell className="font-medium">{order.id}</TableCell>
+                    <TableRow key={order._id}>
+                      <TableCell className="font-medium">{order._id}</TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
                           <User className="h-4 w-4 text-gray-400" />
                           <div>
-                            <p className="font-medium">{order.customerName}</p>
-                            <p className="text-sm text-gray-500 flex items-center">
-                              <Phone className="h-3 w-3 mr-1" />
-                              {order.customerPhone}
-                            </p>
+                            <p className="font-medium">{order.bookedById.email}</p>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="space-y-1">
                           {order.items.slice(0, 2).map((item) => (
-                            <div key={item.id} className="text-sm">
+                            <div key={item._id} className="text-sm">
                               {item.quantity}x {item.name}
                             </div>
                           ))}
@@ -285,7 +255,7 @@ export default function SellerOrderPage() {
                           )}
                         </div>
                       </TableCell>
-                      <TableCell className="font-medium">${order.total.toFixed(2)}</TableCell>
+                      <TableCell className="font-medium">${order.price.toFixed(2)}</TableCell>
                       <TableCell>
                         <Badge className={`${statusColors[order.status]} flex items-center w-fit`}>
                           {getStatusIcon(order.status)}
@@ -294,8 +264,15 @@ export default function SellerOrderPage() {
                       </TableCell>
                       <TableCell>
                         <div className="text-sm">
-                          <p>{order.orderTime}</p>
-                          {order.estimatedTime && <p className="text-gray-500">Est: {order.estimatedTime}</p>}
+                          <p>
+                            {new Date(order.createdAt).toLocaleString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </p>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -310,22 +287,22 @@ export default function SellerOrderPage() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              {order.status === "pending" && (
-                                <DropdownMenuItem onClick={() => updateOrderStatus(order.id, "preparing")}>
+                              {order.status === "Pending" && (
+                                <DropdownMenuItem onClick={() => updateOrderStatus(order._id, "Preparing")}>
                                   Start Preparing
                                 </DropdownMenuItem>
                               )}
-                              {order.status === "preparing" && (
-                                <DropdownMenuItem onClick={() => updateOrderStatus(order.id, "ready")}>
+                              {order.status === "Preparing" && (
+                                <DropdownMenuItem onClick={() => updateOrderStatus(order._id, "Ready")}>
                                   Mark as Ready
                                 </DropdownMenuItem>
                               )}
-                              {order.status === "ready" && (
-                                <DropdownMenuItem onClick={() => updateOrderStatus(order.id, "delivered")}>
+                              {order.status === "Ready" && (
+                                <DropdownMenuItem onClick={() => updateOrderStatus(order._id, "Delivered")}>
                                   Mark as Delivered
                                 </DropdownMenuItem>
                               )}
-                              <DropdownMenuItem onClick={() => updateOrderStatus(order.id, "cancelled")}>
+                              <DropdownMenuItem onClick={() => updateOrderStatus(order._id, "Cancelled")}>
                                 Cancel Order
                               </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -346,7 +323,7 @@ export default function SellerOrderPage() {
             <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
               <CardHeader>
                 <div className="flex justify-between items-center">
-                  <CardTitle>Order Details - {selectedOrder.id}</CardTitle>
+                  <CardTitle>Order Details - {selectedOrder._id}</CardTitle>
                   <Button variant="outline" onClick={() => setSelectedOrder(null)}>
                     Close
                   </Button>
@@ -358,13 +335,10 @@ export default function SellerOrderPage() {
                   <h3 className="font-semibold mb-2">Customer Information</h3>
                   <div className="bg-gray-50 p-4 rounded-lg space-y-2">
                     <p>
-                      <strong>Name:</strong> {selectedOrder.customerName}
+                      <strong>Email:</strong> {selectedOrder.bookedById.email}
                     </p>
                     <p>
-                      <strong>Phone:</strong> {selectedOrder.customerPhone}
-                    </p>
-                    <p>
-                      <strong>Address:</strong> {selectedOrder.customerAddress}
+                      <strong>Payment Method:</strong> {selectedOrder.paymentMethod}
                     </p>
                   </div>
                 </div>
@@ -374,13 +348,12 @@ export default function SellerOrderPage() {
                   <h3 className="font-semibold mb-2">Order Items</h3>
                   <div className="space-y-2">
                     {selectedOrder.items.map((item) => (
-                      <div key={item.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                      <div key={item._id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                         <div>
                           <p className="font-medium">{item.name}</p>
                           <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
-                          {item.notes && <p className="text-sm text-gray-600">Notes: {item.notes}</p>}
                         </div>
-                        <p className="font-medium">${item.price.toFixed(2)}</p>
+                        <p className="font-medium">${item.discountedPrice.toFixed(2)}</p>
                       </div>
                     ))}
                   </div>
@@ -390,36 +363,36 @@ export default function SellerOrderPage() {
                 <div className="border-t pt-4">
                   <div className="flex justify-between items-center text-lg font-semibold">
                     <span>Total Amount:</span>
-                    <span>${selectedOrder.total.toFixed(2)}</span>
+                    <span>${selectedOrder.price.toFixed(2)}</span>
                   </div>
                 </div>
 
                 {/* Status Update Actions */}
                 <div className="flex gap-2 pt-4">
-                  {selectedOrder.status === "pending" && (
+                  {selectedOrder.status === "Pending" && (
                     <Button
                       onClick={() => {
-                        updateOrderStatus(selectedOrder.id, "preparing")
+                        updateOrderStatus(selectedOrder._id, "Preparing")
                         setSelectedOrder(null)
                       }}
                     >
                       Start Preparing
                     </Button>
                   )}
-                  {selectedOrder.status === "preparing" && (
+                  {selectedOrder.status === "Preparing" && (
                     <Button
                       onClick={() => {
-                        updateOrderStatus(selectedOrder.id, "ready")
+                        updateOrderStatus(selectedOrder._id, "Ready")
                         setSelectedOrder(null)
                       }}
                     >
                       Mark as Ready
                     </Button>
                   )}
-                  {selectedOrder.status === "ready" && (
+                  {selectedOrder.status === "Ready" && (
                     <Button
                       onClick={() => {
-                        updateOrderStatus(selectedOrder.id, "delivered")
+                        updateOrderStatus(selectedOrder._id, "Delivered")
                         setSelectedOrder(null)
                       }}
                     >
@@ -429,7 +402,7 @@ export default function SellerOrderPage() {
                   <Button
                     variant="destructive"
                     onClick={() => {
-                      updateOrderStatus(selectedOrder.id, "cancelled")
+                      updateOrderStatus(selectedOrder._id, "Cancelled")
                       setSelectedOrder(null)
                     }}
                   >
