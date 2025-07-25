@@ -104,7 +104,6 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
   const [productList, setProductList] = useState([]);
   const [productsOfSelectedCategory, setProductsOfSelectedCategory] = useState([])
 
-
   const [foodSearch, setFoodSearch] = useState("");
   const userPreferences = useSelector((state) => state.user.userPreferences);
   const [foodCategories, setFoodCategories] = useState([])
@@ -139,6 +138,12 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
     const { data } = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/product-chips?categoryId=${catId}`
     );
+    if(data?.length >  0) {
+      
+      fetchProductsByProductIds(data[0]?.product_ids)
+      setSelectedCategory(data[0])
+   
+    }
     setProductsOfSelectedCategory(data)
 
   };
@@ -160,9 +165,8 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
   };
 
   useEffect(() => {
-    debugger;
     fetchProducts();
-    fetchProductsByProductIds(null)
+    // fetchProductsByProductIds(null)
     fetchCategories();
     fetchProductChip()
   }, []);
@@ -379,7 +383,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                 }
                 className={`flex items-center space-x-2 ${selectedCategory.name === category.name
                   ? "bg-orange-400 text-white"
-                  : "bg-orange-400 text-white border-0"
+                  : "bg-blue-400 text-white border-0"
                   } rounded-full px-4 py-2`}
                 onClick={() => handleCategoryClick(category)}
               >
