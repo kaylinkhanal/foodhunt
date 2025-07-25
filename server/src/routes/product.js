@@ -5,35 +5,39 @@ import User from "../models/user.js";
 import CapitalizeWords from "../utils/capitalizeWords.js";
 import runPrompt from "../utils/generalizeChipName.js";
 const productRouter = express.Router();
-import multer   from 'multer'
+import multer from "multer";
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads')
+    cb(null, "uploads");
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname)
-  }
-})
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
 
-const upload = multer({ storage: storage })
+const upload = multer({ storage: storage });
 
 //to post product
-productRouter.post("/products", upload.single('uplodedFiles'), async (req, res) => {
-  try {
-    // To caplitalize name. P.s. incase of patch/put requests same should be done to maintain consistency
-    const productData = { ...req.body };
-    productData.name = CapitalizeWords(productData.name);
-    productData.imageName = req.file?.filename 
-    const product = new Product(productData);
-    const savedProduct = await product.save();
+productRouter.post(
+  "/products",
+  upload.single("uplodedFiles"),
+  async (req, res) => {
+    try {
+      // To caplitalize name. P.s. incase of patch/put requests same should be done to maintain consistency
+      const productData = { ...req.body };
+      productData.name = CapitalizeWords(productData.name);
+      productData.imageName = req.file?.filename;
+      const product = new Product(productData);
+      const savedProduct = await product.save();
 
-    res.status(201).json(savedProduct);
-  } catch (err) {
-    console.log("error while adding the product", err);
+      res.status(201).json(savedProduct);
+    } catch (err) {
+      console.log("error while adding the product", err);
 
-    res.status(400).json({ error: err.message });
+      res.status(400).json({ error: err.message });
+    }
   }
-});
+);
 
 productRouter.patch("/products/update/:id", async (req, res) => {
   const data = await Product.findById(req.params.id);
@@ -87,7 +91,6 @@ productRouter.get("products/:id", async (req, res) => {
 
 productRouter.get("products/category/:categoryId", async (req, res) => {
   try {
-
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ error: "Product not found" });
     res.status(200).json(product);
@@ -111,16 +114,41 @@ productRouter.get("/product-chips", async (req, res) => {
 });
 
 productRouter.get("/product-search", async (req, res) => {
-  let matchedProducts
-  if(req.query?.productIds){
-   matchedProducts = await Product.find({
+  let matchedProducts;
+  if (req.query?.productIds) {
+    matchedProducts = await Product.find({
       _id: { $in: req.query?.productIds?.split(",") },
     }).populate("sellerId category");
-  }else{
+  } else {
     matchedProducts = await Product.find({}).populate("sellerId category");
   }
 
   res.json(matchedProducts);
 });
+
+productRouter.patch(
+  "/product-cancel/:productid/:quantity",
+  async (req, res) => {
+    try {
+      const { productid, quantity } = req.params;
+      const parsedQuantity = parseInt(quantity);
+      if (isNaN(parsedQuantity) || parsedQuantity <= 0) {
+        return res.status(400).json({ message: "Invalid quantity provided." });
+      }
+      const updatedProduct = await Product.findById(productid);
+      if (!updatedProduct) {
+        return res
+          .status(400)
+          .json({ message: "Product for the given id is not found." });
+      }
+      updatedProduct.availableQuantity += parsedQuantity;
+      await updatedProduct.save();
+      return res.status(200).json({ message: "Successfully updated Product." });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Server Error." });
+    }
+  }
+);
 
 export default productRouter;
