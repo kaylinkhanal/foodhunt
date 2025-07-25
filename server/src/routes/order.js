@@ -30,10 +30,14 @@ orderRouter.post("/orders", async (req, res) => {
 orderRouter.get("/orders", async (req, res) => {
   try {
     const orders = await Order.find()
-      .populate("userId", "name email")
-      .populate("productId", "name discountedPrice");
+      .populate("bookedById", "name email")
+      .populate("productId", "name discountedPrice")
+      .skip((req.query.page -1) * req.query.pageSize )
+      .limit(req.query.pageSize )
     res.status(200).json(orders);
   } catch (error) {
+    console.log('error while getting orders', error);
+    
     res.status(500).json({ error: "Failed to fetch orders" });
   }
 });
@@ -46,23 +50,47 @@ orderRouter.get("/orders/:userId", async (req, res) => {
       model: "User",
     },
   });
+
   res.json(orders);
 });
 
 orderRouter.patch("/orders/:orderId", async (req, res) => {
   try {
     const order = await Order.findById(req.params.orderId);
-    if (!order) {
-      return res.status(400).send({ message: "The given order is not found." });
+    if(!order){
+      res.status(400).json({message:'order not found'})
     }
-    order.status = "Cancelled";
-    order.save();
-    res.status(200).json({ message: "Order Cancelled" });
-  } catch (err) {
-    return res.status(500).json({ error: "Server Error." });
+    //only pending and booked status order can be cancelled
+    if(order.status !== 'pending' && order.status !== 'booked'){
+      res.status(400).json({message :`order can not be cancelled on ${order.status} status.`})
+
+    }
+    order.status ='Cancelled';
+    await order.save();
+
+    //updating product available quantity
+    await Product.findByIdAndUpdate(
+      order.productId,
+      {$inc:{availableQuantity: order.quantity}},
+      {new:true}
+
+    );
+
+    res.status(200).json({ message: "Order cancelled successfully", order });  
+
+  } catch (error) {
+    res.status(500).json({message:'error while cancelling order'})
+    
   }
-  // create cancel api
-  // available quantify should increase back
+
 });
 
 export default orderRouter;
+
+
+
+
+
+
+
+
