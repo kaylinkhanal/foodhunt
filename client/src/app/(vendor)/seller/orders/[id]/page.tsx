@@ -54,6 +54,14 @@ export default function OrderDetailPage() {
       timeStyle: "short",
     });
 
+  const statusColorMap: { [key: string]: string } = {
+    Pending: "text-gray-400",
+    "In Progress": "text-blue-500",
+    Completed: "text-green-500",
+    Cancelled: "text-red-500",
+    Booked: "text-purple-500",
+  };
+
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded shadow">
       <Steppers status={order.status} />
@@ -66,14 +74,8 @@ export default function OrderDetailPage() {
         <p>
           <strong>Status:</strong>{" "}
           <span
-            className={`px-2 py-1 rounded text-white ${
-              order.status === "cancelled"
-                ? "bg-red-500"
-                : order.status === "completed"
-                ? "bg-green-500"
-                : order.status === "pending"
-                ? "bg-yellow-500"
-                : "bg-blue-500"
+            className={`px-2 py-1 rounded text-black ${
+              statusColorMap[order?.status]
             }`}
           >
             {order.status}

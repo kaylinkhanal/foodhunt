@@ -66,6 +66,7 @@ const MapSidebar: React.FC<SidebarProps> = ({
     Completed: "text-green-500",
     Cancelled: "text-red-500",
     Booked: "text-purple-500",
+    
   };
 
   const handleOrderClick = (orderId?: string) => {
