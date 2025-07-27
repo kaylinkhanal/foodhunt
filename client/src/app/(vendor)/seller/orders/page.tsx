@@ -53,6 +53,97 @@ export default function SellerOrderPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(4) 
+    // Pagination logic with ellipses
+    const generatePaginationItems = () => {
+      const items = []
+      const maxVisiblePages = 5
+      const halfVisible = Math.floor(maxVisiblePages / 2)
+  
+      let startPage = Math.max(1, page - halfVisible)
+      let endPage = Math.min(totalPages, page + halfVisible)
+  
+      // Adjust if we're near the beginning or end
+      if (endPage - startPage + 1 < maxVisiblePages) {
+        if (startPage === 1) {
+          endPage = Math.min(totalPages, startPage + maxVisiblePages - 1)
+        } else {
+          startPage = Math.max(1, endPage - maxVisiblePages + 1)
+        }
+      }
+  
+      // Add first page and ellipsis if needed
+      if (startPage > 1) {
+        items.push(
+          <PaginationItem key="1">
+            <PaginationLink
+              href="#"
+              onClick={(e) => {
+                e.preventDefault()
+                setPage(1)
+              }}
+              className={page === 1 ? "bg-primary text-primary-foreground" : ""}
+            >
+              1
+            </PaginationLink>
+          </PaginationItem>,
+        )
+  
+        if (startPage > 2) {
+          items.push(
+            <PaginationItem key="ellipsis-start">
+              <PaginationEllipsis />
+            </PaginationItem>,
+          )
+        }
+      }
+  
+      // Add visible page numbers
+      for (let i = startPage; i <= endPage; i++) {
+        items.push(
+          <PaginationItem key={i}>
+            <PaginationLink
+              href="#"
+              onClick={(e) => {
+                e.preventDefault()
+                setPage(i)
+              }}
+              className={page === i ? "bg-primary text-primary-foreground" : ""}
+            >
+              {i}
+            </PaginationLink>
+          </PaginationItem>,
+        )
+      }
+  
+      // Add ellipsis and last page if needed
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          items.push(
+            <PaginationItem key="ellipsis-end">
+              <PaginationEllipsis />
+            </PaginationItem>,
+          )
+        }
+  
+        items.push(
+          <PaginationItem key={totalPages}>
+            <PaginationLink
+              href="#"
+              onClick={(e) => {
+                e.preventDefault()
+                setPage(totalPages)
+              }}
+              className={page === totalPages ? "bg-primary text-primary-foreground" : ""}
+            >
+              {totalPages}
+            </PaginationLink>
+          </PaginationItem>,
+        )
+      }
+  
+      return items
+    }
   const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
     try {
       await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/orders/${orderId}`, { status: newStatus })
@@ -64,12 +155,17 @@ export default function SellerOrderPage() {
 
   const fetchOrders = async () => {
     try {
-      const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/orders?pageSize=5&page=${page}` )
-      setOrders(data)
+      const {data: {orders, totalDbOrders}} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/orders?pageSize=5&page=${page}` )
+      setOrders(orders)
+      setTotalPages(Math.ceil(totalDbOrders / 5)) // Assuming pageSize is 5
     } catch (error) {
       console.error('Error fetching orders:', error)
     }
   }
+
+
+
+
 
   useEffect(() => {
     fetchOrders()
@@ -90,11 +186,10 @@ export default function SellerOrderPage() {
     }
   }
 
-  const pendingCount = orders.filter((o) => o.status === "Pending").length
-  const preparingCount = orders.filter((o) => o.status === "Preparing").length
-  const readyCount = orders.filter((o) => o.status === "Ready").length
-  const todayRevenue = orders.filter((o) => o.status === "Delivered").reduce((sum, o) => sum + o.price, 0)
-
+  const pendingCount = 12
+  const preparingCount = 100
+  const readyCount = 20
+  const todayRevenue =123312
   return (
     <div className="min-h-screen  w-full bg-gray-50">
       {/* Header */}
@@ -301,25 +396,33 @@ export default function SellerOrderPage() {
                 </TableBody>
               </Table>
             </div>
-            <Pagination >
-            <PaginationContent>
-              <PaginationItem onClick={()=>setPage(page - 1)}>
-                <PaginationPrevious />
-              </PaginationItem>
-             {
-             [1,2,3,4,5,6,7,9].map((item, id)=>{
-              return(
-                  <PaginationItem key={id} onClick={()=>setPage(item)}>
-                    <PaginationLink href="#">{item}</PaginationLink>
+            <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        if (page > 1) setPage(page - 1)
+                      }}
+                      className={page === 1 ? "pointer-events-none opacity-50" : ""}
+                    />
                   </PaginationItem>
-              )
-             }) }
-             
-              <PaginationItem onClick={()=>setPage(page + 1)}>
-                <PaginationNext />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+
+                  {generatePaginationItems()}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        if (page < totalPages) setPage(page + 1)
+                      }}
+                      className={page === totalPages ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
           </CardContent>
         </Card>
 
