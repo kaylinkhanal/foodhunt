@@ -85,6 +85,7 @@ export default function SellerOrderPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [page, setPage] = useState(1);
+  
   const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
     try {
       await axios.patch(
