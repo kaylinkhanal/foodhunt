@@ -55,7 +55,7 @@ export default function OrderDetailPopup({
 
     fetchOrder();
   }, [orderId]);
-  const { toPDF, targetRef } = usePDF({filename: 'page.pdf'});
+  const { toPDF, targetRef } = usePDF({filename: 'invoice.pdf'});
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleString("en-GB", {
       dateStyle: "medium",

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, ShoppingBagIcon, ShoppingCart } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
@@ -32,6 +32,7 @@ import { logoutUser } from "@/redux/reducerSlices/userSlice";
 import MapSidebar from "./map-sidebar";
 import axios from "axios";
 import { toast } from "sonner";
+import { addToCart } from "@/redux/reducerSlices/productSlice";
 
 interface MapProps {
   position: [number, number]; // [latitude, longitude]
@@ -102,6 +103,7 @@ const createEmojiIcon = (emoji, discountPercentage) => {
 const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
   const { _id } = useSelector((state) => state.user);
   const [productList, setProductList] = useState([]);
+  const {cart} = useSelector((state) => state.product);
   const [productsOfSelectedCategory, setProductsOfSelectedCategory] = useState([])
 
   const [foodSearch, setFoodSearch] = useState("");
@@ -235,6 +237,9 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
     setProductList(reducedArr)
 
   }
+  const generateCartCount  =()=>{
+    return cart.reduce((total, item) => total + item.quantity, 0);
+  }
 
   const handleIncrement = (clickedItem) => {
     const temp = [...productList]
@@ -295,7 +300,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                     <CardContent className="py-1">
                       <div className="flex items-center justify-between mb-1">
                         <h3 className="text-sm font-bold text-gray-800 flex-1">
-                          Avaialble  <span className="text-white p-1 rounded-sm" style={{ backgroundColor: "#FAA617" }}>{item.availableQuantity}</span> {" stocks of "}
+                          Available  <span className="text-white p-1 rounded-sm" style={{ backgroundColor: "#FAA617" }}>{item.availableQuantity}</span> {" stocks of "}
                           {item.name}
                         </h3>
                       </div>
@@ -340,6 +345,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                           </Button>
                         </div>
                       </div>
+                      <Button onClick={()=> dispatch(addToCart(item))}>Add to Cart</Button>
 
                     </CardContent>
                   </Card>
@@ -444,14 +450,22 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
 
       {/* Authentication Buttons */}
       <div className="absolute top-6 right-35 z-[1000]">
+
         {isLoggedIn ? (
-          <Button
+          <>
+          <Button>
+            <ShoppingCart/>
+            <span className="ml-2">{generateCartCount()} items</span>
+          </Button>
+            <Button
             onClick={handleLogout}
             variant="outline"
             className="justify-start bg-orange-600 hover:bg-orange-400 text-blue-50"
           >
             Logout
           </Button>
+          </>
+        
         ) : (
           <div className="flex flex-row items-center space-x-4 ml-4">
             <Link href="/login">
