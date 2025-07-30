@@ -29,12 +29,13 @@ orderRouter.post("/orders", async (req, res) => {
 
 orderRouter.get("/orders", async (req, res) => {
   try {
+    const totalDbOrders = await Order.countDocuments();
     const orders = await Order.find()
       .populate("bookedById", "name email")
       .populate("productId", "name discountedPrice")
-      .skip((req.query.page - 1) * req.query.pageSize)
-      .limit(req.query.pageSize);
-    res.status(200).json(orders);
+      .skip((req.query.page -1) * req.query.pageSize )
+      .limit(req.query.pageSize )
+    res.status(200).json({orders,totalDbOrders});
   } catch (error) {
     console.log("error while getting orders", error);
 
