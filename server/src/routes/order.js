@@ -43,6 +43,24 @@ orderRouter.get("/orders", async (req, res) => {
   }
 });
 
+orderRouter.get("/orders/:id", async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const order = await Order.findById(id)
+      .populate("bookedById", "name email")
+      .populate("productId", "name discountedPrice");
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+    res.status(200).json({
+      data: order,
+      message: "Successfully fetched order",
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 orderRouter.get("/orders/:userId", async (req, res) => {
   const orders = await Order.find({ bookedById: req.params.userId }).populate({
     path: "productId",
