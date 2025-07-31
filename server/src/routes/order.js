@@ -91,7 +91,6 @@ orderRouter.post("/re-orders/:orderid", async (req, res) => {
   product.availableQuantity -= orderData.quantity;
   await product.save();
   let price = product.discountedPrice * orderData.quantity;
-  // Assuming you have an Order model
   const order = new Order({
     bookedById: orderData.bookedById,
     productId: orderData.productId,
