@@ -43,7 +43,9 @@ const createEmojiIcon = (emoji, discountPercentage) => {
   return L.divIcon({
     html: `
       <div class="relative flex flex-col items-center">
-        <div class="discount-text" style="font-size: 18px; text-align: center; font-weight: bold;">${discountPercentage.toFixed(2)}% OFF</div>
+        <div class="discount-text" style="font-size: 18px; text-align: center; font-weight: bold;">${discountPercentage.toFixed(
+          2
+        )}% OFF</div>
         <div class="emoji-container" style="font-size: 48px; text-align: center; line-height: 1; position: relative;">
           ${emoji}
           <span class="ripple"></span>
@@ -103,79 +105,70 @@ const createEmojiIcon = (emoji, discountPercentage) => {
 const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
   const { _id } = useSelector((state) => state.user);
   const [productList, setProductList] = useState([]);
-  const {cart} = useSelector((state) => state.product);
-  const [productsOfSelectedCategory, setProductsOfSelectedCategory] = useState([])
+  const { cart } = useSelector((state) => state.product);
+  const [productsOfSelectedCategory, setProductsOfSelectedCategory] = useState(
+    []
+  );
 
   const [foodSearch, setFoodSearch] = useState("");
   const userPreferences = useSelector((state) => state.user.userPreferences);
-  const [foodCategories, setFoodCategories] = useState([])
+  const [foodCategories, setFoodCategories] = useState([]);
   const fetchProducts = async () => {
     const allFetchedProducts = []; // To accumulate all products from different queries
     for (const item of userPreferences) {
       const { data } = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/products?name=${item}&userId=${_id}`
       );
-  
-      const reducedArr = data.map((item) => {
 
-        item.quantity = 1
-        return item
-      })
-      setProductList(reducedArr)
+      const reducedArr = data.map((item) => {
+        item.quantity = 1;
+        return item;
+      });
+      setProductList(reducedArr);
       allFetchedProducts.push(...data);
     }
-
-
   };
 
   const fetchCategories = async () => {
     const { data } = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/categories`
     );
-    setFoodCategories(data)
-
+    setFoodCategories(data);
   };
 
-  const fetchProductChip = async (catId = '') => {
+  const fetchProductChip = async (catId = "") => {
     const { data } = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/product-chips?categoryId=${catId}`
     );
-    if(data?.length >  0) {
-      
-      fetchProductsByProductIds(data[0]?.product_ids)
-      setSelectedCategory(data[0])
-   
+    if (data?.length > 0) {
+      fetchProductsByProductIds(data[0]?.product_ids);
+      setSelectedCategory(data[0]);
     }
-    setProductsOfSelectedCategory(data)
-
+    setProductsOfSelectedCategory(data);
   };
 
-
-
   const fetchProductsByProductIds = async (id) => {
-
-      const { data } = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/product-search?productIds=${id ? id?.join(','): ''}`
-      );
-      const reducedArr = data.map((item) => {
-        item.quantity = 1
-        return item
-      })
-      setProductList(reducedArr)
-
-   
+    const { data } = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/product-search?productIds=${
+        id ? id?.join(",") : ""
+      }`
+    );
+    const reducedArr = data.map((item) => {
+      item.quantity = 1;
+      return item;
+    });
+    setProductList(reducedArr);
   };
 
   useEffect(() => {
     fetchProducts();
     // fetchProductsByProductIds(null)
     fetchCategories();
-    fetchProductChip()
+    fetchProductChip();
   }, []);
 
-
   const { isLoggedIn } = useSelector((state) => state.user);
-  const {cart: reduxCart} = useSelector(state=> state.product)
+  const { cart: reduxCart } = useSelector((state) => state.product);
   const [selectedCategory, setSelectedCategory] = useState([]); // Default to first category (Burgers)
   const [isSearchFocused, setIsSearchFocused] = useState(false); // Track input focus
   const dispatch = useDispatch();
@@ -187,16 +180,19 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
   const updateProduct = async (item) => {
     const values = {
       availableQuantity: item.availableQuantity - item.quantity,
-    }
-    const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/products/update/${item._id}`, values)
-  }
+    };
+    const response = await axios.patch(
+      `${process.env.NEXT_PUBLIC_API_URL}/products/update/${item._id}`,
+      values
+    );
+  };
   const handlePlaceOrder = async (item) => {
     const values = {
       bookedById: _id,
       productId: item._id,
       quantity: item.quantity,
       price: item.quantity * item.discountedPrice,
-      paymentMethod: 'Cash',
+      paymentMethod: "Cash",
     };
 
     try {
@@ -206,80 +202,81 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
       );
 
       toast(response.data.message);
-      updateProduct(item)
+      updateProduct(item);
     } catch (error) {
       console.error("Failed to place order:", error);
       toast("Failed to place order");
     }
     fetchProducts();
-
   };
 
-
   const handleCategoryClick = (category) => {
-    fetchProductsByProductIds(category.product_ids)
+    fetchProductsByProductIds(category.product_ids);
     setSelectedCategory(category);
     setIsSearchFocused(false);
   };
 
   const handleSidebarCategoryClick = (category) => {
-    fetchProductChip(category._id)
-  }
+    fetchProductChip(category._id);
+  };
 
   const handleDecrement = (clickedItem) => {
-    const temp = [...productList]
+    const temp = [...productList];
     const reducedArr = temp.map((item) => {
       if (item._id === clickedItem._id && item.quantity !== 1) {
-        item.quantity--
+        item.quantity--;
       }
-      return item
-    })
+      return item;
+    });
     // debugger;
-    setProductList(reducedArr)
-
-  }
-  const generateCartCount  =()=>{
+    setProductList(reducedArr);
+  };
+  const generateCartCount = () => {
     return cart.reduce((total, item) => total + item.quantity, 0);
-  }
+  };
 
   const handleIncrement = (clickedItem) => {
-    const temp = [...productList]
+    const temp = [...productList];
     const reducedArr = temp.map((item) => {
-      if (item._id === clickedItem._id && item.quantity < item.availableQuantity) {
-        item.quantity++
+      if (
+        item._id === clickedItem._id &&
+        item.quantity < item.availableQuantity
+      ) {
+        item.quantity++;
       }
-      return item
-    })
+      return item;
+    });
     // debugger;
-    setProductList(reducedArr)
-  }
+    setProductList(reducedArr);
+  };
 
-
-  const handleClick = async ( item) => {
-    let totalCart = 0
-    reduxCart.forEach((cartItem)=>{
-      if(cartItem._id === item._id){
-        totalCart = totalCart +  cartItem.quantity 
+  const handleClick = async (item) => {
+    let totalCart = 0;
+    reduxCart.forEach((cartItem) => {
+      if (cartItem._id === item._id) {
+        totalCart = totalCart + cartItem.quantity;
       }
-    })
-    if(item.quantity <= item.availableQuantity ){
-        const {data} =  await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/stock-count/${item._id}`)
-        if(data.stockCount >= item.quantity && totalCart <= data.stockCount){
-          dispatch(addToCart(item))
-        }
-      const temp = [...productList]
+    });
+    if (item.quantity <= item.availableQuantity) {
+      const { data } = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/stock-count/${item._id}`
+      );
+      if (data.stockCount >= item.quantity && totalCart <= data.stockCount) {
+        dispatch(addToCart(item));
+      }
+      const temp = [...productList];
       const reducedArr = temp.map((val) => {
-        if (val._id === item._id ) {
-         return {
-          ...val,
-          availableQuantity: val.availableQuantity- item.quantity,
-         }
+        if (val._id === item._id) {
+          return {
+            ...val,
+            availableQuantity: val.availableQuantity - item.quantity,
+          };
         }
-        return val
-      })
-      setProductList(reducedArr)
+        return val;
+      });
+      setProductList(reducedArr);
     }
-  }
+  };
 
   return (
     <div className="relative w-full h-screen">
@@ -306,7 +303,10 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
         {productList.map((item) => {
           if (!item.sellerId?.coords?.lat || !item.sellerId?.coords?.lng)
             return null;
-          const customIcon = createEmojiIcon(item.category?.emoji, item.discountPercentage);
+          const customIcon = createEmojiIcon(
+            item.category?.emoji,
+            item.discountPercentage
+          );
           return (
             <Marker
               position={[
@@ -317,10 +317,8 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
               key={item._id}
             >
               <Popup maxWidth={300}>
-
                 {selectedCategory.emoji}
                 <div>
-
                   <Card
                     // key={index}
                     className="py-2 my-2 w-full bg-white shadow-lg border border-gray-200"
@@ -328,11 +326,22 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                     <CardContent className="py-1">
                       <div className="flex items-center justify-between mb-1">
                         <h3 className="text-sm font-bold text-gray-800 flex-1">
-                          Available  <span className="text-white p-1 rounded-sm" style={{ backgroundColor: "#FAA617" }}>{item.availableQuantity}</span> {" stocks of "}
+                          Available{" "}
+                          <span
+                            className="text-white p-1 rounded-sm"
+                            style={{ backgroundColor: "#FAA617" }}
+                          >
+                            {item.availableQuantity}
+                          </span>{" "}
+                          {" stocks of "}
                           {item.name}
                         </h3>
                       </div>
-                      {item.availableQuantity === 0 && <h4 className="text-red-500 mb-1">{item.name} is currently not available</h4>}
+                      {item.availableQuantity === 0 && (
+                        <h4 className="text-red-500 mb-1">
+                          {item.name} is currently not available
+                        </h4>
+                      )}
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex flex-col">
                           <span className="text-xs text-gray-500 line-through">
@@ -373,8 +382,9 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                           </Button>
                         </div>
                       </div>
-                      <Button onClick={()=> handleClick(item)}>Add to Cart</Button>
-
+                      <Button onClick={() => handleClick(item)}>
+                        Add to Cart
+                      </Button>
                     </CardContent>
                   </Card>
 
@@ -391,12 +401,13 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                       color: "white",
                     }}
                     disabled={item.availableQuantity < 1}
-                    onClick={() => { handlePlaceOrder(item) }}
+                    onClick={() => {
+                      handlePlaceOrder(item);
+                    }}
                   >
                     Place Order
                   </Button>
                 </div>
-
               </Popup>
             </Marker>
           );
@@ -407,24 +418,26 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
       <div className="absolute  top-4 left-1/2 transform -translate-x-1/3 z-[1000] w-[1000px]">
         <ScrollArea className="w-full whitespace-nowrap rounded-full scrollbar-hidden">
           <div className="flex space-x-2 p-2">
-            {productsOfSelectedCategory.length > 0 && productsOfSelectedCategory.map((category, index) => (
-              <Button
-                key={index}
-                variant={
-                  selectedCategory.name === category.name
-                    ? "default"
-                    : "outline"
-                }
-                className={`flex items-center space-x-2 ${selectedCategory.name === category.name
-                  ? "bg-orange-400 text-white"
-                  : "bg-blue-400 text-white border-0"
+            {productsOfSelectedCategory.length > 0 &&
+              productsOfSelectedCategory.map((category, index) => (
+                <Button
+                  key={index}
+                  variant={
+                    selectedCategory.name === category.name
+                      ? "default"
+                      : "outline"
+                  }
+                  className={`flex items-center space-x-2 ${
+                    selectedCategory.name === category.name
+                      ? "bg-orange-400 text-white"
+                      : "bg-blue-400 text-white border-0"
                   } rounded-full px-4 py-2`}
-                onClick={() => handleCategoryClick(category)}
-              >
-                <span>{category.emoji}</span>
-                <span>{category.name}</span>
-              </Button>
-            ))}
+                  onClick={() => handleCategoryClick(category)}
+                >
+                  <span>{category.emoji}</span>
+                  <span>{category.name}</span>
+                </Button>
+              ))}
           </div>
           <ScrollBar
             orientation="horizontal"
@@ -478,22 +491,20 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
 
       {/* Authentication Buttons */}
       <div className="absolute top-6 right-35 z-[1000]">
-
         {isLoggedIn ? (
           <>
-          <Button>
-            <ShoppingCart/>
-            <span className="ml-2">{generateCartCount()} items</span>
-          </Button>
+            <Button>
+              <ShoppingCart />
+              <span className="ml-2">{generateCartCount()} items</span>
+            </Button>
             <Button
-            onClick={handleLogout}
-            variant="outline"
-            className="justify-start bg-orange-600 hover:bg-orange-400 text-blue-50"
-          >
-            Logout
-          </Button>
+              onClick={handleLogout}
+              variant="outline"
+              className="justify-start bg-orange-600 hover:bg-orange-400 text-blue-50"
+            >
+              Logout
+            </Button>
           </>
-        
         ) : (
           <div className="flex flex-row items-center space-x-4 ml-4">
             <Link href="/login">

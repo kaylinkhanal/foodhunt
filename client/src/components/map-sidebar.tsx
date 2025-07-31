@@ -42,10 +42,8 @@ const MapSidebar: React.FC<SidebarProps> = ({
         process.env.NEXT_PUBLIC_API_URL + "/orders/"
       );
 
-      if (data && Array.isArray(data.data)) {
-        setOrders(data.data);
-      } else if (Array.isArray(data)) {
-        setOrders(data);
+      if (data && Array.isArray(data.orders)) {
+        setOrders(data.orders);
       } else {
         console.warn("Unexpected API response format for orders:", data);
         setOrders([]);
@@ -95,7 +93,7 @@ const MapSidebar: React.FC<SidebarProps> = ({
   const handleOrderMouseLeave = () => {
     hoverTimeoutRef.current = setTimeout(() => {
       setHoveredOrderId(null);
-    }, 3000);
+    }, 500);
   };
 
   const handlePopupMouseEnter = () => {
@@ -108,7 +106,7 @@ const MapSidebar: React.FC<SidebarProps> = ({
   const handlePopupMouseLeave = () => {
     hoverTimeoutRef.current = setTimeout(() => {
       setHoveredOrderId(null);
-    }, 3000);
+    }, 500);
   };
 
   const handleClosePopup = () => {
