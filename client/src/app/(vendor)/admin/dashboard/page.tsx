@@ -26,15 +26,7 @@ const lineChartConfig = {
         label: "Revenue",
         color: "#FB5700",
     },
-} satisfies ChartConfig
-
-const statuses = [
-    { status: "Pending", fill: "#F6A719" },
-    { status: "In Progress", fill: "#FB5700" },
-    { status: "Completed", fill: "#10B981" },
-    { status: "Cancelled", fill: "#EF4444" },
-    { status: "Booked", fill: "#8B5CF6" },
-];
+} satisfies ChartConfig;
 
 const chartConfig: ChartConfig = {
     count: {
@@ -65,24 +57,44 @@ const chartConfig: ChartConfig = {
 const Dashboard = () => {
     const [orderData, setOrderData] = useState({ orders: [], totalDbOrders: 0 });
 
-    const fetchOrders = async () => {
-        try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/orders`);
-            setOrderData(response.data);
-        } catch (error) {
-            console.error("Error fetching order data:", error);
-        }
-    };
-
     useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/orders`);
+                setOrderData(response.data);
+            } catch (error) {
+                console.error("Error fetching order data:", error);
+            }
+        };
+
         fetchOrders();
     }, []);
 
+    // 1. Get today's date and subtract 30 days
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
+
+    // 2. Filter orders from past 1 month
+    const recentOrders = orderData.orders.filter((order: any) => {
+        const createdAtDate = new Date(order.createdAt);
+        return createdAtDate >= oneMonthAgo;
+    });
+
+    // 3. Count statuses for filtered orders
     const statusCounts: Record<string, number> = {};
-    orderData.orders.forEach((order: any) => {
+    recentOrders.forEach((order: any) => {
         const status = order.status;
         statusCounts[status] = (statusCounts[status] || 0) + 1;
     });
+
+    // 4. Define chartData using your defined colors
+    const statuses = [
+        { status: "Pending", fill: "#F6A719" },
+        { status: "In Progress", fill: "#FB5700" },
+        { status: "Completed", fill: "#10B981" },
+        { status: "Cancelled", fill: "#EF4444" },
+        { status: "Booked", fill: "#8B5CF6" },
+    ];
 
     const chartData = statuses.map((item) => ({
         status: item.status,
@@ -122,15 +134,12 @@ const Dashboard = () => {
 
     return (
         <div style={{ minHeight: "100vh", backgroundColor: "#FFFFFF", padding: "1.5rem" }}>
-            {/* Header */}
             <div className="mb-8">
                 <h1 style={{ fontSize: "1.875rem", fontWeight: "bold", color: "#FB5700", marginBottom: "0.5rem" }}>Admin Dashboard</h1>
                 <p style={{ color: "#F6A719" }}>Monitor your business performance and analytics</p>
             </div>
 
-            {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                {/* Total Orders */}
                 <Card className="relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-20 h-20 transform translate-x-8 -translate-y-8">
                         <div className="w-full h-full rounded-full" style={{ backgroundColor: "#FB5700", opacity: 0.1 }}></div>
@@ -141,13 +150,9 @@ const Dashboard = () => {
                     </CardHeader>
                     <CardContent>
                         <div style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#FB5700" }}>{totalOrders}</div>
-                        {/* <p style={{ fontSize: "0.75rem", color: "#F6A719", marginTop: "0.25rem" }}>
-                            Total Order
-                        </p> */}
                     </CardContent>
                 </Card>
 
-                {/* Total Revenue */}
                 <Card className="relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-20 h-20 transform translate-x-8 -translate-y-8">
                         <div className="w-full h-full rounded-full" style={{ backgroundColor: "#F6A719", opacity: 0.1 }}></div>
@@ -158,13 +163,9 @@ const Dashboard = () => {
                     </CardHeader>
                     <CardContent>
                         <div style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#FB5700" }}>${totalRevenue.toLocaleString()}</div>
-                        {/* <p style={{ fontSize: "0.75rem", color: "#F6A719", marginTop: "0.25rem" }}>
-                            +5.2% from last month
-                        </p> */}
                     </CardContent>
                 </Card>
 
-                {/* Completed Orders */}
                 <Card className="relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-20 h-20 transform translate-x-8 -translate-y-8">
                         <div className="w-full h-full rounded-full" style={{ backgroundColor: "#10B981", opacity: 0.1 }}></div>
@@ -175,13 +176,9 @@ const Dashboard = () => {
                     </CardHeader>
                     <CardContent>
                         <div style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#FB5700" }}>{completedOrders}</div>
-                        {/* <p style={{ fontSize: "0.75rem", color: "#F6A719", marginTop: "0.25rem" }}>
-                            +12% from last month
-                        </p> */}
                     </CardContent>
                 </Card>
 
-                {/* Pending Orders */}
                 <Card className="relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-20 h-20 transform translate-x-8 -translate-y-8">
                         <div className="w-full h-full rounded-full" style={{ backgroundColor: "#F6A719", opacity: 0.1 }}></div>
@@ -192,16 +189,11 @@ const Dashboard = () => {
                     </CardHeader>
                     <CardContent>
                         <div style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#FB5700" }}>{pendingOrders}</div>
-                        {/* <p style={{ fontSize: "0.75rem", color: "#F6A719", marginTop: "0.25rem" }}>
-                            -3% from last month
-                        </p> */}
                     </CardContent>
                 </Card>
             </div>
 
-            {/* Charts */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                {/* Revenue Chart */}
                 <div className="xl:col-span-2">
                     <Card className="shadow-lg border-0">
                         <CardHeader className="border-b pb-4">
@@ -249,7 +241,6 @@ const Dashboard = () => {
                     </Card>
                 </div>
 
-                {/* Pie Chart */}
                 <Card className="shadow-lg border-0">
                     <CardHeader className="border-b pb-4">
                         <div className="flex items-center space-x-2">
