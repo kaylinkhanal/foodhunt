@@ -238,9 +238,10 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
     setProductList(reducedArr)
 
   }
-  const generateCartCount  =()=>{
-    return cart.reduce((total, item) => total + item.quantity, 0);
-  }
+const generateCartCount = () => {
+  return Array.isArray(cart) ? cart.reduce((total, item) => total + item.quantity, 0) : 0;
+};
+
 
   const handleIncrement = (clickedItem) => {
     const temp = [...productList]
