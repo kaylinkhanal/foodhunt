@@ -111,7 +111,7 @@ const Dashboard = () => {
             if (!monthlyTotals[monthName]) {
                 monthlyTotals[monthName] = 0;
             }
-            monthlyTotals[monthName] += order.price;
+            monthlyTotals[monthName] += order.price ;
         });
 
         const allMonths = [
@@ -209,11 +209,11 @@ const Dashboard = () => {
                                     <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#F6A719" />
                                     <XAxis
                                         dataKey="month"
-                                        tickLine={false}
+                                        tickLine={true}
                                         axisLine={false}
                                         tickMargin={8}
                                         tick={{ fill: "#FB5700", fontSize: 12 }}
-                                        tickFormatter={(value) => value.slice(0, 3)}
+                                        tickFormatter={(value) => value.slice(0, 2)}
                                     />
                                     <ChartTooltip
                                         cursor={{ stroke: "#FB5700", strokeWidth: 1, strokeDasharray: "4 4" }}
