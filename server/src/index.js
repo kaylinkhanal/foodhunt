@@ -19,7 +19,9 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, { cors: { origin: "*" } });
 
 io.on("connection", (socket) => {
-  // ...
+  socket.on('order', (orderId)=>{
+    io.emit('orderId', orderId);
+  })
 });
 
 app.use('/images',express.static('uploads'));
