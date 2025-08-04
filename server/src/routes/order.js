@@ -73,6 +73,18 @@ orderRouter.get("/orders/:userId", async (req, res) => {
   res.json(orders);
 });
 
+
+orderRouter.get("/orders-insights", async (req, res) => {
+  console.log(req.query.sellerId)
+  const orders = await Order.find().populate({
+    path: 'productId',
+    select: 'name discountedPrice price _id sellerId',
+    match: { 'sellerId': req.query.sellerId },
+  })
+  res.json(orders);
+});
+
+
 orderRouter.patch("/orders/:orderId", async (req, res) => {
   try {
     const order = await Order.findById(req.params.orderId);
