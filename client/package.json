@@ -50,6 +50,7 @@
     "react-leaflet": "^5.0.0",
     "react-redux": "^9.2.0",
     "react-to-pdf": "^2.0.1",
+    "recharts": "^2.15.4",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
     "sonner": "^2.0.5",

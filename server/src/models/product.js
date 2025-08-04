@@ -66,13 +66,6 @@ const productSchema = new Schema(
     // Expiration and Availability
     expiryDate: {
       type: Date,
-      required: true,
-      validate: {
-        validator: function (v) {
-          return v > new Date(); // Expiry date must be in the future
-        },
-        message: "Expiry date must be in the future.",
-      },
     },
     availableQuantity: {
       type: Number,
