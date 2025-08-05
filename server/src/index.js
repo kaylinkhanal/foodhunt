@@ -9,6 +9,7 @@ import productRouter from "./routes/product.js";
 import orderRouter from "./routes/order.js";
 import categoryRouter from "./routes/category.js";
 import { Server } from "socket.io";
+import notificationRouter from "./routes/notificationRoutes.js";
 dotenv.config();
 
 const port = process.env.PORT;
@@ -31,6 +32,8 @@ app.use(kycRouter);
 app.use(productRouter);
 app.use(orderRouter);
 app.use(categoryRouter);
+app.use(notificationRouter);
+
 
 httpServer.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
