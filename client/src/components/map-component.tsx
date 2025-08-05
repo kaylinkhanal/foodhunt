@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import {socket } from "@/lib/socket";
 import { Minus, Plus, ShoppingBagIcon, ShoppingCart } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -105,7 +106,14 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
   const [productList, setProductList] = useState([]);
   const {cart} = useSelector((state) => state.product);
   const [productsOfSelectedCategory, setProductsOfSelectedCategory] = useState([])
+  const [newNotification, setNewNotification] = useState(false);
+  useEffect(()=>{
+    socket.on('connection')
+    socket.on('orderId', (orderId) => {
+      setNewNotification(true)
+    })
 
+  },[])
   const [foodSearch, setFoodSearch] = useState("");
   const userPreferences = useSelector((state) => state.user.userPreferences);
   const [foodCategories, setFoodCategories] = useState([])
@@ -198,7 +206,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
       price: item.quantity * item.discountedPrice,
       paymentMethod: 'Cash',
     };
-
+    socket.emit('order', _id);
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/orders`,
@@ -395,6 +403,8 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                   >
                     Place Order
                   </Button>
+
+                  <div className={`${newNotification ? 'bg-red-200 w-2 h-2': ''}`}></div>
                 </div>
 
               </Popup>
