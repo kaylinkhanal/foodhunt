@@ -46,6 +46,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { socket } from "@/lib/socket";
 
 type OrderStatus =
   | "Pending"
@@ -85,97 +86,104 @@ export default function SellerOrderPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(4) 
-    // Pagination logic with ellipses
-    const generatePaginationItems = () => {
-      const items = []
-      const maxVisiblePages = 5
-      const halfVisible = Math.floor(maxVisiblePages / 2)
-  
-      let startPage = Math.max(1, page - halfVisible)
-      let endPage = Math.min(totalPages, page + halfVisible)
-  
-      // Adjust if we're near the beginning or end
-      if (endPage - startPage + 1 < maxVisiblePages) {
-        if (startPage === 1) {
-          endPage = Math.min(totalPages, startPage + maxVisiblePages - 1)
-        } else {
-          startPage = Math.max(1, endPage - maxVisiblePages + 1)
-        }
+  const [totalPages, setTotalPages] = useState(4)
+  const [newNotification, setNewNotification] = useState(false);
+  useEffect(() => {
+    socket.on('connection')
+    socket.on('orderId', (orderId) => {
+      setNewNotification(true)
+    })
+  }, [])
+  // Pagination logic with ellipses
+  const generatePaginationItems = () => {
+    const items = []
+    const maxVisiblePages = 5
+    const halfVisible = Math.floor(maxVisiblePages / 2)
+
+    let startPage = Math.max(1, page - halfVisible)
+    let endPage = Math.min(totalPages, page + halfVisible)
+
+    // Adjust if we're near the beginning or end
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      if (startPage === 1) {
+        endPage = Math.min(totalPages, startPage + maxVisiblePages - 1)
+      } else {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1)
       }
-  
-      // Add first page and ellipsis if needed
-      if (startPage > 1) {
-        items.push(
-          <PaginationItem key="1">
-            <PaginationLink
-              href="#"
-              onClick={(e) => {
-                e.preventDefault()
-                setPage(1)
-              }}
-              className={page === 1 ? "bg-primary text-primary-foreground" : ""}
-            >
-              1
-            </PaginationLink>
-          </PaginationItem>,
-        )
-  
-        if (startPage > 2) {
-          items.push(
-            <PaginationItem key="ellipsis-start">
-              <PaginationEllipsis />
-            </PaginationItem>,
-          )
-        }
-      }
-  
-      // Add visible page numbers
-      for (let i = startPage; i <= endPage; i++) {
-        items.push(
-          <PaginationItem key={i}>
-            <PaginationLink
-              href="#"
-              onClick={(e) => {
-                e.preventDefault()
-                setPage(i)
-              }}
-              className={page === i ? "bg-primary text-primary-foreground" : ""}
-            >
-              {i}
-            </PaginationLink>
-          </PaginationItem>,
-        )
-      }
-  
-      // Add ellipsis and last page if needed
-      if (endPage < totalPages) {
-        if (endPage < totalPages - 1) {
-          items.push(
-            <PaginationItem key="ellipsis-end">
-              <PaginationEllipsis />
-            </PaginationItem>,
-          )
-        }
-  
-        items.push(
-          <PaginationItem key={totalPages}>
-            <PaginationLink
-              href="#"
-              onClick={(e) => {
-                e.preventDefault()
-                setPage(totalPages)
-              }}
-              className={page === totalPages ? "bg-primary text-primary-foreground" : ""}
-            >
-              {totalPages}
-            </PaginationLink>
-          </PaginationItem>,
-        )
-      }
-  
-      return items
     }
+
+    // Add first page and ellipsis if needed
+    if (startPage > 1) {
+      items.push(
+        <PaginationItem key="1">
+          <PaginationLink
+            href="#"
+            onClick={(e) => {
+              e.preventDefault()
+              setPage(1)
+            }}
+            className={page === 1 ? "bg-primary text-primary-foreground" : ""}
+          >
+            1
+          </PaginationLink>
+        </PaginationItem>,
+      )
+
+      if (startPage > 2) {
+        items.push(
+          <PaginationItem key="ellipsis-start">
+            <PaginationEllipsis />
+          </PaginationItem>,
+        )
+      }
+    }
+
+    // Add visible page numbers
+    for (let i = startPage; i <= endPage; i++) {
+      items.push(
+        <PaginationItem key={i}>
+          <PaginationLink
+            href="#"
+            onClick={(e) => {
+              e.preventDefault()
+              setPage(i)
+            }}
+            className={page === i ? "bg-primary text-primary-foreground" : ""}
+          >
+            {i}
+          </PaginationLink>
+        </PaginationItem>,
+      )
+    }
+
+    // Add ellipsis and last page if needed
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        items.push(
+          <PaginationItem key="ellipsis-end">
+            <PaginationEllipsis />
+          </PaginationItem>,
+        )
+      }
+
+      items.push(
+        <PaginationItem key={totalPages}>
+          <PaginationLink
+            href="#"
+            onClick={(e) => {
+              e.preventDefault()
+              setPage(totalPages)
+            }}
+            className={page === totalPages ? "bg-primary text-primary-foreground" : ""}
+          >
+            {totalPages}
+          </PaginationLink>
+        </PaginationItem>,
+      )
+    }
+
+    return items
+  }
   const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
     try {
       await axios.patch(
@@ -194,7 +202,7 @@ export default function SellerOrderPage() {
 
   const fetchOrders = async () => {
     try {
-      const {data: {orders, totalDbOrders}} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/orders?pageSize=5&page=${page}` )
+      const { data: { orders, totalDbOrders } } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/orders?pageSize=5&page=${page}`)
       setOrders(orders)
       setTotalPages(Math.ceil(totalDbOrders / 5)) // Assuming pageSize is 5
     } catch (error) {
@@ -226,7 +234,7 @@ export default function SellerOrderPage() {
   const pendingCount = 12
   const preparingCount = 100
   const readyCount = 20
-  const todayRevenue =123312
+  const todayRevenue = 123312
   return (
     <div className="min-h-screen  w-full bg-gray-50">
       {/* Header */}
@@ -239,7 +247,9 @@ export default function SellerOrderPage() {
               </h1>
               <p className="text-gray-600">Manage your restaurant orders</p>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 relative">
+              <Bell onClick={() => setNewNotification(!newNotification)} />
+              <div className={`${newNotification ? 'bg-red-600 w-2 h-2 rounded-full absolute left-4 top-0.5' : ""}`}></div>
               <Badge variant="outline" className="text-sm">
                 <Bell className="h-4 w-4 mr-1" />
                 {pendingCount + preparingCount} Active Orders
@@ -305,7 +315,7 @@ export default function SellerOrderPage() {
                     Today's Revenue
                   </p>
                   <p className="text-2xl font-bold text-gray-900">
-               321
+                    321
                   </p>
                 </div>
               </div>
@@ -378,7 +388,7 @@ export default function SellerOrderPage() {
                       </TableCell>
                       <TableCell>
                         <div className="space-y-1">
-                       name
+                          name
                           {/* {order.items.slice(0, 2).map((item) => (
                             <div key={item._id} className="text-sm">
                               {item.quantity}x {item.name}
@@ -390,13 +400,12 @@ export default function SellerOrderPage() {
                         </div>
                       </TableCell>
                       <TableCell className="font-medium">
-                       312
+                        312
                       </TableCell>
                       <TableCell>
                         <Badge
-                          className={`${
-                            statusColors[order.status]
-                          } flex items-center w-fit`}
+                          className={`${statusColors[order.status]
+                            } flex items-center w-fit`}
                         >
                           {getStatusIcon(order.status)}
                           <span className="ml-1 capitalize">
@@ -477,32 +486,32 @@ export default function SellerOrderPage() {
               </Table>
             </div>
             <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        if (page > 1) setPage(page - 1)
-                      }}
-                      className={page === 1 ? "pointer-events-none opacity-50" : ""}
-                    />
-                  </PaginationItem>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      if (page > 1) setPage(page - 1)
+                    }}
+                    className={page === 1 ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
 
-                  {generatePaginationItems()}
+                {generatePaginationItems()}
 
-                  <PaginationItem>
-                    <PaginationNext
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        if (page < totalPages) setPage(page + 1)
-                      }}
-                      className={page === totalPages ? "pointer-events-none opacity-50" : ""}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      if (page < totalPages) setPage(page + 1)
+                    }}
+                    className={page === totalPages ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           </CardContent>
         </Card>
 
@@ -552,7 +561,7 @@ export default function SellerOrderPage() {
                           </p>
                         </div>
                         <p className="font-medium">
-                       321321
+                          321321
                         </p>
                       </div>
                     ))}
