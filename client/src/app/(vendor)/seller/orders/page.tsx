@@ -247,9 +247,13 @@ export default function SellerOrderPage() {
               </h1>
               <p className="text-gray-600">Manage your restaurant orders</p>
             </div>
-            <div className="flex items-center space-x-4 relative">
-              <Bell onClick={() => setNewNotification(!newNotification)} />
-              <div className={`${newNotification ? 'bg-red-600 w-2 h-2 rounded-full absolute left-4 top-0.5' : ""}`}></div>
+            <div className="flex items-center space-x-4">
+              <div className="relative cursor-pointer" onClick={() => setNewNotification(false)}>
+                <Bell className="w-6 h-6" />
+                {newNotification && (
+                  <div className="bg-red-600 w-2 h-2 rounded-full absolute top-0.5 left-4" />
+                )}
+              </div>
               <Badge variant="outline" className="text-sm">
                 <Bell className="h-4 w-4 mr-1" />
                 {pendingCount + preparingCount} Active Orders

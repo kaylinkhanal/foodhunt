@@ -491,8 +491,12 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
         {isLoggedIn ? (
           <>
             <div className="flex gap-3 relative">
-              <Bell onClick={() => setNewNotification(false)} />
-              <div className={`${newNotification ? 'bg-red-600 w-2 h-2 rounded-full absolute left-4' : ""}`}></div>
+              <div className="relative cursor-pointer" onClick={() => setNewNotification(false)}>
+                <Bell className="w-6 h-6" />
+                {newNotification && (
+                  <div className="bg-red-600 w-2 h-2 rounded-full absolute top-0.5 left-4" />
+                )}
+              </div>
               <Button>
                 <ShoppingCart />
                 <span className="ml-2">{generateCartCount()} items</span>
