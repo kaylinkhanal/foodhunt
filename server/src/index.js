@@ -39,11 +39,6 @@ httpServer.listen(port, () => {
 });
 
 
-
-
-
-
-
 //  web socket 
 //   --> req body, req.query, params
 //   --> REST: methods, POST, GET, PUT, DELETE, not the same in web socket setup, 
