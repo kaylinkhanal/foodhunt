@@ -14,6 +14,7 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 import { Button } from "./ui/button"
+import { setNewNotification } from "@/redux/reducerSlices/productSlice"
 
 const Sidebar = () => {
   const dispatch = useDispatch()
@@ -23,6 +24,7 @@ const Sidebar = () => {
     dispatch(logoutUser())
     router.push("/login")
   }
+  const {newNotification} = useSelector(state => state.product)
 
   // const navItems = [
   //   { label: "Dashboard", path: "/seller/dashboard", icon: BarChart3 },
@@ -67,11 +69,15 @@ const Sidebar = () => {
           <Link
             key={id}
             href={path}
+            onClick={()=> label == 'Orders' && dispatch(setNewNotification(false))}
             className="group flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium hover:bg-orange-50 hover:text-orange-600 transition-all"
           >
             {/* <Icon className="w-5 h-5 text-gray-500 group-hover:text-orange-500 transition-colors" /> */}
             <span>{label}</span>
             <span className="ml-auto w-2 h-2 rounded-full bg-orange-400 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+            {newNotification && label == 'Orders' && (
+            <span className="ml-auto w-2 h-2 rounded-full bg-orange-400 opacity-0 opacity-100 transition-opacity"></span>
+            )}
           </Link>
         ))}
       </nav>

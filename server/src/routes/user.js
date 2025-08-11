@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 const saltRounds = 10;
 import User from "../models/user.js";
 import sendEmail from "../utils/sendEmail.js";
+import validateToken from "../middleware/validateToken.js";
 const userRouter = Router();
 
 userRouter.post("/register", async (req, res) => {
@@ -41,7 +42,7 @@ userRouter.post("/login", async (req, res) => {
   });
 });
 
-userRouter.get("/users", async (req, res) => {
+userRouter.get("/users", validateToken,  async (req, res) => {
   let data;
   if (req.query.role) {
     data = await User.find({ role: req.query.role, isApproved: false });

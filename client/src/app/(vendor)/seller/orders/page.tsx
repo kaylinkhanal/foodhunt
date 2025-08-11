@@ -47,6 +47,8 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { socket } from "@/lib/socket";
+import { setNewNotification } from "@/redux/reducerSlices/productSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 type OrderStatus =
   | "Pending"
@@ -87,11 +89,15 @@ export default function SellerOrderPage() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(4)
-  const [newNotification, setNewNotification] = useState(false);
+  const dispatch = useDispatch()
+  const {_id} = useSelector(state=> state.user)
+
+  const {newNotification} = useSelector(state=> state.product)
   useEffect(() => {
     socket.on('connection')
+    socket.on('user-active', _id)
     socket.on('orderId', (orderId) => {
-      setNewNotification(true)
+      dispatch(setNewNotification(true))
     })
   }, [])
   // Pagination logic with ellipses
@@ -248,12 +254,12 @@ export default function SellerOrderPage() {
               <p className="text-gray-600">Manage your restaurant orders</p>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="relative cursor-pointer" onClick={() => setNewNotification(false)}>
+              {/* <div className="relative cursor-pointer" onClick={() => setNewNotification(false)}>
                 <Bell className="w-6 h-6" />
                 {newNotification && (
                   <div className="bg-red-600 w-2 h-2 rounded-full absolute top-0.5 left-4" />
                 )}
-              </div>
+              </div> */}
               <Badge variant="outline" className="text-sm">
                 <Bell className="h-4 w-4 mr-1" />
                 {pendingCount + preparingCount} Active Orders

@@ -14,6 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import axiosInstance from "@/lib/axios";
 import { Textarea } from "@/components/ui/textarea";
 import {
   AlertDialog,
@@ -59,7 +60,7 @@ export default function CategoriesPage() {
   );
 
   const fetchCategories = async () => {
-    const { data } = await axios.get("http://localhost:8080/categories");
+    const { data } = await axiosInstance.get("categories");
     setCategories(data);
   };
 
@@ -515,3 +516,5 @@ export default function CategoriesPage() {
     </div>
   );
 }
+
+

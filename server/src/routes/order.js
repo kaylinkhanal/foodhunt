@@ -75,7 +75,6 @@ orderRouter.get("/orders/:userId", async (req, res) => {
 
 
 orderRouter.get("/orders-insights", async (req, res) => {
-  console.log(req.query.sellerId)
   const orders = await Order.find().populate({
     path: 'productId',
     select: 'name discountedPrice price _id sellerId',

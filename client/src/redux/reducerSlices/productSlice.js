@@ -2,7 +2,8 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   cart: [],
-  aggregatedCart: []
+  aggregatedCart: [],
+  newNotification: false
     };
 
 const productSlice = createSlice({
@@ -28,9 +29,12 @@ const productSlice = createSlice({
     removeFromCart: (state, action) => {
     
     },
+    setNewNotification: (state, action) => {
+      state.newNotification = action.payload;
+    },
   },
 });
 
-export const { addToCart, removeFromCart } = productSlice.actions;
+export const { addToCart, removeFromCart,setNewNotification } = productSlice.actions;
 
 export default productSlice.reducer;

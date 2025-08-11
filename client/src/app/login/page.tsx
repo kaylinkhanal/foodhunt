@@ -59,7 +59,7 @@ const Login = () => {
     { setSubmitting }: any
   ) => {
     const { data } = await axios.post(
-      process.env.NEXT_PUBLIC_API_URL + "/login",
+     "/api/login",
       values
     );
     if (data?.isLoggedIn) {

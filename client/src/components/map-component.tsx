@@ -111,7 +111,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
     socket.on('orderId', (orderId) => {
       setNewNotification(true)
     })
-
+   
   }, [])
   const [foodSearch, setFoodSearch] = useState("");
   const userPreferences = useSelector((state) => state.user.userPreferences);
@@ -189,6 +189,10 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
 
   const handleLogout = () => {
     dispatch(logoutUser());
+  socket.emit('user-logout', _id);
+
+
+  socket.disconnect();
   };
 
   const updateProduct = async (item) => {

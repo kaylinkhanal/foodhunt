@@ -2,44 +2,21 @@ import { Router } from "express";
 import Category from "../models/category.js";
 import CapitalizeWords from "../utils/capitalizeWords.js";
 import Product from "../models/product.js";
+import { addNewCategories, getAllCategories, getProductsByCategoryId } from "../controllers/category.js";
+import validateToken from "../middleware/validateToken.js";
 
 const categoryrouter = Router();
 
 // POST - Create a new category
-categoryrouter.post("/categories", async (req, res) => {
-  try {
-    const { name, description, emoji } = req.body;
-    const category = new Category({
-      name: CapitalizeWords(name),
-      description,
-      emoji,
-    });
-    await category.save();
-    res.status(201).json({ message: "Category created", category });
-  } catch (error) {
-    res.status(500).json({ message: `Server error: ${error.message}` });
-  }
-});
+categoryrouter.post("/categories", addNewCategories);
 
 // GET - Get all categories
-categoryrouter.get("/categories", async (req, res) => {
-  try {
-    const data = await Category.find().sort({ createdAt: -1 });
-    res.status(200).json(data);
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error });
-  }
-});
+categoryrouter.get("/categories",validateToken, getAllCategories);
 
 
-categoryrouter.get("/categories/:categoryId/products", async (req, res) => {
-  try {
-    const data = await Product.find({category: req.params.categoryId})
-    res.status(200).json(data);
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error });
-  }
-});
+categoryrouter.get("/categories/:categoryId/products", getProductsByCategoryId);
+
+
 // DELETE - Delete a category
 categoryrouter.delete("/categories/:id", async (req, res) => {
   try {

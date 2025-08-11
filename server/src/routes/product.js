@@ -162,3 +162,14 @@ productRouter.get("/stock-count/:id", async (req, res) => {
 })
 
 export default productRouter;
+
+
+
+// graphql    vs REST
+
+// // GraphQL vs REST
+// -POST                           - POST, PATCH, PUT, ...
+// -1 endpoint                     - multiple endpoints
+// - query/mutations               - Create(POST) (PUT/PATCH) detele(DELETE)  | read(GET) update
+// - body                          - query params
+

@@ -46,7 +46,6 @@ kycRouter.get("/kycs", async (req, res) => {
 
 kycRouter.patch("/kycs/:id", async (req, res) => {
   const kyc = await SellerKyc.findById(req.params.id);
-  console.log(kyc);
   kyc.isKycApproved = true;
   await kyc.save();
   res.json({ message: "KYC approved successfully" });
