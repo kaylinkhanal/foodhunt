@@ -1,6 +1,9 @@
 "use client";
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 447a190aabf8db9367714cb8458c1572ade9f77f
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -47,6 +50,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { socket } from "@/lib/socket";
 
 type OrderStatus =
   | "Pending"
@@ -81,102 +85,114 @@ const statusColors = {
 };
 
 export default function SellerOrderPage() {
-  const [orders, setOrders] = useState<Order[]>([])
-  const [statusFilter, setStatusFilter] = useState<string>("all")
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
-  const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(4) 
-    // Pagination logic with ellipses
-    const generatePaginationItems = () => {
-      const items = []
-      const maxVisiblePages = 5
-      const halfVisible = Math.floor(maxVisiblePages / 2)
-  
-      let startPage = Math.max(1, page - halfVisible)
-      let endPage = Math.min(totalPages, page + halfVisible)
-  
-      // Adjust if we're near the beginning or end
-      if (endPage - startPage + 1 < maxVisiblePages) {
-        if (startPage === 1) {
-          endPage = Math.min(totalPages, startPage + maxVisiblePages - 1)
-        } else {
-          startPage = Math.max(1, endPage - maxVisiblePages + 1)
-        }
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(4);
+  const [newNotification, setNewNotification] = useState(false);
+
+  useEffect(() => {
+    socket.on("connection");
+    socket.on("orderId", (orderId) => {
+      setNewNotification(true);
+    });
+  }, []);
+
+  // Pagination logic with ellipses
+  const generatePaginationItems = () => {
+    const items = [];
+    const maxVisiblePages = 5;
+    const halfVisible = Math.floor(maxVisiblePages / 2);
+
+    let startPage = Math.max(1, page - halfVisible);
+    let endPage = Math.min(totalPages, page + halfVisible);
+
+    // Adjust if we're near the beginning or end
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      if (startPage === 1) {
+        endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+      } else {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
       }
-  
-      // Add first page and ellipsis if needed
-      if (startPage > 1) {
-        items.push(
-          <PaginationItem key="1">
-            <PaginationLink
-              href="#"
-              onClick={(e) => {
-                e.preventDefault()
-                setPage(1)
-              }}
-              className={page === 1 ? "bg-primary text-primary-foreground" : ""}
-            >
-              1
-            </PaginationLink>
-          </PaginationItem>,
-        )
-  
-        if (startPage > 2) {
-          items.push(
-            <PaginationItem key="ellipsis-start">
-              <PaginationEllipsis />
-            </PaginationItem>,
-          )
-        }
-      }
-  
-      // Add visible page numbers
-      for (let i = startPage; i <= endPage; i++) {
-        items.push(
-          <PaginationItem key={i}>
-            <PaginationLink
-              href="#"
-              onClick={(e) => {
-                e.preventDefault()
-                setPage(i)
-              }}
-              className={page === i ? "bg-primary text-primary-foreground" : ""}
-            >
-              {i}
-            </PaginationLink>
-          </PaginationItem>,
-        )
-      }
-  
-      // Add ellipsis and last page if needed
-      if (endPage < totalPages) {
-        if (endPage < totalPages - 1) {
-          items.push(
-            <PaginationItem key="ellipsis-end">
-              <PaginationEllipsis />
-            </PaginationItem>,
-          )
-        }
-  
-        items.push(
-          <PaginationItem key={totalPages}>
-            <PaginationLink
-              href="#"
-              onClick={(e) => {
-                e.preventDefault()
-                setPage(totalPages)
-              }}
-              className={page === totalPages ? "bg-primary text-primary-foreground" : ""}
-            >
-              {totalPages}
-            </PaginationLink>
-          </PaginationItem>,
-        )
-      }
-  
-      return items
     }
+
+    // Add first page and ellipsis if needed
+    if (startPage > 1) {
+      items.push(
+        <PaginationItem key="1">
+          <PaginationLink
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              setPage(1);
+            }}
+            className={page === 1 ? "bg-primary text-primary-foreground" : ""}
+          >
+            1
+          </PaginationLink>
+        </PaginationItem>
+      );
+
+      if (startPage > 2) {
+        items.push(
+          <PaginationItem key="ellipsis-start">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+    }
+
+    // Add visible page numbers
+    for (let i = startPage; i <= endPage; i++) {
+      items.push(
+        <PaginationItem key={i}>
+          <PaginationLink
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              setPage(i);
+            }}
+            className={page === i ? "bg-primary text-primary-foreground" : ""}
+          >
+            {i}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    // Add ellipsis and last page if needed
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        items.push(
+          <PaginationItem key="ellipsis-end">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+
+      items.push(
+        <PaginationItem key={totalPages}>
+          <PaginationLink
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              setPage(totalPages);
+            }}
+            className={
+              page === totalPages ? "bg-primary text-primary-foreground" : ""
+            }
+          >
+            {totalPages}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    return items;
+  };
+
   const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
     try {
       await axios.patch(
@@ -195,17 +211,17 @@ export default function SellerOrderPage() {
 
   const fetchOrders = async () => {
     try {
-      const {data: {orders, totalDbOrders}} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/orders?pageSize=5&page=${page}` )
-      setOrders(orders)
-      setTotalPages(Math.ceil(totalDbOrders / 5)) // Assuming pageSize is 5
+      const {
+        data: { orders, totalDbOrders },
+      } = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/orders?pageSize=5&page=${page}`
+      );
+      setOrders(orders);
+      setTotalPages(Math.ceil(totalDbOrders / 5)); // Assuming pageSize is 5
     } catch (error) {
       console.error("Error fetching orders:", error);
     }
   };
-
-
-
-
 
   useEffect(() => {
     fetchOrders();
@@ -221,6 +237,7 @@ export default function SellerOrderPage() {
         return <Bell className="h-4 w-4" />;
       default:
         return null;
+<<<<<<< HEAD
 =======
 const orders = [
   { id: "ORD-2024-001", customer: "Sarah Johnson", date: "2024-06-25", total: 479.97, items: ["Premium Headphones (x2)", "Bluetooth Speaker (x1)"], status: "Pending" },
@@ -308,11 +325,51 @@ const Orders = () => {
             <p className="text-3xl font-bold text-white mt-2">{getStatusCount("Cancelled")}</p>
             <span className="text-2xl text-white">❌</span>
 >>>>>>> 3cc67fad624dfd05f7b615060c607d42cc077eeb
+=======
+    }
+  };
+
+  const pendingCount = 12;
+  const preparingCount = 100;
+  const readyCount = 20;
+  const todayRevenue = 123312;
+
+  return (
+    <div className="min-h-screen  w-full bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-6">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Order Management
+              </h1>
+              <p className="text-gray-600">Manage your restaurant orders</p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div
+                className="relative cursor-pointer"
+                onClick={() => setNewNotification(false)}
+              >
+                <Bell className="w-6 h-6" />
+                {newNotification && (
+                  <div className="bg-red-600 w-2 h-2 rounded-full absolute top-0.5 left-4" />
+                )}
+              </div>
+              <Badge variant="outline" className="text-sm">
+                <Bell className="h-4 w-4 mr-1" />
+                {pendingCount + preparingCount} Active Orders
+              </Badge>
+            </div>
+>>>>>>> 447a190aabf8db9367714cb8458c1572ade9f77f
           </div>
         </div>
       </div>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 447a190aabf8db9367714cb8458c1572ade9f77f
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -368,9 +425,7 @@ const Orders = () => {
                   <p className="text-sm font-medium text-gray-600">
                     Today's Revenue
                   </p>
-                  <p className="text-2xl font-bold text-gray-900">
-               321
-                  </p>
+                  <p className="text-2xl font-bold text-gray-900">321</p>
                 </div>
               </div>
             </CardContent>
@@ -442,7 +497,7 @@ const Orders = () => {
                       </TableCell>
                       <TableCell>
                         <div className="space-y-1">
-                       name
+                          name
                           {/* {order.items.slice(0, 2).map((item) => (
                             <div key={item._id} className="text-sm">
                               {item.quantity}x {item.name}
@@ -453,9 +508,7 @@ const Orders = () => {
                           )} */}
                         </div>
                       </TableCell>
-                      <TableCell className="font-medium">
-                       312
-                      </TableCell>
+                      <TableCell className="font-medium">312</TableCell>
                       <TableCell>
                         <Badge
                           className={`${
@@ -541,32 +594,34 @@ const Orders = () => {
               </Table>
             </div>
             <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        if (page > 1) setPage(page - 1)
-                      }}
-                      className={page === 1 ? "pointer-events-none opacity-50" : ""}
-                    />
-                  </PaginationItem>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (page > 1) setPage(page - 1);
+                    }}
+                    className={page === 1 ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
 
-                  {generatePaginationItems()}
+                {generatePaginationItems()}
 
-                  <PaginationItem>
-                    <PaginationNext
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        if (page < totalPages) setPage(page + 1)
-                      }}
-                      className={page === totalPages ? "pointer-events-none opacity-50" : ""}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (page < totalPages) setPage(page + 1);
+                    }}
+                    className={
+                      page === totalPages ? "pointer-events-none opacity-50" : ""
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           </CardContent>
         </Card>
 
@@ -615,9 +670,7 @@ const Orders = () => {
                             Quantity: {item.quantity}
                           </p>
                         </div>
-                        <p className="font-medium">
-                       321321
-                        </p>
+                        <p className="font-medium">321321</p>
                       </div>
                     ))}
                   </div>
@@ -675,6 +728,7 @@ const Orders = () => {
                 </div>
               </CardContent>
             </Card>
+<<<<<<< HEAD
 =======
           <div className="bg-orange-300 p-6 rounded-xl shadow-lg mb-8 flex items-center justify-center">
             <div className="flex items-center  justify-between space-x-4 w-full ">
@@ -693,54 +747,11 @@ const Orders = () => {
               </select>
             </div>
 >>>>>>> 3cc67fad624dfd05f7b615060c607d42cc077eeb
+=======
+>>>>>>> 447a190aabf8db9367714cb8458c1572ade9f77f
           </div>
-
-      <div className="bg-white p-6 rounded-xl shadow-lg">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="bg-gradient-to-r from-orange-600 to-orange-500 text-white">
-              <tr>
-                <th className="py-3 px-4 font-semibold uppercase tracking-wider">Order ID</th>
-                <th className="py-3 px-4 font-semibold uppercase tracking-wider">Customer</th>
-                <th className="py-3 px-4 font-semibold uppercase tracking-wider">Date</th>
-                <th className="py-3 px-4 font-semibold uppercase tracking-wider">Total</th>
-                <th className="py-3 px-4 font-semibold uppercase tracking-wider">Items</th>
-                <th className="py-3 px-4 font-semibold uppercase tracking-wider">Status</th>
-                <th className="py-3 px-4 font-semibold uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((order) => (
-                <tr key={order.id} className="border-b border-gray-200 hover:bg-orange-50 transition-colors duration-200">
-                  <td className="py-4 px-4 text-gray-800 font-medium">{order.id}</td>
-                  <td className="py-4 px-4 text-gray-700">{order.customer}</td>
-                  <td className="py-4 px-4 text-gray-700">📅 {order.date}</td>
-                  <td className="py-4 px-4 text-gray-700">💰 ${order.total.toFixed(2)}</td>
-                  <td className="py-4 px-4 text-gray-700">
-                    <ul className="list-disc list-inside">
-                      {order.items.map((item, idx) => (
-                        <li key={idx} className="text-sm">{item}</li>
-                      ))}
-                    </ul>
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)} shadow-md`}>
-                      {order.status}
-                    </span>
-                  </td>
-                  <td className="py-4 px-4">
-                    <button className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition duration-200">
-                      View Details
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        )}
       </div>
     </div>
   );
 }
-
-export default Orders
