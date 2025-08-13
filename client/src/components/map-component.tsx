@@ -32,7 +32,7 @@ import { logoutUser } from "@/redux/reducerSlices/userSlice";
 import MapSidebar from "./map-sidebar";
 import axios from "axios";
 import { toast } from "sonner";
-import { log } from "util";
+import { addToCart } from "@/redux/reducerSlices/productSlice";
 
 interface MapProps {
   position: [number, number]; // [latitude, longitude]
@@ -103,9 +103,20 @@ const createEmojiIcon = (emoji, discountPercentage) => {
 const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
   const { _id } = useSelector((state) => state.user);
   const [productList, setProductList] = useState([]);
-  const [productsOfSelectedCategory, setProductsOfSelectedCategory] = useState([])
+  const [productsOfSelectedCategory,setProductsOfSelectedCategory] = useState([])
+  
+  // const [search, setSearch] = useState('');
+  const { isLoggedIn } = useSelector((state) => state.user);
+  const [show, setShow] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState([]); // Default to first category (Burgers)
+  const [isSearchFocused, setIsSearchFocused] = useState(false); // Track input focus
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [allChipProducts, setAllChipProducts] = useState([]);
 
+  const dispatch = useDispatch();
+  
 
+  },[])
   const [foodSearch, setFoodSearch] = useState("");
   const userPreferences = useSelector((state) => state.user.userPreferences);
   const [foodCategories, setFoodCategories] = useState([])
@@ -128,6 +139,8 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
 
   };
 
+
+
   const fetchCategories = async () => {
     const { data } = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/categories`
@@ -140,6 +153,12 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
     const { data } = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/product-chips?categoryId=${catId}`
     );
+    if(data?.length >  0) {
+      
+      fetchProductsByProductIds(data[0]?.product_ids)
+      setSelectedCategory(data[0])
+   
+    }
     setProductsOfSelectedCategory(data)
     setAllChipProducts(data);
 
@@ -169,18 +188,12 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
   };
 
   useEffect(() => {
-    debugger;
     fetchProducts();
-    fetchProductsByProductIds(null)
+    // fetchProductsByProductIds(null)
     fetchCategories();
     fetchProductChip()
   }, []);
 
-
-  const { isLoggedIn } = useSelector((state) => state.user);
-  const [selectedCategory, setSelectedCategory] = useState([]); // Default to first category (Burgers)
-  const [isSearchFocused, setIsSearchFocused] = useState(false); // Track input focus
-  const dispatch = useDispatch();
 
   const handleLogout = () => {
     dispatch(logoutUser());
@@ -200,7 +213,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
       price: item.quantity * item.discountedPrice,
       paymentMethod: 'Cash',
     };
-
+    socket.emit('order', _id);
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/orders`,
@@ -220,8 +233,6 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
 
   const handleCategoryClick = (category) => {
     fetchProductsByProductIds(category.product_ids)
-    console.log('products by products id are from category', category);
-    
     setSelectedCategory(category);
     setIsSearchFocused(false);
   };
@@ -242,6 +253,9 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
     setProductList(reducedArr)
 
   }
+  const generateCartCount  =()=>{
+    return cart.reduce((total, item) => total + item.quantity, 0);
+  }
 
   const handleIncrement = (clickedItem) => {
     const temp = [...productList]
@@ -253,6 +267,33 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
     })
     // debugger;
     setProductList(reducedArr)
+  }
+
+
+  const handleClick = async ( item) => {
+    let totalCart = 0
+    reduxCart.forEach((cartItem)=>{
+      if(cartItem._id === item._id){
+        totalCart = totalCart +  cartItem.quantity 
+      }
+    })
+    if(item.quantity <= item.availableQuantity ){
+        const {data} =  await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/stock-count/${item._id}`)
+        if(data.stockCount >= item.quantity && totalCart <= data.stockCount){
+          dispatch(addToCart(item))
+        }
+      const temp = [...productList]
+      const reducedArr = temp.map((val) => {
+        if (val._id === item._id ) {
+         return {
+          ...val,
+          availableQuantity: val.availableQuantity- item.quantity,
+         }
+        }
+        return val
+      })
+      setProductList(reducedArr)
+    }
   }
 
   return (
@@ -302,7 +343,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                     <CardContent className="py-1">
                       <div className="flex items-center justify-between mb-1">
                         <h3 className="text-sm font-bold text-gray-800 flex-1">
-                          Avaialble  <span className="text-white p-1 rounded-sm" style={{ backgroundColor: "#FAA617" }}>{item.availableQuantity}</span> {" stocks of "}
+                          Available  <span className="text-white p-1 rounded-sm" style={{ backgroundColor: "#FAA617" }}>{item.availableQuantity}</span> {" stocks of "}
                           {item.name}
                         </h3>
                       </div>
@@ -347,6 +388,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                           </Button>
                         </div>
                       </div>
+                      <Button onClick={()=> handleClick(item)}>Add to Cart</Button>
 
                     </CardContent>
                   </Card>
@@ -368,6 +410,8 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                   >
                     Place Order
                   </Button>
+
+                  <div className={`${newNotification ? 'bg-red-200 w-2 h-2': ''}`}></div>
                 </div>
 
               </Popup>
@@ -390,7 +434,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                 }
                 className={`flex items-center space-x-2 ${selectedCategory.name === category.name
                   ? "bg-orange-400 text-white"
-                  : "bg-orange-400 text-white border-0"
+                  : "bg-blue-400 text-white border-0"
                   } rounded-full px-4 py-2`}
                 onClick={() => handleCategoryClick(category)}
               >
@@ -451,14 +495,22 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
 
       {/* Authentication Buttons */}
       <div className="absolute top-6 right-35 z-[1000]">
+
         {isLoggedIn ? (
-          <Button
+          <>
+          <Button>
+            <ShoppingCart/>
+            <span className="ml-2">{generateCartCount()} items</span>
+          </Button>
+            <Button
             onClick={handleLogout}
             variant="outline"
             className="justify-start bg-orange-600 hover:bg-orange-400 text-blue-50"
           >
             Logout
           </Button>
+          </>
+        
         ) : (
           <div className="flex flex-row items-center space-x-4 ml-4">
             <Link href="/login">
@@ -505,6 +557,6 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
       </div>
     </div>
   );
-};
+
 
 export default MapComponent;
