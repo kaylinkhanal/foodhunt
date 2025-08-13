@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { AwardIcon, Minus, Plus } from "lucide-react";
+import { Minus, Plus, ShoppingBagIcon, ShoppingCart } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
@@ -103,20 +103,9 @@ const createEmojiIcon = (emoji, discountPercentage) => {
 const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
   const { _id } = useSelector((state) => state.user);
   const [productList, setProductList] = useState([]);
-  const [productsOfSelectedCategory,setProductsOfSelectedCategory] = useState([])
-  
-  // const [search, setSearch] = useState('');
-  const { isLoggedIn } = useSelector((state) => state.user);
-  const [show, setShow] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState([]); // Default to first category (Burgers)
-  const [isSearchFocused, setIsSearchFocused] = useState(false); // Track input focus
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [allChipProducts, setAllChipProducts] = useState([]);
+  const {cart} = useSelector((state) => state.product);
+  const [productsOfSelectedCategory, setProductsOfSelectedCategory] = useState([])
 
-  const dispatch = useDispatch();
-  
-
-  },[])
   const [foodSearch, setFoodSearch] = useState("");
   const userPreferences = useSelector((state) => state.user.userPreferences);
   const [foodCategories, setFoodCategories] = useState([])
@@ -139,8 +128,6 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
 
   };
 
-
-
   const fetchCategories = async () => {
     const { data } = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/categories`
@@ -160,17 +147,9 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
    
     }
     setProductsOfSelectedCategory(data)
-    setAllChipProducts(data);
 
   };
 
-  const fetchProductsByCategory = async(categoryId) =>{
-    const data = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/product-chips?categoryId=${categoryId}`);
-    console.log('fetchProductsByCategory', data);
-    setProductsOfSelectedCategory(data)
-
-
-  }
 
 
   const fetchProductsByProductIds = async (id) => {
@@ -195,6 +174,12 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
   }, []);
 
 
+  const { isLoggedIn } = useSelector((state) => state.user);
+  const {cart: reduxCart} = useSelector(state=> state.product)
+  const [selectedCategory, setSelectedCategory] = useState([]); // Default to first category (Burgers)
+  const [isSearchFocused, setIsSearchFocused] = useState(false); // Track input focus
+  const dispatch = useDispatch();
+
   const handleLogout = () => {
     dispatch(logoutUser());
   };
@@ -213,7 +198,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
       price: item.quantity * item.discountedPrice,
       paymentMethod: 'Cash',
     };
-    socket.emit('order', _id);
+
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/orders`,
@@ -410,8 +395,6 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                   >
                     Place Order
                   </Button>
-
-                  <div className={`${newNotification ? 'bg-red-200 w-2 h-2': ''}`}></div>
                 </div>
 
               </Popup>
@@ -557,6 +540,6 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
       </div>
     </div>
   );
-
+};
 
 export default MapComponent;
