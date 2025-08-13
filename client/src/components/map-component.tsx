@@ -29,11 +29,10 @@ import {
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "@/redux/reducerSlices/userSlice";
-import MapSidebar from "./map-sidebar";
 import axios from "axios";
 import { toast } from "sonner";
 import { addToCart } from "@/redux/reducerSlices/productSlice";
-
+import MapSidebar from "./map-sidebar";
 interface MapProps {
   position: [number, number]; // [latitude, longitude]
   zoom?: number;
