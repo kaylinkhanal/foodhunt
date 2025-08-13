@@ -8,24 +8,36 @@ import { useSelector } from "react-redux";
 
 const Dashboard = () => {
   const router = useRouter();
+  const [orderInsightData, setOrderInsightData] = useState([]);
   const [kycStatus, setKycStatus] = useState({
     isKycSubmitted: false,
     isKycApproved: false,
   });
   const { _id } = useSelector((state) => state.user);
+  const fetchOrderInsights = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/orders-insights?sellerId=${_id}`
+      );
+      setOrderInsightData(data);
+    } catch (error) {
+      console.error("Failed to fetch KYC status", error);
+    }
+  };
+
+  const fetchKycStatus = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/kycs/${_id}`
+      );
+      setKycStatus(data);
+    } catch (error) {
+      console.error("Failed to fetch KYC status", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchKycStatus = async () => {
-      try {
-        const { data } = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/kycs/${_id}`
-        );
-        setKycStatus(data);
-      } catch (error) {
-        console.error("Failed to fetch KYC status", error);
-      }
-    };
-
+    fetchOrderInsights()
     fetchKycStatus();
   }, []);
 
@@ -76,6 +88,9 @@ const Dashboard = () => {
           </Alert>
         )}
       </div>
+
+{JSON.stringify(orderInsightData)}
+      
     </div>
   );
 };

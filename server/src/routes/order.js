@@ -33,9 +33,9 @@ orderRouter.get("/orders", async (req, res) => {
     const orders = await Order.find()
       .populate("bookedById", "name email")
       .populate("productId", "name discountedPrice")
-      .skip((req.query.page -1) * req.query.pageSize )
-      .limit(req.query.pageSize )
-    res.status(200).json({orders,totalDbOrders});
+      .skip((req.query.page - 1) * req.query.pageSize)
+      .limit(req.query.pageSize);
+    res.status(200).json({ orders, totalDbOrders });
   } catch (error) {
     console.log("error while getting orders", error);
 
@@ -73,6 +73,18 @@ orderRouter.get("/orders/:userId", async (req, res) => {
   res.json(orders);
 });
 
+
+orderRouter.get("/orders-insights", async (req, res) => {
+  console.log(req.query.sellerId)
+  const orders = await Order.find().populate({
+    path: 'productId',
+    select: 'name discountedPrice price _id sellerId',
+    match: { 'sellerId': req.query.sellerId },
+  })
+  res.json(orders);
+});
+
+
 orderRouter.patch("/orders/:orderId", async (req, res) => {
   try {
     const order = await Order.findById(req.params.orderId);
@@ -99,6 +111,26 @@ orderRouter.patch("/orders/:orderId", async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "error while cancelling order" });
   }
+});
+
+orderRouter.post("/re-orders/:orderid", async (req, res) => {
+  const orderData = await Order.findById(req.params.orderid);
+  const product = await Product.findById(orderData.productId);
+  if (product.availableQuantity < orderData.quantity)
+    return res.status(404).json({ message: "Dont have enough food quantity." });
+  product.availableQuantity -= orderData.quantity;
+  await product.save();
+  let price = product.discountedPrice * orderData.quantity;
+  // Assuming you have an Order model
+  const order = new Order({
+    bookedById: orderData.bookedById,
+    productId: orderData.productId,
+    quantity: orderData.quantity,
+    paymentMethod: orderData.paymentMethod,
+    price,
+  });
+  await order.save();
+  res.send({ message: "Re-Order placed successfully", order });
 });
 
 export default orderRouter;

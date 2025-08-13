@@ -9,7 +9,8 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Minus, Plus, ShoppingBagIcon, ShoppingCart } from "lucide-react";
+import { socket } from "@/lib/socket";
+import { Minus, Plus, ShoppingBagIcon, ShoppingCart, Bell } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
@@ -37,7 +38,6 @@ interface MapProps {
   position: [number, number]; // [latitude, longitude]
   zoom?: number;
 }
-
 const createEmojiIcon = (emoji, discountPercentage) => {
   return L.divIcon({
     html: `
@@ -102,9 +102,16 @@ const createEmojiIcon = (emoji, discountPercentage) => {
 const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
   const { _id } = useSelector((state) => state.user);
   const [productList, setProductList] = useState([]);
-  const {cart} = useSelector((state) => state.product);
+  const { cart } = useSelector((state) => state.product);
   const [productsOfSelectedCategory, setProductsOfSelectedCategory] = useState([])
+  const [newNotification, setNewNotification] = useState(false);
+  useEffect(() => {
+    socket.on('connection')
+    socket.on('orderId', (orderId) => {
+      setNewNotification(true)
+    })
 
+  }, [])
   const [foodSearch, setFoodSearch] = useState("");
   const userPreferences = useSelector((state) => state.user.userPreferences);
   const [foodCategories, setFoodCategories] = useState([])
@@ -114,7 +121,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
       const { data } = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/products?name=${item}&userId=${_id}`
       );
-  
+
       const reducedArr = data.map((item) => {
 
         item.quantity = 1
@@ -139,11 +146,11 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
     const { data } = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/product-chips?categoryId=${catId}`
     );
-    if(data?.length >  0) {
-      
+    if (data?.length > 0) {
+
       fetchProductsByProductIds(data[0]?.product_ids)
       setSelectedCategory(data[0])
-   
+
     }
     setProductsOfSelectedCategory(data)
 
@@ -153,16 +160,16 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
 
   const fetchProductsByProductIds = async (id) => {
 
-      const { data } = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/product-search?productIds=${id ? id?.join(','): ''}`
-      );
-      const reducedArr = data.map((item) => {
-        item.quantity = 1
-        return item
-      })
-      setProductList(reducedArr)
+    const { data } = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/product-search?productIds=${id ? id?.join(',') : ''}`
+    );
+    const reducedArr = data.map((item) => {
+      item.quantity = 1
+      return item
+    })
+    setProductList(reducedArr)
 
-   
+
   };
 
   useEffect(() => {
@@ -174,7 +181,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
 
 
   const { isLoggedIn } = useSelector((state) => state.user);
-  const {cart: reduxCart} = useSelector(state=> state.product)
+  const { cart: reduxCart } = useSelector(state => state.product)
   const [selectedCategory, setSelectedCategory] = useState([]); // Default to first category (Burgers)
   const [isSearchFocused, setIsSearchFocused] = useState(false); // Track input focus
   const dispatch = useDispatch();
@@ -197,7 +204,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
       price: item.quantity * item.discountedPrice,
       paymentMethod: 'Cash',
     };
-
+    socket.emit('order', _id);
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/orders`,
@@ -237,7 +244,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
     setProductList(reducedArr)
 
   }
-  const generateCartCount  =()=>{
+  const generateCartCount = () => {
     return cart.reduce((total, item) => total + item.quantity, 0);
   }
 
@@ -254,25 +261,25 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
   }
 
 
-  const handleClick = async ( item) => {
+  const handleClick = async (item) => {
     let totalCart = 0
-    reduxCart.forEach((cartItem)=>{
-      if(cartItem._id === item._id){
-        totalCart = totalCart +  cartItem.quantity 
+    reduxCart.forEach((cartItem) => {
+      if (cartItem._id === item._id) {
+        totalCart = totalCart + cartItem.quantity
       }
     })
-    if(item.quantity <= item.availableQuantity ){
-        const {data} =  await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/stock-count/${item._id}`)
-        if(data.stockCount >= item.quantity && totalCart <= data.stockCount){
-          dispatch(addToCart(item))
-        }
+    if (item.quantity <= item.availableQuantity) {
+      const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/stock-count/${item._id}`)
+      if (data.stockCount >= item.quantity && totalCart <= data.stockCount) {
+        dispatch(addToCart(item))
+      }
       const temp = [...productList]
       const reducedArr = temp.map((val) => {
-        if (val._id === item._id ) {
-         return {
-          ...val,
-          availableQuantity: val.availableQuantity- item.quantity,
-         }
+        if (val._id === item._id) {
+          return {
+            ...val,
+            availableQuantity: val.availableQuantity - item.quantity,
+          }
         }
         return val
       })
@@ -372,7 +379,7 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                           </Button>
                         </div>
                       </div>
-                      <Button onClick={()=> handleClick(item)}>Add to Cart</Button>
+                      <Button onClick={() => handleClick(item)}>Add to Cart</Button>
 
                     </CardContent>
                   </Card>
@@ -394,6 +401,8 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
                   >
                     Place Order
                   </Button>
+
+
                 </div>
 
               </Popup>
@@ -480,19 +489,27 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
 
         {isLoggedIn ? (
           <>
-          <Button>
-            <ShoppingCart/>
-            <span className="ml-2">{generateCartCount()} items</span>
-          </Button>
-            <Button
-            onClick={handleLogout}
-            variant="outline"
-            className="justify-start bg-orange-600 hover:bg-orange-400 text-blue-50"
-          >
-            Logout
-          </Button>
+            <div className="flex gap-3 relative">
+              <div className="relative cursor-pointer" onClick={() => setNewNotification(false)}>
+                <Bell className="w-6 h-6" />
+                {newNotification && (
+                  <div className="bg-red-600 w-2 h-2 rounded-full absolute top-0.5 left-4" />
+                )}
+              </div>
+              <Button>
+                <ShoppingCart />
+                <span className="ml-2">{generateCartCount()} items</span>
+              </Button>
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                className="justify-start bg-orange-600 hover:bg-orange-400 text-blue-50"
+              >
+                Logout
+              </Button>
+            </div>
           </>
-        
+
         ) : (
           <div className="flex flex-row items-center space-x-4 ml-4">
             <Link href="/login">
