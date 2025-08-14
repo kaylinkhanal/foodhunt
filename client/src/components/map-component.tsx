@@ -9,12 +9,8 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-<<<<<<< HEAD
-import { AwardIcon, Minus, Plus } from "lucide-react";
-=======
 import { socket } from "@/lib/socket";
 import { Minus, Plus, ShoppingBagIcon, ShoppingCart, Bell } from "lucide-react";
->>>>>>> 447a190aabf8db9367714cb8458c1572ade9f77f
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
@@ -106,20 +102,6 @@ const createEmojiIcon = (emoji, discountPercentage) => {
 const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
   const { _id } = useSelector((state) => state.user);
   const [productList, setProductList] = useState([]);
-<<<<<<< HEAD
-  const [productsOfSelectedCategory,setProductsOfSelectedCategory] = useState([])
-  
-  // const [search, setSearch] = useState('');
-  const { isLoggedIn } = useSelector((state) => state.user);
-  const [show, setShow] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState([]); // Default to first category (Burgers)
-  const [isSearchFocused, setIsSearchFocused] = useState(false); // Track input focus
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [allChipProducts, setAllChipProducts] = useState([]);
-
-  const dispatch = useDispatch();
-  
-=======
   const { cart } = useSelector((state) => state.product);
   const [productsOfSelectedCategory, setProductsOfSelectedCategory] = useState([])
   const [newNotification, setNewNotification] = useState(false);
@@ -128,7 +110,6 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
     socket.on('orderId', (orderId) => {
       setNewNotification(true)
     })
->>>>>>> 447a190aabf8db9367714cb8458c1572ade9f77f
 
   }, [])
   const [foodSearch, setFoodSearch] = useState("");
@@ -198,15 +179,12 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
     fetchProductChip()
   }, []);
 
-<<<<<<< HEAD
-=======
 
   const { isLoggedIn } = useSelector((state) => state.user);
   const { cart: reduxCart } = useSelector(state => state.product)
   const [selectedCategory, setSelectedCategory] = useState([]); // Default to first category (Burgers)
   const [isSearchFocused, setIsSearchFocused] = useState(false); // Track input focus
   const dispatch = useDispatch();
->>>>>>> 447a190aabf8db9367714cb8458c1572ade9f77f
 
   const handleLogout = () => {
     dispatch(logoutUser());
@@ -579,5 +557,5 @@ const MapComponent: React.FC<MapProps> = ({ position, zoom = 12 }) => {
     </div>
   );
 
-
+}
 export default MapComponent;
