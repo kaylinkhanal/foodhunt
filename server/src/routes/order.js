@@ -61,6 +61,9 @@ orderRouter.get("/orders/:id", async (req, res, next) => {
   }
 });
 
+
+
+
 orderRouter.get("/orders/:userId", async (req, res) => {
   const orders = await Order.find({ bookedById: req.params.userId }).populate({
     path: "productId",
@@ -73,16 +76,6 @@ orderRouter.get("/orders/:userId", async (req, res) => {
   res.json(orders);
 });
 
-
-orderRouter.get("/orders-insights", async (req, res) => {
-  console.log(req.query.sellerId)
-  const orders = await Order.find().populate({
-    path: 'productId',
-    select: 'name discountedPrice price _id sellerId',
-    match: { 'sellerId': req.query.sellerId },
-  })
-  res.json(orders);
-});
 
 
 orderRouter.patch("/orders/:orderId", async (req, res) => {
@@ -132,5 +125,35 @@ orderRouter.post("/re-orders/:orderid", async (req, res) => {
   await order.save();
   res.send({ message: "Re-Order placed successfully", order });
 });
+
+
+//for seller dashboard
+orderRouter.get("/orders", async (req, res) => {
+  try {
+    const { sellerId } = req.query;
+
+    if (!sellerId) {
+      return res.status(400).json({ error: "Seller ID is required." });
+    }
+
+    const products = await Product.find({ sellerId }).select("_id name discountedPrice");
+    const productIds = products.map((product) => product._id);
+
+    if (productIds.length === 0) {
+      return res.status(200).json({ orders: [], products: [], totalDbOrders: 0 });
+    }
+
+    const orders = await Order.find({ productId: { $in: productIds } })
+      .populate("bookedById", "name email")
+      .populate("productId", "name discountedPrice");
+
+    res.status(200).json({ orders, products, totalDbOrders: orders.length });
+
+  } catch (error) {
+    console.error("Error while getting seller's orders:", error);
+    res.status(500).json({ error: "Failed to fetch orders for the seller." });
+  }
+});
+
 
 export default orderRouter;
